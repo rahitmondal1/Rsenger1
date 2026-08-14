@@ -15963,6 +15963,150 @@ async function sendMessage(){
                     .serverTimestamp()
 
             });
+            
+            
+            // ================= GET MY NICKNAME =================
+
+let notificationName =
+    me.displayName ||
+    me.email.split("@")[0];
+
+try {
+
+    const myUserSnapshot =
+        await db.collection("users")
+        .where("email", "==", me.email)
+        .limit(1)
+        .get();
+
+    if(!myUserSnapshot.empty){
+
+        const myUser =
+            myUserSnapshot.docs[0].data();
+
+        notificationName =
+            myUser.nickname ||
+            myUser.name ||
+            myUser.username ||
+            notificationName;
+
+    }
+
+}
+catch(error){
+
+    console.log(
+        "Could not get nickname:",
+        error
+    );
+
+}
+            
+            // ================= SEND NOTIFICATION =================
+
+try {
+
+    await fetch(
+        "https://rsenger-notification-server.onrender.com/send-message-notification",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                receiverEmail:
+                    currentChatEmail,
+
+                message:
+                    pendingAttachment.type &&
+                    pendingAttachment.type.startsWith("image/")
+                        ? "📷 Photo"
+                        : "📎 File: " +
+                          pendingAttachment.name,
+
+                senderName:
+    notificationName,
+
+                senderEmail:
+                    me.email
+
+            })
+        }
+    );
+
+    console.log(
+        "Attachment notification request sent"
+    );
+
+}
+catch(notificationError){
+
+    console.error(
+        "Notification error:",
+        notificationError
+    );
+
+}
+
+// ================= SEND TEXT NOTIFICATION =================
+
+try {
+
+    const notificationResponse =
+        await fetch(
+            "https://rsenger-notification-server.onrender.com/send-message-notification",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    receiverEmail:
+                        currentChatEmail,
+
+                    message:
+                        text,
+
+                    senderName:
+                        me.displayName ||
+                        me.email.split("@")[0],
+
+                    senderEmail:
+                        me.email
+
+                })
+
+            }
+        );
+
+
+    const notificationResult =
+        await notificationResponse.json();
+
+
+    console.log(
+        "Text notification result:",
+        notificationResult
+    );
+
+
+}
+catch(notificationError){
+
+    // Notification fail হলেও
+    // message already Firestore-এ save হয়েছে
+    console.error(
+        "Text notification error:",
+        notificationError
+    );
+
+}
 
 
             // ================= CLEAR ATTACHMENT =================
