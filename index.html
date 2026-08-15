@@ -18649,62 +18649,79 @@ function updateAttachmentError(error){
 
 async function clearAttachmentAfterSend(){
 
+    // ===============================
+    // PREVIEW IMAGE CLEAR
+    // ===============================
+
     const image =
         document.getElementById(
             "attachmentPreviewImage"
         );
 
-
     if(image){
 
-        image.removeAttribute(
-            "src"
-        );
+        image.removeAttribute("src");
 
-        image.classList.add(
-            "hidden"
-        );
+        image.classList.add("hidden");
+
+        image.style.display = "none";
 
     }
 
+
+    // ===============================
+    // FILE ICON CLEAR
+    // ===============================
 
     const fileIcon =
         document.getElementById(
             "attachmentFileIcon"
         );
 
-
     if(fileIcon){
 
-        fileIcon.classList.add(
-            "hidden"
-        );
+        fileIcon.classList.add("hidden");
+
+        fileIcon.style.display = "none";
 
     }
 
+
+    // ===============================
+    // PREVIEW CONTAINER REMOVE
+    // ===============================
 
     const container =
         document.getElementById(
             "attachmentPreview"
         );
 
-
     if(container){
 
-        container.classList.add(
-            "hidden"
-        );
+        container.classList.add("hidden");
+
+        // CSS override হলেও preview থাকবে না
+        container.style.display = "none";
+
+        container.style.visibility = "hidden";
+
+        container.style.opacity = "0";
 
     }
 
 
-    pendingAttachment =
-        null;
+    // ===============================
+    // RESET ATTACHMENT DATA
+    // ===============================
+
+    pendingAttachment = null;
+
+    cloudinaryUploadXHR = null;
 
 
-    cloudinaryUploadXHR =
-        null;
-
+    // ===============================
+    // RESET FILE INPUTS
+    // ===============================
 
     const camera =
         document.getElementById(
@@ -18722,14 +18739,25 @@ async function clearAttachmentAfterSend(){
         );
 
 
-    if(camera)
+    if(camera){
+
         camera.value = "";
 
-    if(photo)
+    }
+
+
+    if(photo){
+
         photo.value = "";
 
-    if(file)
+    }
+
+
+    if(file){
+
         file.value = "";
+
+    }
 
 }
 
