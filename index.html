@@ -594,19 +594,74 @@ No chats yet
      PREMIUM ATTACHMENT PREVIEW
 ===================================================== -->
 
-<div id="attachmentPreview" class="attachment-preview hidden">
+<div
+    id="attachmentPreview"
+    class="attachment-preview hidden"
+>
+
+    <button
+        class="attachment-preview-close"
+        onclick="cancelPendingAttachment()"
+        aria-label="Cancel attachment"
+    >
+        <i data-lucide="x"></i>
+    </button>
+
 
     <div
-        id="attachmentPreviewCard"
-        class="attachment-preview-card"
+        class="attachment-preview-media"
+        onclick="toggleAttachmentPreview()"
     >
 
-        <!-- Preview content will appear here -->
+        <img
+            id="attachmentPreviewImage"
+            class="attachment-preview-image hidden"
+            alt="Attachment"
+        >
+
+
+        <div
+            id="attachmentFileIcon"
+            class="attachment-file-icon hidden"
+        >
+
+            <i data-lucide="file"></i>
+
+        </div>
+
+
+        <!-- Upload progress -->
+
+        <div
+            id="attachmentProgress"
+            class="attachment-progress"
+        >
+
+            <div
+                id="attachmentProgressCircle"
+                class="attachment-progress-circle"
+            >
+
+                <span
+                    id="attachmentProgressText"
+                >
+                    0%
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
 
-</div>
 
+    <div
+        id="attachmentPreviewName"
+        class="attachment-preview-name"
+    >
+    </div>
+
+</div>
 
 <div class="message-box">
 
@@ -671,30 +726,28 @@ No chats yet
     <!-- HIDDEN INPUTS -->
 
     <input
-        type="file"
-        id="cameraInput"
-        accept="image/*"
-        capture="environment"
-        hidden
-        onchange="handleAttachment(this)"
-    >
+    type="file"
+    id="cameraInput"
+    accept="image/*"
+    capture="environment"
+    hidden
+    onchange="handleCloudinaryAttachment(this)"
+>
 
-    <input
-        type="file"
-        id="photoInput"
-        accept="image/*"
-        hidden
-        onchange="handleAttachment(this)"
-    >
+<input
+    type="file"
+    id="photoInput"
+    accept="image/*"
+    hidden
+    onchange="handleCloudinaryAttachment(this)"
+>
 
-    <input
-        type="file"
-        id="fileInput"
-        accept="*/*"
-        hidden
-        onchange="handleAttachment(this)"
-    >
-
+<input
+    type="file"
+    id="fileInput"
+    hidden
+    onchange="handleCloudinaryAttachment(this)"
+>
 
     <!-- MESSAGE INPUT -->
 
@@ -1170,6 +1223,7 @@ Settings
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
@@ -1530,6 +1584,35 @@ onclick="closeMessageMenu()"></div>
         </button>
 
     </div>
+
+</div>
+
+<!-- =====================================================
+     PREMIUM PHOTO VIEWER
+     ===================================================== -->
+
+<div
+    id="photoViewer"
+    class="photo-viewer"
+    onclick="closePhotoViewer(event)"
+>
+
+    <button
+        type="button"
+        class="photo-viewer-close"
+        onclick="closePhotoViewer()"
+        aria-label="Back"
+    >
+        ←
+    </button>
+
+
+    <img
+        id="photoViewerImage"
+        src=""
+        alt="Photo"
+        onclick="event.stopPropagation()"
+    >
 
 </div>
 
@@ -13668,7 +13751,676 @@ body:not(.dark)
     box-shadow:
         0 12px 35px rgba(80,130,255,.38);
 }
-</style><script>let selectedMessageId = "";
+
+/* =====================================================
+   PREMIUM CHAT STATUS
+===================================================== */
+
+#chatStatus{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    font-size:12px;
+    font-weight:500;
+
+    line-height:1;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+
+.premium-status-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+    flex:none;
+}
+
+
+.premium-status-dot.online{
+    background:#22c55e;
+
+    box-shadow:
+        0 0 0 3px rgba(34,197,94,.10),
+        0 0 10px rgba(34,197,94,.45);
+}
+
+
+.premium-status-dot.offline{
+    background:#9ca3af;
+
+    box-shadow:
+        0 0 0 3px rgba(156,163,175,.10);
+}
+
+
+.premium-status-text{
+    opacity:.75;
+}
+
+
+/* =====================================================
+   PREMIUM TYPING
+===================================================== */
+
+#chatStatus.typing-active{
+    color:#8b5cf6;
+}
+
+
+.premium-typing-dot{
+    display:flex;
+    align-items:center;
+    gap:3px;
+}
+
+
+.premium-typing-dot span{
+    width:4px;
+    height:4px;
+
+    border-radius:50%;
+
+    background:#8b5cf6;
+
+    animation:
+        premiumTypingBounce
+        1.2s infinite ease-in-out;
+}
+
+
+.premium-typing-dot span:nth-child(2){
+    animation-delay:.15s;
+}
+
+
+.premium-typing-dot span:nth-child(3){
+    animation-delay:.3s;
+}
+
+
+.premium-typing-text{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.1px;
+}
+
+
+@keyframes premiumTypingBounce{
+
+    0%,
+    60%,
+    100%{
+        transform:translateY(0);
+        opacity:.45;
+    }
+
+    30%{
+        transform:translateY(-3px);
+        opacity:1;
+    }
+
+}
+
+
+/* =====================================================
+   PREMIUM ATTACHMENT PREVIEW
+===================================================== */
+
+.attachment-preview{
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 0 12px 10px;
+
+    padding: 10px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,.18);
+
+}
+
+
+.attachment-preview.hidden{
+
+    display: none;
+
+}
+
+
+.attachment-preview-media{
+
+    position: relative;
+
+    width: 72px;
+
+    height: 72px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+
+    background:
+        rgba(0,0,0,.22);
+
+    cursor: pointer;
+
+}
+
+
+.attachment-preview-image{
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.attachment-preview-image.hidden{
+
+    display: none;
+
+}
+
+
+.attachment-preview-close{
+
+    position: absolute;
+
+    top: 5px;
+
+    right: 5px;
+
+    z-index: 20;
+
+    width: 25px;
+
+    height: 25px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.72);
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+.attachment-preview-close svg{
+
+    width: 14px;
+
+    height: 14px;
+
+}
+
+
+.attachment-file-icon{
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.attachment-file-icon svg{
+
+    width: 30px;
+
+    height: 30px;
+
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+.attachment-progress{
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.28);
+
+}
+
+
+.attachment-progress.completed{
+
+    background:
+        rgba(0,0,0,.08);
+
+}
+
+
+.attachment-progress.error{
+
+    background:
+        rgba(180,20,20,.55);
+
+}
+
+
+.attachment-progress-circle{
+
+    --progress: 0;
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+
+        conic-gradient(
+            #ffffff
+            calc(var(--progress) * 1%),
+            rgba(255,255,255,.25)
+            0
+        );
+
+    position: relative;
+
+}
+
+
+.attachment-progress-circle::before{
+
+    content: "";
+
+    position: absolute;
+
+    width: 32px;
+
+    height: 32px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(20,20,20,.72);
+
+}
+
+
+#attachmentProgressText{
+
+    position: relative;
+
+    z-index: 2;
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* =====================================================
+   FILE NAME
+===================================================== */
+
+.attachment-preview-name{
+
+    min-width: 0;
+
+    max-width: 220px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   FULLSCREEN IMAGE PREVIEW
+===================================================== */
+
+.attachment-preview-image.fullscreen-preview{
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    object-fit: contain;
+
+    background:
+        rgba(0,0,0,.96);
+
+    z-index: 99999;
+
+    border-radius: 0;
+
+}
+
+/* =====================================================
+   PREMIUM CHAT PHOTO
+   ===================================================== */
+
+.message-attachment-photo {
+    width: 180px;
+    height: 180px;
+    margin: 3px 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.18);
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* পুরো ছবিটা ছোট card-এর মধ্যে দেখা যাবে */
+.message-attachment-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    object-fit: contain;
+
+    border-radius: 16px;
+
+    background: rgba(0, 0, 0, 0.12);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+/* Tap effect */
+.message-attachment-photo:active img {
+    transform: scale(0.97);
+    opacity: 0.85;
+}
+
+
+/* =====================================================
+   PREMIUM FULLSCREEN PHOTO VIEWER
+   ===================================================== */
+
+.photo-viewer {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.96);
+
+    z-index: 999999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 60px 15px 25px;
+
+    box-sizing: border-box;
+}
+
+
+/* Viewer active */
+.photo-viewer.active {
+    display: flex;
+}
+
+
+/* Fullscreen image */
+.photo-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    border-radius: 8px;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    animation: photoViewerIn 0.2s ease;
+}
+
+
+/* =====================================================
+   CLOSE / BACK BUTTON
+   ===================================================== */
+
+.photo-viewer-close {
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    background: rgba(25,25,30,0.75);
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    color: white;
+
+    font-size: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    z-index: 2;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.4);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.photo-viewer-close:active {
+    transform: scale(0.9);
+    background: rgba(255,255,255,0.18);
+}
+
+
+/* =====================================================
+   ANIMATION
+   ===================================================== */
+
+@keyframes photoViewerIn {
+
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+.photo-viewer-close {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+
+    width: 52px;
+    height: 52px;
+
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 50%;
+
+    background: rgba(20,20,25,0.62);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    font-size: 0;
+    line-height: 1;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.45),
+        inset 0 1px 1px rgba(255,255,255,0.12);
+
+    cursor: pointer;
+
+    z-index: 9999;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease;
+}
+
+
+/* Premium arrow */
+.photo-viewer-close::before {
+    content: "";
+
+    width: 12px;
+    height: 12px;
+
+    border-left: 2.5px solid #fff;
+    border-bottom: 2.5px solid #fff;
+
+    transform: rotate(45deg);
+
+    margin-left: 5px;
+}
+
+
+/* Tap effect */
+.photo-viewer-close:active {
+    transform: scale(0.88);
+
+    background: rgba(255,255,255,0.16);
+
+    border-color:
+        rgba(255,255,255,0.35);
+}
+
+
+/* Desktop / larger screen */
+@media (min-width: 600px) {
+
+    .photo-viewer-close {
+        top: 24px;
+        left: 24px;
+
+        width: 56px;
+        height: 56px;
+    }
+
+}</style><script>let selectedMessageId = "";
 let selectedMessageText = "";
 
 let replyMessageId = "";
@@ -13690,6 +14442,8 @@ measurementId: "G-L727JXTMRJ"
 firebase.initializeApp(firebaseConfig);
 
 
+
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const rtdb = firebase.database();
@@ -13700,20 +14454,40 @@ const rtdb = firebase.database();
 let fcmRetryTimer = null;
 
 function saveFCMToken(){
+  
 
     const user = auth.currentUser;
 
     if(!user){
+
+        console.log(
+            "FCM: User not logged in."
+        );
+
         return;
+
     }
 
-    // আগের retry timer থাকলে বন্ধ
+
+    // =========================================
+    // CLEAR OLD RETRY TIMER
+    // =========================================
+
     if(fcmRetryTimer){
-        clearTimeout(fcmRetryTimer);
+
+        clearTimeout(
+            fcmRetryTimer
+        );
+
         fcmRetryTimer = null;
+
     }
 
-    // WebToNative Firebase Messaging এখনো ready হয়নি
+
+    // =========================================
+    // CHECK WEBTONATIVE
+    // =========================================
+
     if(
         !window.WTN ||
         !window.WTN.Firebase ||
@@ -13721,78 +14495,165 @@ function saveFCMToken(){
     ){
 
         console.log(
-            "WebToNative Firebase Messaging not ready. Retrying..."
+            "FCM: WebToNative Firebase Messaging not ready."
         );
 
-        fcmRetryTimer = setTimeout(
-            saveFCMToken,
-            2000
-        );
+
+        fcmRetryTimer =
+            setTimeout(
+                saveFCMToken,
+                3000
+            );
+
 
         return;
+
     }
+
+
+    console.log(
+        "FCM: Firebase Messaging is ready."
+    );
+
 
     const FirebaseMessaging =
         window.WTN.Firebase.Messaging;
 
-    FirebaseMessaging.getFCMToken({
 
-        callback: function(data){
+    // =========================================
+    // GET FCM TOKEN
+    // =========================================
 
-            if(!data || !data.token){
+    try{
+
+        FirebaseMessaging.getFCMToken({
+
+            callback: function(data){
 
                 console.log(
-                    "FCM token not received. Retrying..."
+                    "FCM getFCMToken response:",
+                    data
                 );
 
-                fcmRetryTimer = setTimeout(
-                    saveFCMToken,
-                    3000
+
+                // =================================
+                // TOKEN NOT RECEIVED
+                // =================================
+
+                if(
+                    !data ||
+                    !data.token
+                ){
+
+                    console.log(
+                        "FCM: Token not received. Retrying..."
+                    );
+
+
+                    fcmRetryTimer =
+                        setTimeout(
+                            saveFCMToken,
+                            5000
+                        );
+
+
+                    return;
+
+                }
+
+
+                // =================================
+                // TOKEN RECEIVED
+                // =================================
+
+                const token =
+                    data.token;
+
+
+                console.log(
+                    "FCM TOKEN RECEIVED:",
+                    token
                 );
 
-                return;
+
+                const currentUser =
+                    auth.currentUser;
+
+
+                if(!currentUser){
+
+                    console.log(
+                        "FCM: User logged out before token save."
+                    );
+
+                    return;
+
+                }
+
+
+                const uid =
+                    currentUser.uid;
+
+
+                // =================================
+                // SAVE TOKEN TO FIRESTORE
+                // =================================
+
+                db.collection("users")
+                .doc(uid)
+                .set({
+
+                    fcmTokens:
+                        firebase.firestore
+                        .FieldValue
+                        .arrayUnion(
+                            token
+                        )
+
+                }, {
+
+                    merge: true
+
+                })
+
+                .then(function(){
+
+                    console.log(
+                        "✅ FCM TOKEN SAVED TO FIRESTORE"
+                    );
+
+                })
+
+                .catch(function(error){
+
+                    console.error(
+                        "❌ FCM TOKEN FIRESTORE SAVE ERROR:",
+                        error
+                    );
+
+                });
+
             }
 
-            const token = data.token;
+        });
 
-            console.log(
-                "FCM Token received:",
-                token
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ FCM getFCMToken ERROR:",
+            error
+        );
+
+
+        fcmRetryTimer =
+            setTimeout(
+                saveFCMToken,
+                5000
             );
 
-            const uid =
-                auth.currentUser.uid;
-
-            db.collection("users")
-.doc(uid)
-.set({
-
-    fcmTokens:
-        firebase.firestore.FieldValue
-        .arrayUnion(token)
-
-}, {
-    merge: true
-})
-            .then(() => {
-
-                console.log(
-                    "FCM token saved successfully"
-                );
-
-            })
-            .catch(error => {
-
-                console.error(
-                    "FCM token save error:",
-                    error
-                );
-
-            });
-
-        }
-
-    });
+    }
 
 }
 
@@ -13863,18 +14724,25 @@ window.onload = function () {
 
     auth.onAuthStateChanged(function(user){
 
-        authUser = user;
+    authUser = user;
 
-        // যদি user logged in থাকে,
-        // splash শেষ হওয়ার পর Home দেখাবে
-        if(user && splashFinished){
+    // =========================================
+    // FCM PUSH NOTIFICATION SETUP
+    // =========================================
 
-            openHomeAfterSplash(user);
+    
 
-        }
+    // =========================================
+    // HOME
+    // =========================================
 
-    });
+    if(user && splashFinished){
 
+        openHomeAfterSplash(user);
+
+    }
+
+});
 
     // ================= SPLASH TIMER =================
 
@@ -15277,6 +16145,8 @@ let currentChatEmail = "";
 function openChat(email){
 
     currentChatEmail = email;
+    
+    currentChatUserUid = null;
 
     hideBottomNav();
 
@@ -15386,7 +16256,7 @@ if(chatPhoto){
         // ================= REAL TIME PRESENCE =================
 
         listenToChatUserStatus(email);
-        listenToTyping();
+        
 
 
         // ================= LOAD MESSAGES =================
@@ -15445,16 +16315,14 @@ function loadMessages(){
     .orderBy("time")
     .onSnapshot(snapshot => {
 
-
         const messagesBox =
             document.getElementById("messages");
-
 
         if(!messagesBox) return;
 
 
         // ================================================
-        // আগের scroll position
+        // OLD SCROLL POSITION
         // ================================================
 
         const oldScrollHeight =
@@ -15467,13 +16335,10 @@ function loadMessages(){
             messagesBox.clientHeight;
 
 
-        // তুমি bottom-এর কাছে আছো কিনা
-
         const wasNearBottom =
             oldScrollHeight -
             oldScrollTop -
-            oldClientHeight <
-            100;
+            oldClientHeight < 100;
 
 
         // ================================================
@@ -15487,9 +16352,13 @@ function loadMessages(){
 
         snapshot.forEach(doc => {
 
+            const msg =
+                doc.data();
 
-            const msg = doc.data();
 
+            // ============================================
+            // DELETED FOR ME
+            // ============================================
 
             if(
                 msg.deletedFor &&
@@ -15503,7 +16372,6 @@ function loadMessages(){
             }
 
 
-            
             // ============================================
             // CURRENT CHAT
             // ============================================
@@ -15568,6 +16436,7 @@ function loadMessages(){
 
                         `;
 
+
                         lastDate =
                             msgDate;
 
@@ -15582,6 +16451,99 @@ function loadMessages(){
                                 minute: "2-digit"
                             }
                         );
+
+
+                    // ====================================
+                    // ATTACHMENT HTML
+                    // ====================================
+
+                    let attachmentHTML = "";
+
+
+                    if(
+                        msg.attachment &&
+                        msg.attachment.url
+                    ){
+
+                        const attachment =
+                            msg.attachment;
+
+
+                        // =================================
+                        // PHOTO
+                        // =================================
+
+                        if(
+                            attachment.type &&
+                            attachment.type.startsWith(
+                                "image/"
+                            )
+                        ){
+
+                            attachmentHTML = `
+
+                                <div
+                                    class="message-attachment-photo"
+                                >
+
+                                    <img
+                                        src="${attachment.url}"
+                                        alt="${
+                                            attachment.name ||
+                                            "Photo"
+                                        }"
+                                        loading="lazy"
+                                        onclick="openPhotoViewer('${attachment.url}')"
+                                    >
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        // =================================
+                        // FILE
+                        // =================================
+
+                        else{
+
+                            attachmentHTML = `
+
+                                <a
+                                    href="${attachment.url}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="message-attachment-file"
+                                >
+
+                                    <span class="file-icon">
+                                        📎
+                                    </span>
+
+                                    <span class="file-info">
+
+                                        <strong>
+                                            ${
+                                                attachment.name ||
+                                                "File"
+                                            }
+                                        </strong>
+
+                                        <small>
+                                            Tap to open
+                                        </small>
+
+                                    </span>
+
+                                </a>
+
+                            `;
+
+                        }
+
+                    }
 
 
                     // ====================================
@@ -15620,7 +16582,21 @@ function loadMessages(){
                                 ""
                             }
 
-                            ${msg.text || ""}
+
+                            ${attachmentHTML}
+
+
+                            ${
+                                msg.text
+                                ?
+                                `
+                                <div class="message-text">
+                                    ${msg.text}
+                                </div>
+                                `
+                                :
+                                ""
+                            }
 
 
                             <div class="msg-time">
@@ -15668,7 +16644,21 @@ function loadMessages(){
                                 ""
                             }
 
-                            ${msg.text || ""}
+
+                            ${attachmentHTML}
+
+
+                            ${
+                                msg.text
+                                ?
+                                `
+                                <div class="message-text">
+                                    ${msg.text}
+                                </div>
+                                `
+                                :
+                                ""
+                            }
 
 
                             ${
@@ -15708,16 +16698,10 @@ function loadMessages(){
 
 
         // ================================================
-        // AUTO SCROLL LOGIC
+        // AUTO SCROLL
         // ================================================
 
         requestAnimationFrame(() => {
-
-
-            /*
-             * যদি user নিজে bottom-এর কাছে থাকে
-             * তাহলে নতুন message এলে bottom-এ থাকবে।
-             */
 
             if(wasNearBottom){
 
@@ -15726,9 +16710,7 @@ function loadMessages(){
 
             }
 
-
         });
-
 
     });
 
@@ -15836,10 +16818,7 @@ async function sendMessage(){
 
         if(!me){
 
-            console.log(
-                "User is not logged in"
-            );
-
+            console.log("User is not logged in");
             return;
 
         }
@@ -15847,27 +16826,19 @@ async function sendMessage(){
 
         if(!currentChatEmail){
 
-            console.log(
-                "No chat selected"
-            );
-
+            console.log("No chat selected");
             return;
 
         }
 
 
         const input =
-            document.getElementById(
-                "messageInput"
-            );
+            document.getElementById("messageInput");
 
 
         if(!input){
 
-            console.log(
-                "messageInput not found"
-            );
-
+            console.log("messageInput not found");
             return;
 
         }
@@ -15877,267 +16848,361 @@ async function sendMessage(){
             input.value.trim();
 
 
-        // =================================================
-        // ATTACHMENT SEND
-        // =================================================
+        // =====================================================
+        // PHOTO / FILE MESSAGE
+        // =====================================================
 
         if(pendingAttachment){
 
-            // Upload এখনো শেষ হয়নি
+            console.log(
+                "Pending attachment:",
+                pendingAttachment
+            );
+
+
+            // -------------------------------------------------
+            // UPLOAD NOT FINISHED
+            // -------------------------------------------------
 
             if(
-                !pendingAttachment.uploaded
+                pendingAttachment.uploading === true ||
+                pendingAttachment.uploaded !== true
             ){
 
-                if(
-    !pendingAttachment.uploaded
-){
-    premiumAlert(
-        "Please wait until the upload finishes.",
-        "Upload In Progress",
-        "success"
-    );
-
-    return;
-}
+                premiumAlert(
+                    "Please wait until the upload finishes.",
+                    "Upload In Progress",
+                    "success"
+                );
 
                 return;
 
             }
 
 
-            // ================= SAVE ATTACHMENT MESSAGE =================
+            // -------------------------------------------------
+            // CHECK CLOUDINARY URL
+            // -------------------------------------------------
 
-            await db
-            .collection("messages")
-            .add({
+            if(
+                !pendingAttachment.url
+            ){
 
-                text: "",
-
-                sender:
-                    me.email,
-
-                receiver:
-                    currentChatEmail,
-
-                seen:
-                    false,
-
-                edited:
-                    false,
-
-                deletedFor: [],
+                console.error(
+                    "Attachment URL missing:",
+                    pendingAttachment
+                );
 
 
-                replyId:
-                    typeof replyMessageId !== "undefined"
-                    ? replyMessageId
-                    : null,
+                premiumAlert(
+                    "Photo/File upload is incomplete. Please select it again.",
+                    "Upload Error",
+                    "error"
+                );
 
-                replyText:
-                    typeof replyMessageText !== "undefined"
-                    ? replyMessageText
-                    : null,
-
-
-                attachment: {
-
-                    url:
-                        pendingAttachment.url,
-
-                    name:
-                        pendingAttachment.name,
-
-                    type:
-                        pendingAttachment.type,
-
-                    size:
-                        pendingAttachment.size
-
-                },
-
-
-                time:
-                    firebase.firestore
-                    .FieldValue
-                    .serverTimestamp()
-
-            });
-            
-            
-            // ================= GET MY NICKNAME =================
-
-let notificationName =
-    me.displayName ||
-    me.email.split("@")[0];
-
-try {
-
-    const myUserSnapshot =
-        await db.collection("users")
-        .where("email", "==", me.email)
-        .limit(1)
-        .get();
-
-    if(!myUserSnapshot.empty){
-
-        const myUser =
-            myUserSnapshot.docs[0].data();
-
-        notificationName =
-            myUser.nickname ||
-            myUser.name ||
-            myUser.username ||
-            notificationName;
-
-    }
-
-}
-catch(error){
-
-    console.log(
-        "Could not get nickname:",
-        error
-    );
-
-}
-            
-            // ================= SEND NOTIFICATION =================
-
-try {
-
-    await fetch(
-        "https://rsenger-notification-server.onrender.com/send-message-notification",
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-
-                receiverEmail:
-                    currentChatEmail,
-
-                message:
-                    pendingAttachment.type &&
-                    pendingAttachment.type.startsWith("image/")
-                        ? "📷 Photo"
-                        : "📎 File: " +
-                          pendingAttachment.name,
-
-                senderName:
-    notificationName,
-
-                senderEmail:
-                    me.email
-
-            })
-        }
-    );
-
-    console.log(
-        "Attachment notification request sent"
-    );
-
-}
-catch(notificationError){
-
-    console.error(
-        "Notification error:",
-        notificationError
-    );
-
-}
-
-// ================= SEND TEXT NOTIFICATION =================
-
-try {
-
-    const notificationResponse =
-        await fetch(
-            "https://rsenger-notification-server.onrender.com/send-message-notification",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    receiverEmail:
-                        currentChatEmail,
-
-                    message:
-                        text,
-
-                    senderName:
-                        me.displayName ||
-                        me.email.split("@")[0],
-
-                    senderEmail:
-                        me.email
-
-                })
+                return;
 
             }
-        );
 
 
-    const notificationResult =
-        await notificationResponse.json();
+            // -------------------------------------------------
+            // ATTACHMENT DATA
+            // -------------------------------------------------
+
+            const attachmentData = {
+
+                url:
+                    pendingAttachment.url,
+
+                name:
+                    pendingAttachment.name ||
+                    "Attachment",
+
+                type:
+                    pendingAttachment.type ||
+                    "application/octet-stream",
+
+                size:
+                    Number(
+                        pendingAttachment.size
+                    ) || 0
+
+            };
 
 
-    console.log(
-        "Text notification result:",
-        notificationResult
-    );
+            console.log(
+                "Sending attachment:",
+                attachmentData
+            );
 
 
-}
-catch(notificationError){
+            // -------------------------------------------------
+            // SAVE TO FIRESTORE
+            // -------------------------------------------------
 
-    // Notification fail হলেও
-    // message already Firestore-এ save হয়েছে
-    console.error(
-        "Text notification error:",
-        notificationError
-    );
+            const messageRef =
+                await db
+                .collection("messages")
+                .add({
 
-}
+                    text: "",
+
+                    sender:
+                        me.email,
+
+                    receiver:
+                        currentChatEmail,
+
+                    seen:
+                        false,
+
+                    edited:
+                        false,
+
+                    deletedFor: [],
 
 
-            // ================= CLEAR ATTACHMENT =================
+                    replyId:
+                        typeof replyMessageId !== "undefined"
+                        ? replyMessageId
+                        : null,
 
-            await clearAttachmentAfterSend();
+                    replyText:
+                        typeof replyMessageText !== "undefined"
+                        ? replyMessageText
+                        : null,
 
 
-            // ================= SCROLL =================
+                    attachment:
+                        attachmentData,
 
-            setTimeout(function(){
 
-                const messages =
-                    document.getElementById(
-                        "messages"
-                    );
+                    time:
+                        firebase.firestore
+                        .FieldValue
+                        .serverTimestamp()
 
-                if(messages){
+                });
 
-                    messages.scrollTo({
 
-                        top:
-                            messages.scrollHeight,
+            console.log(
+                "Attachment message saved:",
+                messageRef.id
+            );
 
-                        behavior:
-                            "smooth"
 
-                    });
+            // -------------------------------------------------
+            // GET NICKNAME
+            // -------------------------------------------------
+
+            let notificationName =
+                me.displayName ||
+                me.email.split("@")[0];
+
+
+            try{
+
+                const myUserSnapshot =
+                    await db
+                    .collection("users")
+                    .where(
+                        "email",
+                        "==",
+                        me.email
+                    )
+                    .limit(1)
+                    .get();
+
+
+                if(
+                    !myUserSnapshot.empty
+                ){
+
+                    const myUser =
+                        myUserSnapshot
+                        .docs[0]
+                        .data();
+
+
+                    notificationName =
+                        myUser.nickname ||
+                        myUser.name ||
+                        myUser.username ||
+                        notificationName;
 
                 }
 
-            }, 150);
+            }
+            catch(error){
+
+                console.log(
+                    "Nickname lookup failed:",
+                    error
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // ATTACHMENT NOTIFICATION
+            // -------------------------------------------------
+
+            try{
+
+                const attachmentMessage =
+                    attachmentData.type &&
+                    attachmentData.type
+                    .startsWith("image/")
+
+                    ? "📷 Photo"
+
+                    : "📎 File: " +
+                      attachmentData.name;
+
+
+                const notificationResponse =
+                    await fetch(
+                        "https://rsenger-notification-server.onrender.com/send-message-notification",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers:{
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    receiverEmail:
+                                        currentChatEmail,
+
+                                    message:
+                                        attachmentMessage,
+
+                                    senderName:
+                                        notificationName,
+
+                                    senderEmail:
+                                        me.email
+
+                                })
+
+                        }
+                    );
+
+
+                console.log(
+                    "Attachment notification status:",
+                    notificationResponse.status
+                );
+
+            }
+            catch(notificationError){
+
+                console.error(
+                    "Attachment notification error:",
+                    notificationError
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // CLEAR INPUT
+            // -------------------------------------------------
+
+            input.value = "";
+
+
+            // -------------------------------------------------
+            // CANCEL REPLY
+            // -------------------------------------------------
+
+            if(
+                typeof cancelReply ===
+                "function"
+            ){
+
+                cancelReply();
+
+            }
+
+
+            // -------------------------------------------------
+            // STOP TYPING
+            // -------------------------------------------------
+
+            if(
+                typeof stopTyping ===
+                "function"
+            ){
+
+                stopTyping();
+
+            }
+
+
+            // -------------------------------------------------
+            // CLEAR ATTACHMENT
+            // IMPORTANT:
+            // CLEAR ERROR SHOULD NOT MAKE MESSAGE FAIL
+            // -------------------------------------------------
+
+            try{
+
+                if(
+                    typeof clearAttachmentAfterSend ===
+                    "function"
+                ){
+
+                    await clearAttachmentAfterSend();
+
+                }
+
+            }
+            catch(clearError){
+
+                console.error(
+                    "Attachment clear error:",
+                    clearError
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // SCROLL
+            // -------------------------------------------------
+
+            setTimeout(
+                function(){
+
+                    const messages =
+                        document.getElementById(
+                            "messages"
+                        );
+
+
+                    if(messages){
+
+                        messages.scrollTo({
+
+                            top:
+                                messages.scrollHeight,
+
+                            behavior:
+                                "smooth"
+
+                        });
+
+                    }
+
+                },
+                150
+            );
 
 
             return;
@@ -16145,9 +17210,9 @@ catch(notificationError){
         }
 
 
-        // =================================================
+        // =====================================================
         // NORMAL TEXT MESSAGE
-        // =================================================
+        // =====================================================
 
         if(text === ""){
 
@@ -16197,8 +17262,16 @@ catch(notificationError){
         });
 
 
+        // -------------------------------------------------
+        // CLEAR TEXT INPUT
+        // -------------------------------------------------
+
         input.value = "";
 
+
+        // -------------------------------------------------
+        // CANCEL REPLY
+        // -------------------------------------------------
 
         if(
             typeof cancelReply ===
@@ -16210,6 +17283,10 @@ catch(notificationError){
         }
 
 
+        // -------------------------------------------------
+        // STOP TYPING
+        // -------------------------------------------------
+
         if(
             typeof stopTyping ===
             "function"
@@ -16220,28 +17297,134 @@ catch(notificationError){
         }
 
 
-        setTimeout(function(){
+        // -------------------------------------------------
+        // TEXT NOTIFICATION
+        // -------------------------------------------------
 
-            const messages =
-                document.getElementById(
-                    "messages"
+        try{
+
+            let notificationName =
+                me.displayName ||
+                me.email.split("@")[0];
+
+
+            try{
+
+                const myUserSnapshot =
+                    await db
+                    .collection("users")
+                    .where(
+                        "email",
+                        "==",
+                        me.email
+                    )
+                    .limit(1)
+                    .get();
+
+
+                if(
+                    !myUserSnapshot.empty
+                ){
+
+                    const myUser =
+                        myUserSnapshot
+                        .docs[0]
+                        .data();
+
+
+                    notificationName =
+                        myUser.nickname ||
+                        myUser.name ||
+                        myUser.username ||
+                        notificationName;
+
+                }
+
+            }
+            catch(nameError){
+
+                console.log(
+                    "Nickname lookup failed:",
+                    nameError
                 );
-
-            if(messages){
-
-                messages.scrollTo({
-
-                    top:
-                        messages.scrollHeight,
-
-                    behavior:
-                        "smooth"
-
-                });
 
             }
 
-        }, 100);
+
+            await fetch(
+                "https://rsenger-notification-server.onrender.com/send-message-notification",
+                {
+
+                    method:
+                        "POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            receiverEmail:
+                                currentChatEmail,
+
+                            message:
+                                text,
+
+                            senderName:
+                                notificationName,
+
+                            senderEmail:
+                                me.email
+
+                        })
+
+                }
+            );
+
+        }
+        catch(notificationError){
+
+            console.error(
+                "Text notification error:",
+                notificationError
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // SCROLL
+        // -------------------------------------------------
+
+        setTimeout(
+            function(){
+
+                const messages =
+                    document.getElementById(
+                        "messages"
+                    );
+
+
+                if(messages){
+
+                    messages.scrollTo({
+
+                        top:
+                            messages.scrollHeight,
+
+                        behavior:
+                            "smooth"
+
+                    });
+
+                }
+
+            },
+            100
+        );
+
 
     }
     catch(error){
@@ -16251,8 +17434,18 @@ catch(notificationError){
             error
         );
 
-        alert(
-            "Message send failed. Please try again."
+
+        console.error(
+            "Send message error message:",
+            error.message
+        );
+
+
+        premiumAlert(
+            error.message ||
+            "Message send failed. Please try again.",
+            "Message Send Failed",
+            "error"
         );
 
     }
@@ -16348,252 +17541,635 @@ function closeAttachmentMenu(){
 }
 
 // =====================================================
-// PREMIUM ATTACHMENT STATE
+// CLOUDINARY CONFIG
+// =====================================================
+
+const CLOUDINARY_CLOUD_NAME =
+    "r7m4l4dap";
+
+const CLOUDINARY_UPLOAD_PRESET =
+    "rsenger_chat";
+
+
+// =====================================================
+// PENDING ATTACHMENT
 // =====================================================
 
 let pendingAttachment = null;
-let attachmentUploadTask = null;
+
+let cloudinaryUploadXHR = null;
+
 let attachmentObjectURL = null;
 
+
 // =====================================================
-// PREMIUM ATTACHMENT HANDLER
+// RSENGER CHAT ATTACHMENT
+// CLOUDINARY PHOTO + FILE UPLOAD
 // =====================================================
 
-async function handleAttachment(input){
-
-    const me = auth.currentUser;
-
-    if(!me){
-        showPremiumAlert(
-    "Login Required",
-    "Please login before sending a photo or file.",
-    "lock-keyhole"
-);
-        return;
-    }
-
-    if(!currentChatEmail){
-        showPremiumAlert(
-    "Open a Chat",
-    "Please open a chat before selecting a file.",
-    "message-circle"
-);
-        return;
-    }
+function handleCloudinaryAttachment(input){
 
     const file =
         input.files &&
         input.files[0];
 
-    if(!file) return;
+    if(!file){
+
+        return;
+
+    }
 
 
-    // ================= SIZE =================
+    const user =
+        auth.currentUser;
 
-    const maxSize =
-        25 * 1024 * 1024;
 
-    if(file.size > maxSize){
+    if(!user){
 
-        showPremiumAlert(
-    "File Too Large",
-    "This file is larger than the 25 MB limit.",
-    "file-warning"
-);
-        
+        premiumAlert(
+            "Please login first.",
+            "Login Required",
+            "error"
+        );
 
         input.value = "";
 
         return;
-    }
-
-
-    // আগের attachment থাকলে সরিয়ে দাও
-
-    if(pendingAttachment){
-
-        await cancelAttachment();
 
     }
 
 
-    // ================= LOCAL PREVIEW =================
+    if(!currentChatEmail){
 
-    if(file.type.startsWith("image/")){
-
-        attachmentObjectURL =
-            URL.createObjectURL(file);
-
-    }
-
-
-    // ================= SHOW PREVIEW =================
-
-    showAttachmentPreview(file);
-
-
-    // ================= SAFE NAME =================
-
-    const safeName =
-        file.name.replace(
-            /[^a-zA-Z0-9._-]/g,
-            "_"
+        premiumAlert(
+            "Please open a chat first.",
+            "No Chat Selected",
+            "error"
         );
 
+        input.value = "";
 
-    const filePath =
-        "chatFiles/" +
-        me.uid +
-        "/" +
-        Date.now() +
-        "_" +
-        safeName;
+        return;
+
+    }
 
 
-    try{
+    // =================================================
+    // MAX FILE SIZE
+    // =================================================
 
-        const storage =
-            firebase.storage();
-
-        const storageRef =
-            storage.ref(filePath);
-
-
-        // ================= CREATE UPLOAD TASK =================
-
-        attachmentUploadTask =
-            storageRef.put(file);
+    const maxSize =
+        25 * 1024 * 1024;
 
 
-        // Save basic pending data
+    if(file.size > maxSize){
 
-        pendingAttachment = {
+        premiumAlert(
+            "Maximum file size is 25 MB.",
+            "File Too Large",
+            "error"
+        );
 
-            file: file,
+        input.value = "";
 
-            name: file.name,
+        return;
 
-            type:
-                file.type ||
-                "application/octet-stream",
+    }
 
-            size: file.size,
 
-            storageRef: storageRef,
+    // =================================================
+    // CANCEL PREVIOUS ATTACHMENT
+    // =================================================
 
-            uploadTask:
-                attachmentUploadTask,
+    if(
+        typeof cancelPendingAttachment ===
+        "function"
+    ){
 
-            url: null,
+        cancelPendingAttachment();
 
-            uploaded: false
+    }
+
+
+    // =================================================
+    // LOCAL PREVIEW URL
+    // =================================================
+
+    if(
+        file.type &&
+        file.type.startsWith("image/")
+    ){
+
+        try{
+
+            attachmentObjectURL =
+                URL.createObjectURL(file);
+
+        }
+        catch(error){
+
+            console.error(
+                "Preview URL error:",
+                error
+            );
+
+            attachmentObjectURL =
+                null;
+
+        }
+
+    }
+
+
+    // =================================================
+    // CREATE PENDING ATTACHMENT
+    // =================================================
+
+    pendingAttachment = {
+
+        file:
+            file,
+
+        name:
+            file.name,
+
+        type:
+            file.type ||
+            "application/octet-stream",
+
+        size:
+            file.size,
+
+        url:
+            null,
+
+        publicId:
+            null,
+
+        uploaded:
+            false,
+
+        uploading:
+            true,
+
+        cancelled:
+            false
+
+    };
+
+
+    // =================================================
+    // SHOW PREVIEW
+    // =================================================
+
+    if(
+        typeof showAttachmentPreview ===
+        "function"
+    ){
+
+        showAttachmentPreview(
+            file
+        );
+
+    }
+
+
+    // =================================================
+    // RESET PROGRESS
+    // =================================================
+
+    if(
+        typeof updateAttachmentProgress ===
+        "function"
+    ){
+
+        updateAttachmentProgress(
+            0
+        );
+
+    }
+
+
+    // =================================================
+    // START UPLOAD
+    // =================================================
+
+    uploadToCloudinary(
+        file
+    );
+
+}
+
+
+
+// =====================================================
+// CLOUDINARY UPLOAD
+// =====================================================
+
+function uploadToCloudinary(file){
+
+    if(!file){
+
+        return;
+
+    }
+
+
+    if(!pendingAttachment){
+
+        return;
+
+    }
+
+
+    // =================================================
+    // WORKING PROFILE PHOTO CLOUDINARY CONFIG
+    // =================================================
+
+    const cloudName =
+        "icheksek";
+
+
+    const uploadPreset =
+        "ghmekilf";
+
+
+    // =================================================
+    // AUTO UPLOAD
+    // Supports image + file
+    // =================================================
+
+    const uploadURL =
+        "https://api.cloudinary.com/v1_1/" +
+        cloudName +
+        "/auto/upload";
+
+
+    // =================================================
+    // FORM DATA
+    // =================================================
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    formData.append(
+        "upload_preset",
+        uploadPreset
+    );
+
+
+    // =================================================
+    // XHR
+    // =================================================
+
+    const xhr =
+        new XMLHttpRequest();
+
+
+    cloudinaryUploadXHR =
+        xhr;
+
+
+    xhr.open(
+        "POST",
+        uploadURL,
+        true
+    );
+
+
+    // =================================================
+    // UPLOAD PROGRESS
+    // =================================================
+
+    xhr.upload.onprogress =
+        function(event){
+
+            if(
+                !event.lengthComputable
+            ){
+
+                return;
+
+            }
+
+
+            const percent =
+                Math.round(
+                    (
+                        event.loaded /
+                        event.total
+                    ) * 100
+                );
+
+
+            console.log(
+                "Cloudinary upload:",
+                percent + "%"
+            );
+
+
+            if(
+                typeof updateAttachmentProgress ===
+                "function"
+            ){
+
+                updateAttachmentProgress(
+                    percent
+                );
+
+            }
 
         };
 
 
-        // ================= UPLOAD LISTENER =================
+    // =================================================
+    // UPLOAD COMPLETE
+    // =================================================
 
-        attachmentUploadTask.on(
+    xhr.onload =
+        function(){
 
-            "state_changed",
+            // -----------------------------------------
+            // CANCELLED
+            // -----------------------------------------
 
-            function(snapshot){
+            if(
+                !pendingAttachment ||
+                pendingAttachment.cancelled
+            ){
 
-                const progress =
-                    Math.round(
-                        (
-                            snapshot.bytesTransferred /
-                            snapshot.totalBytes
-                        ) * 100
-                    );
+                return;
 
-
-                updateAttachmentProgress(
-                    progress
-                );
-
-            },
+            }
 
 
-            // ================= ERROR =================
+            // -----------------------------------------
+            // SUCCESS
+            // -----------------------------------------
 
-            function(error){
-
-                console.error(
-                    "Attachment upload error:",
-                    error
-                );
-
-
-                updateAttachmentError(
-                    error
-                );
-
-            },
-
-
-            // ================= COMPLETE =================
-
-            async function(){
+            if(
+                xhr.status >= 200 &&
+                xhr.status < 300
+            ){
 
                 try{
 
-                    const downloadURL =
-                        await attachmentUploadTask
-                        .snapshot
-                        .ref
-                        .getDownloadURL();
+                    const data =
+                        JSON.parse(
+                            xhr.responseText
+                        );
 
 
-                    if(!pendingAttachment){
-                        return;
+                    console.log(
+                        "Cloudinary response:",
+                        data
+                    );
+
+
+                    if(
+                        !data.secure_url
+                    ){
+
+                        throw new Error(
+                            data.error?.message ||
+                            "Cloudinary did not return a file URL."
+                        );
+
                     }
 
 
+                    // ==============================
+                    // SAVE UPLOAD RESULT
+                    // ==============================
+
                     pendingAttachment.url =
-                        downloadURL;
+                        data.secure_url;
+
+
+                    pendingAttachment.publicId =
+                        data.public_id ||
+                        null;
+
+
+                    pendingAttachment.resourceType =
+                        data.resource_type ||
+                        null;
+
+
+                    pendingAttachment.format =
+                        data.format ||
+                        null;
+
 
                     pendingAttachment.uploaded =
                         true;
 
 
-                    showAttachmentUploaded();
+                    pendingAttachment.uploading =
+                        false;
+
+
+                    // ==============================
+                    // 100%
+                    // ==============================
+
+                    if(
+                        typeof updateAttachmentProgress ===
+                        "function"
+                    ){
+
+                        updateAttachmentProgress(
+                            100
+                        );
+
+                    }
+
+
+                    // ==============================
+                    // SUCCESS UI
+                    // ==============================
+
+                    if(
+                        typeof showAttachmentUploaded ===
+                        "function"
+                    ){
+
+                        showAttachmentUploaded();
+
+                    }
+
+
+                    console.log(
+                        "Cloudinary upload successful:",
+                        data.secure_url
+                    );
 
 
                 }
                 catch(error){
 
                     console.error(
-                        "Get download URL error:",
+                        "Cloudinary response error:",
                         error
                     );
 
-                    updateAttachmentError(
+
+                    if(
+                        typeof updateAttachmentError ===
+                        "function"
+                    ){
+
+                        updateAttachmentError(
+                            error
+                        );
+
+                    }
+
+                }
+
+            }
+
+
+            // -----------------------------------------
+            // SERVER ERROR
+            // -----------------------------------------
+
+            else{
+
+                let errorMessage =
+                    "Cloudinary upload failed.";
+
+
+                try{
+
+                    const data =
+                        JSON.parse(
+                            xhr.responseText
+                        );
+
+
+                    console.error(
+                        "Cloudinary error response:",
+                        data
+                    );
+
+
+                    if(
+                        data.error &&
+                        data.error.message
+                    ){
+
+                        errorMessage =
+                            data.error.message;
+
+                    }
+
+                }
+                catch(error){
+
+                    console.error(
+                        "Cloudinary response parse error:",
                         error
+                    );
+
+                }
+
+
+                const cloudinaryHeader =
+                    xhr.getResponseHeader(
+                        "X-Cld-Error"
+                    );
+
+
+                if(
+                    cloudinaryHeader
+                ){
+
+                    console.error(
+                        "Cloudinary X-Cld-Error:",
+                        cloudinaryHeader
+                    );
+
+                }
+
+
+                if(
+                    typeof updateAttachmentError ===
+                    "function"
+                ){
+
+                    updateAttachmentError(
+                        new Error(
+                            errorMessage
+                        )
                     );
 
                 }
 
             }
 
-        );
-
-    }
-    catch(error){
-
-        console.error(
-            "Attachment start error:",
-            error
-        );
+        };
 
 
-        updateAttachmentError(
-            error
-        );
+    // =================================================
+    // NETWORK ERROR
+    // =================================================
 
-    }
+    xhr.onerror =
+        function(){
+
+            console.error(
+                "Cloudinary network error"
+            );
+
+
+            if(
+                typeof updateAttachmentError ===
+                "function"
+            ){
+
+                updateAttachmentError(
+                    new Error(
+                        "Network error. Please check your internet connection."
+                    )
+                );
+
+            }
+
+        };
+
+
+    // =================================================
+    // UPLOAD ABORTED
+    // =================================================
+
+    xhr.onabort =
+        function(){
+
+            console.log(
+                "Cloudinary upload cancelled."
+            );
+
+        };
+
+
+    // =================================================
+    // START
+    // =================================================
+
+    xhr.send(
+        formData
+    );
 
 }
+
 
 // =====================================================
 // UPLOAD UI
@@ -16671,168 +18247,166 @@ document.addEventListener(
 
 function showAttachmentPreview(file){
 
-    const wrapper =
+    const container =
         document.getElementById(
             "attachmentPreview"
         );
 
-    const card =
+    const image =
         document.getElementById(
-            "attachmentPreviewCard"
+            "attachmentPreviewImage"
         );
 
-    if(!wrapper || !card) return;
+    const fileIcon =
+        document.getElementById(
+            "attachmentFileIcon"
+        );
+
+    const name =
+        document.getElementById(
+            "attachmentPreviewName"
+        );
 
 
-    wrapper.classList.remove("hidden");
+    if(!container){
+        return;
+    }
 
 
-    const isImage =
-        file.type &&
-        file.type.startsWith("image/");
+    container.classList.remove(
+        "hidden"
+    );
 
 
-    if(isImage){
+    if(name){
 
-        card.innerHTML = `
-
-            <img
-                src="${attachmentObjectURL}"
-                class="attachment-preview-image"
-                onclick="toggleAttachmentPreview(event)"
-                alt="Selected photo"
-            >
-
-            <button
-                class="attachment-cancel-btn"
-                onclick="cancelAttachment(event)"
-                aria-label="Cancel"
-            >
-                ✕
-            </button>
-
-            <div
-                id="attachmentProgress"
-                class="attachment-progress"
-            >
-
-                <div
-                    id="attachmentProgressRing"
-                    class="attachment-progress-ring"
-                >
-
-                    <span
-                        id="attachmentProgressText"
-                        class="attachment-progress-text"
-                    >
-                        0%
-                    </span>
-
-                </div>
-
-            </div>
-
-        `;
+        name.innerText =
+            file.name;
 
     }
+
+
+    // =================================================
+    // IMAGE
+    // =================================================
+
+    if(
+        file.type &&
+        file.type.startsWith("image/")
+    ){
+
+        if(image){
+
+            image.src =
+                URL.createObjectURL(
+                    file
+                );
+
+            image.classList.remove(
+                "hidden"
+            );
+
+        }
+
+
+        if(fileIcon){
+
+            fileIcon.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+
+    // =================================================
+    // FILE
+    // =================================================
+
     else{
 
-        card.innerHTML = `
+        if(image){
 
-            <div
-                class="attachment-file-preview"
-                onclick="toggleAttachmentPreview(event)"
-            >
+            image.classList.add(
+                "hidden"
+            );
 
-                <div class="attachment-file-icon">
-                    📄
-                </div>
-
-                <div class="attachment-file-name">
-                    ${file.name}
-                </div>
-
-            </div>
+        }
 
 
-            <button
-                class="attachment-cancel-btn"
-                onclick="cancelAttachment(event)"
-                aria-label="Cancel"
-            >
-                ✕
-            </button>
+        if(fileIcon){
+
+            fileIcon.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }
 
 
-            <div
-                id="attachmentProgress"
-                class="attachment-progress"
-            >
+    if(
+        typeof lucide !==
+        "undefined"
+    ){
 
-                <div
-                    id="attachmentProgressRing"
-                    class="attachment-progress-ring"
-                >
-
-                    <span
-                        id="attachmentProgressText"
-                        class="attachment-progress-text"
-                    >
-                        0%
-                    </span>
-
-                </div>
-
-            </div>
-
-        `;
+        lucide.createIcons();
 
     }
 
 }
 
+
 // =====================================================
-// UPDATE UPLOAD PROGRESS
+// UPDATE PROGRESS
 // =====================================================
 
-function updateAttachmentProgress(progress){
+function updateAttachmentProgress(percent){
+
+    const progress =
+        document.getElementById(
+            "attachmentProgress"
+        );
 
     const text =
         document.getElementById(
             "attachmentProgressText"
         );
 
-    const ring =
-        document.getElementById(
-            "attachmentProgressRing"
-        );
 
     if(text){
 
         text.innerText =
-            progress + "%";
+            percent + "%";
 
     }
 
 
-    if(ring){
+    if(progress){
 
-        const degrees =
-            progress * 3.6;
+        progress.style.setProperty(
+            "--progress",
+            percent
+        );
 
-        ring.style.background =
-            `
-            conic-gradient(
-                #5b7cff 0deg,
-                #20d9ff ${degrees}deg,
-                rgba(255,255,255,.15)
-                ${degrees}deg
-            )
-            `;
+    }
+
+
+    if(percent >= 100){
+
+        if(progress){
+
+            progress.classList.add(
+                "completed"
+            );
+
+        }
 
     }
 
 }
+
 
 // =====================================================
 // UPLOAD COMPLETE
@@ -16845,219 +18419,166 @@ function showAttachmentUploaded(){
             "attachmentProgress"
         );
 
+
     if(progress){
 
-        progress.remove();
+        progress.classList.add(
+            "completed"
+        );
 
     }
 
 
-    const card =
+    const text =
         document.getElementById(
-            "attachmentPreviewCard"
+            "attachmentProgressText"
         );
 
-    if(!card) return;
 
+    if(text){
 
-    const badge =
-        document.createElement("div");
-
-    badge.className =
-        "attachment-uploaded-badge";
-
-    badge.innerHTML =
-        "✓";
-
-
-    card.appendChild(
-        badge
-    );
-
-
-    const sendBtn =
-        document.querySelector(
-            ".send-btn"
-        );
-
-    if(sendBtn){
-
-        sendBtn.classList.add(
-            "attachment-ready"
-        );
+        text.innerText =
+            "✓";
 
     }
 
 }
+
 
 // =====================================================
 // TOGGLE PHOTO PREVIEW
 // =====================================================
 
-function toggleAttachmentPreview(event){
+function toggleAttachmentPreview(){
 
-    event.stopPropagation();
+    if(
+        !pendingAttachment ||
+        !pendingAttachment.uploaded
+    ){
+
+        return;
+    }
 
 
-    const card =
+    const image =
         document.getElementById(
-            "attachmentPreviewCard"
+            "attachmentPreviewImage"
         );
 
-    if(!card) return;
+
+    if(!image){
+        return;
+    }
 
 
-    card.classList.toggle(
-        "expanded"
+    image.classList.toggle(
+        "fullscreen-preview"
     );
 
 }
+
 
 // =====================================================
 // CANCEL ATTACHMENT
 // =====================================================
 
-async function cancelAttachment(event){
+function cancelPendingAttachment(){
 
-    if(event){
+    // Upload চললে abort
 
-        event.stopPropagation();
+    if(cloudinaryUploadXHR){
 
-    }
+        try{
 
-
-    try{
-
-        // ================= CANCEL UPLOAD =================
-
-        if(
-            attachmentUploadTask &&
-            !pendingAttachment?.uploaded
-        ){
-
-            attachmentUploadTask.cancel();
+            cloudinaryUploadXHR.abort();
 
         }
 
+        catch(error){
 
-        // ================= DELETE UPLOADED FILE =================
-
-        if(
-            pendingAttachment &&
-            pendingAttachment.uploaded &&
-            pendingAttachment.storageRef
-        ){
-
-            try{
-
-                await pendingAttachment
-                    .storageRef
-                    .delete();
-
-            }
-            catch(deleteError){
-
-                console.log(
-                    "Storage delete skipped:",
-                    deleteError
-                );
-
-            }
+            console.log(
+                "Upload abort error:",
+                error
+            );
 
         }
 
     }
-    catch(error){
 
-        console.log(
-            "Cancel attachment error:",
-            error
-        );
+
+    cloudinaryUploadXHR =
+        null;
+
+
+    if(pendingAttachment){
+
+        pendingAttachment.cancelled =
+            true;
 
     }
 
-
-    // ================= CLEAR STATE =================
 
     pendingAttachment =
         null;
 
-    attachmentUploadTask =
-        null;
 
-
-    if(attachmentObjectURL){
-
-        URL.revokeObjectURL(
-            attachmentObjectURL
-        );
-
-        attachmentObjectURL =
-            null;
-
-    }
-
-
-    const wrapper =
+    const container =
         document.getElementById(
             "attachmentPreview"
         );
 
-    if(wrapper){
 
-        wrapper.classList.add(
+    if(container){
+
+        container.classList.add(
             "hidden"
         );
 
     }
 
 
-    const card =
+    const image =
         document.getElementById(
-            "attachmentPreviewCard"
+            "attachmentPreviewImage"
         );
 
-    if(card){
 
-        card.innerHTML = "";
+    if(image){
 
-    }
-
-
-    const sendBtn =
-        document.querySelector(
-            ".send-btn"
-        );
-
-    if(sendBtn){
-
-        sendBtn.classList.remove(
-            "attachment-ready"
+        image.removeAttribute(
+            "src"
         );
 
     }
 
 
-    // Inputs reset
+    const camera =
+        document.getElementById(
+            "cameraInput"
+        );
 
-    [
-        "photoInput",
-        "cameraInput",
-        "fileInput"
-    ].forEach(function(id){
+    const photo =
+        document.getElementById(
+            "photoInput"
+        );
 
-        const input =
-            document.getElementById(id);
+    const file =
+        document.getElementById(
+            "fileInput"
+        );
 
-        if(input){
 
-            input.value = "";
+    if(camera)
+        camera.value = "";
 
-        }
+    if(photo)
+        photo.value = "";
 
-    });
+    if(file)
+        file.value = "";
 
 }
+
 
 // =====================================================
 // ATTACHMENT ERROR
@@ -17066,47 +18587,61 @@ async function cancelAttachment(event){
 function updateAttachmentError(error){
 
     console.error(
-        "Attachment error:",
+        "Cloudinary attachment error:",
         error
     );
+
+
+    if(
+        pendingAttachment
+    ){
+
+        pendingAttachment.uploading =
+            false;
+
+        pendingAttachment.uploaded =
+            false;
+
+    }
+
 
     const text =
         document.getElementById(
             "attachmentProgressText"
         );
 
+
     if(text){
-        text.innerText = "!";
+
+        text.innerText =
+            "!";
+
     }
 
-    const input =
+
+    const progress =
         document.getElementById(
-            "messageInput"
+            "attachmentProgress"
         );
 
-    if(input){
 
-        input.placeholder =
-            "Type a message...";
+    if(progress){
 
-        input.disabled = false;
-
-    }
-
-
-    // ================= PREMIUM ERROR =================
-
-    if(typeof showPremiumAlert === "function"){
-
-        showPremiumAlert(
-            "Upload Failed",
-            "We couldn't upload this file. Please check your connection and try again.",
-            "cloud-off"
+        progress.classList.add(
+            "error"
         );
 
     }
+
+
+    premiumAlert(
+        "Photo/File upload failed. Please try again.",
+        "Upload Failed",
+        "error"
+    );
 
 }
+
 
 // =====================================================
 // CLEAR AFTER SEND
@@ -17114,91 +18649,87 @@ function updateAttachmentError(error){
 
 async function clearAttachmentAfterSend(){
 
-    if(attachmentObjectURL){
-
-        URL.revokeObjectURL(
-            attachmentObjectURL
-        );
-
-    }
-
-
-    attachmentObjectURL =
-        null;
-
-    attachmentUploadTask =
-        null;
-
-    pendingAttachment =
-        null;
-
-
-    const wrapper =
+    const image =
         document.getElementById(
-            "attachmentPreview"
+            "attachmentPreviewImage"
         );
 
-    if(wrapper){
 
-        wrapper.classList.add(
+    if(image){
+
+        image.removeAttribute(
+            "src"
+        );
+
+        image.classList.add(
             "hidden"
         );
 
     }
 
 
-    const card =
+    const fileIcon =
         document.getElementById(
-            "attachmentPreviewCard"
+            "attachmentFileIcon"
         );
 
-    if(card){
 
-        card.innerHTML = "";
+    if(fileIcon){
 
-    }
-
-
-    const sendBtn =
-        document.querySelector(
-            ".send-btn"
-        );
-
-    if(sendBtn){
-
-        sendBtn.classList.remove(
-            "attachment-ready"
+        fileIcon.classList.add(
+            "hidden"
         );
 
     }
 
 
-    [
-        "photoInput",
-        "cameraInput",
-        "fileInput"
-    ].forEach(function(id){
-
-        const input =
-            document.getElementById(id);
-
-        if(input){
-
-            input.value = "";
-
-        }
-
-    });
+    const container =
+        document.getElementById(
+            "attachmentPreview"
+        );
 
 
-    if(
-        typeof cancelReply ===
-        "function"
-    ){
+    if(container){
 
-        cancelReply();
+        container.classList.add(
+            "hidden"
+        );
 
     }
+
+
+    pendingAttachment =
+        null;
+
+
+    cloudinaryUploadXHR =
+        null;
+
+
+    const camera =
+        document.getElementById(
+            "cameraInput"
+        );
+
+    const photo =
+        document.getElementById(
+            "photoInput"
+        );
+
+    const file =
+        document.getElementById(
+            "fileInput"
+        );
+
+
+    if(camera)
+        camera.value = "";
+
+    if(photo)
+        photo.value = "";
+
+    if(file)
+        file.value = "";
 
 }
 
@@ -18657,172 +20188,266 @@ function saveNickname(){
 }
 
 
-// ================= CHAT USER PRESENCE =================
+// =====================================================
+// PREMIUM CHAT PRESENCE + TYPING
+// =====================================================
 
 let chatUserStatusUnsubscribe = null;
+let chatUserTypingUnsubscribe = null;
 
 
-// =========================================================
-// PREMIUM CHAT ONLINE / OFFLINE STATUS
-// =========================================================
+// =====================================================
+// LISTEN TO CHAT USER STATUS
+// =====================================================
 
-function listenToChatUserStatus(email){
 
-    // আগের listener বন্ধ
+
+    function listenToChatUserStatus(email){
+
     if(chatUserStatusUnsubscribe){
-
         chatUserStatusUnsubscribe();
-
         chatUserStatusUnsubscribe = null;
-
     }
 
+    if(chatUserTypingUnsubscribe){
+        chatUserTypingUnsubscribe();
+        chatUserTypingUnsubscribe = null;
+    }
 
-    const statusElement =
+    const me = auth.currentUser;
+
+    if(!me || !email) return;
+
+    const status =
         document.getElementById("chatStatus");
 
+    if(!status) return;
 
-    if(!statusElement){
-        return;
-    }
-
-
-    // =====================================================
-    // FIND USER
-    // =====================================================
 
     db.collection("users")
     .where("email", "==", email)
     .limit(1)
     .get()
 
-    .then(function(snapshot){
+    .then(snapshot => {
 
         if(snapshot.empty){
 
             showPremiumOfflineStatus();
-
             return;
 
         }
 
-
-        const uid =
+        const friendUid =
             snapshot.docs[0].id;
 
+        currentChatUserUid =
+            friendUid;
 
-        // Typing system-এর জন্য UID save
-        currentChatUserUid = uid;
 
+        // =========================================
+        // ONLINE / OFFLINE
+        // =========================================
 
         const statusRef =
             rtdb.ref(
-                "status/" + uid
+                "status/" + friendUid
             );
 
 
-        // =================================================
-        // REAL TIME STATUS
-        // =================================================
+        const statusCallback =
+            snapshot => {
 
-        const callback =
-            statusRef.on(
-                "value",
-                function(snapshot){
+                const data =
+                    snapshot.val();
 
-                    const status =
-                        snapshot.val();
+                if(
+                    data &&
+                    data.state === "online"
+                ){
 
+                    if(
+                        !status.classList.contains(
+                            "typing-active"
+                        )
+                    ){
 
-                    // Typing চলছে কিনা আগে check
-                    const typingRef =
-                        rtdb.ref(
-                            "typing/" +
-                            auth.currentUser.uid +
-                            "/" +
-                            uid
-                        );
+                        showPremiumOnlineStatus();
 
-
-                    typingRef.once(
-                        "value"
-                    )
-                    .then(function(typingSnapshot){
-
-                        const typingData =
-                            typingSnapshot.val();
-
-
-                        // =================================
-                        // TYPING
-                        // =================================
-
-                        if(
-                            typingData &&
-                            typingData.typing === true
-                        ){
-
-                            showPremiumTypingStatus();
-
-                            return;
-
-                        }
-
-
-                        // =================================
-                        // ONLINE
-                        // =================================
-
-                        if(
-                            status &&
-                            status.state === "online"
-                        ){
-
-                            showPremiumOnlineStatus();
-
-                        }
-
-
-                        // =================================
-                        // OFFLINE
-                        // =================================
-
-                        else{
-
-                            showPremiumOfflineStatus();
-
-                        }
-
-                    });
+                    }
 
                 }
-            );
+                else{
+
+                    if(
+                        !status.classList.contains(
+                            "typing-active"
+                        )
+                    ){
+
+                        showPremiumOfflineStatus();
+
+                    }
+
+                }
+
+            };
 
 
-        // =================================================
-        // UNSUBSCRIBE
-        // =================================================
+        statusRef.on(
+            "value",
+            statusCallback
+        );
+
 
         chatUserStatusUnsubscribe =
             function(){
 
                 statusRef.off(
                     "value",
-                    callback
+                    statusCallback
                 );
 
             };
 
-    })
+
+        // =========================================
+        // TYPING
+        // =========================================
+
+        const typingRef =
+            rtdb.ref(
+                "typing/" +
+                me.uid +
+                "/" +
+                friendUid
+            );
 
 
-    .catch(function(error){
+        const typingCallback =
+            snapshot => {
 
-        console.error(
-            "Presence error:",
-            error
+                const data =
+                    snapshot.val();
+
+
+                if(
+                    data &&
+                    data.typing === true
+                ){
+
+                    showPremiumTypingStatus();
+
+                }
+                else{
+
+                    status.classList.remove(
+                        "typing-active"
+                    );
+
+
+                    // Typing শেষ হলে
+                    // current online status আবার পড়ো
+
+                    statusRef.once(
+                        "value"
+                    )
+                    .then(statusSnapshot => {
+
+                        const currentStatus =
+                            statusSnapshot.val();
+
+
+                        if(
+                            currentStatus &&
+                            currentStatus.state === "online"
+                        ){
+
+                            showPremiumOnlineStatus();
+
+                        }
+                        else{
+
+                            showPremiumOfflineStatus();
+
+                        }
+
+                    })
+                    .catch(() => {
+
+                        showPremiumOfflineStatus();
+
+                    });
+
+                }
+
+            };
+
+
+        typingRef.on(
+            "value",
+            typingCallback
         );
 
+
+        chatUserTypingUnsubscribe =
+            function(){
+
+                typingRef.off(
+                    "value",
+                    typingCallback
+                );
+
+            };
+
+
+        // =========================================
+        // INITIAL STATUS
+        // =========================================
+
+        statusRef.once(
+            "value"
+        )
+        .then(statusSnapshot => {
+
+            const data =
+                statusSnapshot.val();
+
+
+            if(
+                data &&
+                data.state === "online"
+            ){
+
+                showPremiumOnlineStatus();
+
+            }
+            else{
+
+                showPremiumOfflineStatus();
+
+            }
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Initial status error:",
+                error
+            );
+
+            showPremiumOfflineStatus();
+
+        });
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Chat presence error:",
+            error
+        );
 
         showPremiumOfflineStatus();
 
@@ -18831,9 +20456,10 @@ function listenToChatUserStatus(email){
 }
 
 
-// =========================================================
+
+// =====================================================
 // PREMIUM ONLINE
-// =========================================================
+// =====================================================
 
 function showPremiumOnlineStatus(){
 
@@ -18857,7 +20483,7 @@ function showPremiumOnlineStatus(){
 
         <span class="premium-status-dot online"></span>
 
-        <span>
+        <span class="premium-status-text">
             Online
         </span>
 
@@ -18866,9 +20492,9 @@ function showPremiumOnlineStatus(){
 }
 
 
-// =========================================================
+// =====================================================
 // PREMIUM OFFLINE
-// =========================================================
+// =====================================================
 
 function showPremiumOfflineStatus(){
 
@@ -18892,7 +20518,7 @@ function showPremiumOfflineStatus(){
 
         <span class="premium-status-dot offline"></span>
 
-        <span>
+        <span class="premium-status-text">
             Offline
         </span>
 
@@ -18901,9 +20527,9 @@ function showPremiumOfflineStatus(){
 }
 
 
-// =========================================================
+// =====================================================
 // PREMIUM TYPING
-// =========================================================
+// =====================================================
 
 function showPremiumTypingStatus(){
 
@@ -18939,16 +20565,26 @@ function showPremiumTypingStatus(){
 
     `;
 
-};
+}
+
+// =====================================================
+// RSENGER TYPING SYSTEM - FINAL
+// =====================================================
+
+let typingTimeout = null;
+let typingListener = null;
+let currentChatUserUid = null;
 
 
-// =========================================================
-// GET CHAT USER UID
-// =========================================================
+// =====================================================
+// GET CURRENT CHAT USER UID
+// =====================================================
 
 async function getChatUserUid(){
 
-    if(!currentChatEmail) return null;
+    if(!currentChatEmail){
+        return null;
+    }
 
     try{
 
@@ -18968,41 +20604,61 @@ async function getChatUserUid(){
     catch(error){
 
         console.error(
-            "Get chat user UID error:",
+            "Typing UID error:",
             error
         );
 
         return null;
+
     }
 
 }
 
 
-// =========================================================
+// =====================================================
 // START TYPING
-// =========================================================
+// =====================================================
 
 async function startTyping(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
 
-    if(!me || !currentChatEmail){
+    if(
+        !me ||
+        !currentChatEmail
+    ){
+
         return;
+
     }
 
 
-    // আগের timeout cancel
     clearTimeout(typingTimeout);
 
 
     try{
 
-        // Friend UID পাওয়া
-        const friendUid =
-            await getChatUserUid();
+        let friendUid =
+            currentChatUserUid;
+
 
         if(!friendUid){
+
+            friendUid =
+                await getChatUserUid();
+
+        }
+
+
+        if(!friendUid){
+
+            console.log(
+                "Friend UID not found"
+            );
+
             return;
+
         }
 
 
@@ -19010,34 +20666,32 @@ async function startTyping(){
             friendUid;
 
 
-        // =================================================
-        // PREMIUM TYPING STATUS
-        // =================================================
+        const typingRef =
+            rtdb.ref(
+                "typing/" +
+                friendUid +
+                "/" +
+                me.uid
+            );
 
-        await rtdb.ref(
-            "typing/" +
-            friendUid +
-            "/" +
-            me.uid
-        ).set({
+
+        await typingRef.set({
 
             typing: true,
 
             timestamp:
-                firebase.database.ServerValue.TIMESTAMP
+                firebase.database.ServerValue
+                .TIMESTAMP
 
         });
 
 
-        // =================================================
-        // AUTO STOP AFTER 1.8 SECOND
-        // =================================================
-
         typingTimeout =
-            setTimeout(
-                stopTyping,
-                1800
-            );
+            setTimeout(() => {
+
+                stopTyping();
+
+            }, 1800);
 
     }
     catch(error){
@@ -19051,29 +20705,48 @@ async function startTyping(){
 
 }
 
-
-// =========================================================
+// =====================================================
 // STOP TYPING
-// =========================================================
+// =====================================================
 
 async function stopTyping(){
 
-    clearTimeout(typingTimeout);
+    clearTimeout(
+        typingTimeout
+    );
 
-    const me = auth.currentUser;
+    typingTimeout = null;
 
-    if(!me){
+
+    const me =
+        auth.currentUser;
+
+    if(
+        !me ||
+        !currentChatEmail
+    ){
+
         return;
+
     }
 
 
-    const friendUid =
-        currentChatUserUid ||
-        await getChatUserUid();
+    let friendUid =
+        currentChatUserUid;
 
 
     if(!friendUid){
+
+        friendUid =
+            await getChatUserUid();
+
+    }
+
+
+    if(!friendUid){
+
         return;
+
     }
 
 
@@ -19085,6 +20758,11 @@ async function stopTyping(){
             "/" +
             me.uid
         ).remove();
+
+
+        console.log(
+            "✅ Typing OFF"
+        );
 
     }
     catch(error){
@@ -19098,16 +20776,20 @@ async function stopTyping(){
 
 }
 
-
-// =========================================================
+// =====================================================
 // LISTEN TO FRIEND TYPING
-// =========================================================
+// =====================================================
 
 async function listenToTyping(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
 
-    if(!me || !currentChatEmail){
+
+    if(
+        !me ||
+        !currentChatEmail
+    ){
         return;
     }
 
@@ -19120,13 +20802,26 @@ async function listenToTyping(){
 
         typingListener();
 
-        typingListener = null;
+        typingListener =
+            null;
 
     }
 
 
-    const friendUid =
-        await getChatUserUid();
+    // =================================================
+    // GET FRIEND UID
+    // =================================================
+
+    let friendUid =
+        currentChatUserUid;
+
+
+    if(!friendUid){
+
+        friendUid =
+            await getChatUserUid();
+
+    }
 
 
     if(!friendUid){
@@ -19154,7 +20849,7 @@ async function listenToTyping(){
     const callback =
         typingRef.on(
             "value",
-            snapshot => {
+            function(snapshot){
 
                 const data =
                     snapshot.val();
@@ -19186,15 +20881,19 @@ async function listenToTyping(){
 
 
                     status.innerHTML = `
+
                         <span class="premium-typing-dot">
+
                             <span></span>
                             <span></span>
                             <span></span>
+
                         </span>
 
                         <span class="premium-typing-text">
                             Typing
                         </span>
+
                     `;
 
                 }
@@ -19211,8 +20910,21 @@ async function listenToTyping(){
                     );
 
 
-                    // আবার Online / Offline
-                    updateChatOnlineStatus();
+                    // তোমার existing online/offline system
+                    if(
+                        typeof updateChatOnlineStatus ===
+                        "function"
+                    ){
+
+                        updateChatOnlineStatus();
+
+                    }
+                    else{
+
+                        status.innerText =
+                            "⚫ Offline";
+
+                    }
 
                 }
 
@@ -19221,7 +20933,7 @@ async function listenToTyping(){
 
 
     // =================================================
-    // SAVE UNSUBSCRIBE FUNCTION
+    // CLEANUP FUNCTION
     // =================================================
 
     typingListener =
@@ -20038,4 +21750,123 @@ function closePremiumAlert(){
 
     modal.classList.add("hidden");
 
-}</script>
+}
+
+// =====================================================
+// PREMIUM PHOTO VIEWER
+// =====================================================
+
+function openPhotoViewer(url){
+
+    if(!url){
+        return;
+    }
+
+
+    const viewer =
+        document.getElementById("photoViewer");
+
+    const image =
+        document.getElementById("photoViewerImage");
+
+
+    if(!viewer || !image){
+        return;
+    }
+
+
+    image.src =
+        url;
+
+
+    viewer.classList.add(
+        "active"
+    );
+
+
+    // Prevent background page scrolling
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+// =====================================================
+// CLOSE PHOTO VIEWER
+// =====================================================
+
+function closePhotoViewer(event){
+
+    // যদি background-এ click না হয়
+    // তাহলে button-এর normal action চলবে
+    if(
+        event &&
+        event.target &&
+        event.target.id !== "photoViewer"
+    ){
+
+        return;
+
+    }
+
+
+    const viewer =
+        document.getElementById("photoViewer");
+
+    const image =
+        document.getElementById("photoViewerImage");
+
+
+    if(!viewer){
+        return;
+    }
+
+
+    viewer.classList.remove(
+        "active"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    // image clear
+    setTimeout(function(){
+
+        if(image){
+
+            image.src =
+                "";
+
+        }
+
+    }, 200);
+
+}
+
+// =====================================================
+// ANDROID BACK BUTTON
+// =====================================================
+
+window.addEventListener(
+    "popstate",
+    function(){
+
+        const viewer =
+            document.getElementById(
+                "photoViewer"
+            );
+
+
+        if(
+            viewer &&
+            viewer.classList.contains("active")
+        ){
+
+            closePhotoViewer();
+
+        }
+
+    }
+);</script>
