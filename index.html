@@ -24405,6 +24405,14 @@ function showHome(){
     // Restore normal bottom navigation
     showBottomNav();
 
+        // Refresh group icon after returning to Home
+    if(
+        typeof updateGroupFabVisibility ===
+        "function"
+    ){
+        updateGroupFabVisibility();
+    }
+
 
     // Restore chats
     if(typeof loadChats === "function"){
