@@ -24417,6 +24417,42 @@ function showHome(){
 
 }
 
+        // =========================
+    // RESTORE GROUP ICON
+    // =========================
+
+    const groupFab =
+        document.getElementById(
+            "rsengerGroupFab"
+        );
+
+    if(groupFab){
+
+        groupFab.style.setProperty(
+            "display",
+            "flex",
+            "important"
+        );
+
+        groupFab.style.setProperty(
+            "visibility",
+            "visible",
+            "important"
+        );
+
+        groupFab.style.setProperty(
+            "opacity",
+            "1",
+            "important"
+        );
+
+        groupFab.style.setProperty(
+            "pointer-events",
+            "auto",
+            "important"
+        );
+    }
+
 
 // ================= PROFILE =================
 
@@ -26207,6 +26243,8 @@ async function updateChatOnlineStatus(){
     }
 
 }
+
+
 
 function hideBottomNav(){
 
@@ -29918,7 +29956,7 @@ function updateGroupFabVisibility() {
     if (homeVisible) {
 
         // =========================
-        // SHOW GROUP ICON
+        // HOME = GROUP ICON SHOW
         // =========================
 
         fab.style.setProperty(
@@ -29948,7 +29986,7 @@ function updateGroupFabVisibility() {
     } else {
 
         // =========================
-        // HIDE GROUP ICON
+        // OTHER PAGE = GROUP ICON HIDE
         // =========================
 
         fab.style.setProperty(
