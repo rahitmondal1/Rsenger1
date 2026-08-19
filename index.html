@@ -588,12 +588,7 @@ No chats yet
     <div
         id="rsengerGroupMessages"
         class="rsenger-group-messages">
-
-        <div
-    id="rsengerGroupMessages"
-    class="rsenger-group-messages">
-</div>
-
+    
     </div>
 
 
@@ -24405,13 +24400,7 @@ function showHome(){
     // Restore normal bottom navigation
     showBottomNav();
 
-        // Refresh group icon after returning to Home
-    if(
-        typeof updateGroupFabVisibility ===
-        "function"
-    ){
-        updateGroupFabVisibility();
-    }
+setGroupFabVisibility(true);
 
 
     // Restore chats
@@ -24439,7 +24428,11 @@ function showProfile(){
 
     showBottomNav();
 
+    setGroupFabVisibility(false);
+
     loadProfile();
+
+    setGroupFabVisibility(false);
 
     updateProfileScroll();
 }
@@ -24455,6 +24448,8 @@ function showFriends(){
         .classList.remove("hidden");
 
     showBottomNav();
+
+    setGroupFabVisibility(false);
 
     loadFriends();
     
@@ -24472,6 +24467,8 @@ function showRequests(){
         .classList.remove("hidden");
 
     showBottomNav();
+
+    setGroupFabVisibility(false);
 
     loadRequests();
     
@@ -24700,6 +24697,8 @@ function openSettings(){
         .classList.remove("hidden");
 
     showBottomNav();
+
+    setGroupFabVisibility(false);
     
     updateSmartScroll();
 }
@@ -28097,6 +28096,8 @@ page.style.setProperty(
 
     hideBottomNav();
 
+    setGroupFabVisibility(false);
+
 
     /*
      * Lucide icons
@@ -28189,6 +28190,8 @@ function closeRsengerGroup(){
 
 
     showBottomNav();
+
+    setGroupFabVisibility(true);
 
 
     if(typeof loadChats === "function"){
