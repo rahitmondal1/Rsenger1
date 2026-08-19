@@ -516,11 +516,12 @@ No chats yet
 
 <button
     id="rsengerGroupFab"
-    class="rsenger-group-fab"
-    onclick="openRsengerGroup()"
-    aria-label="Rsenger Community">
+    class="profile-style-group-btn"
+    onclick="openRsengerGroup()">
 
     <i data-lucide="users"></i>
+
+    <span>Group</span>
 
 </button>
 
@@ -18280,7 +18281,122 @@ body:not(.dark)
     user-select: none;
 
     -webkit-touch-callout: none;
-}</style><script>let selectedMessageId = "";
+}
+
+    /* =====================================================
+   GROUP BUTTON - PROFILE STYLE
+   ===================================================== */
+
+.profile-style-group-btn{
+
+    position:fixed;
+
+    right:18px;
+
+    /* আগের Group icon-এর থেকে একটু উপরে */
+    bottom:160px;
+
+    width:52px;
+    height:52px;
+
+    border:0;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:6px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(105,86,255,.22),
+            rgba(32,199,220,.14)
+        );
+
+    color:#b9c4ff;
+
+    box-shadow:
+        0 8px 24px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.08);
+
+    backdrop-filter:blur(12px);
+
+    -webkit-backdrop-filter:blur(12px);
+
+    cursor:pointer;
+
+    z-index:999;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.profile-style-group-btn i,
+.profile-style-group-btn svg{
+
+    width:23px;
+    height:23px;
+
+    stroke-width:2;
+}
+
+
+.profile-style-group-btn span{
+
+    display:none;
+}
+
+
+.profile-style-group-btn:active{
+
+    transform:scale(.91);
+
+}
+
+
+.profile-style-group-btn:hover{
+
+    transform:translateY(-3px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(105,86,255,.32),
+            rgba(32,199,220,.22)
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.38);
+}
+
+
+/* Mobile */
+
+@media(max-width:480px){
+
+    .profile-style-group-btn{
+
+        right:16px;
+
+        bottom:155px;
+
+        width:52px;
+        height:52px;
+
+    }
+
+}
+    
+</style>
+<script>
+    let selectedMessageId = "";
 let selectedMessageText = "";
 
 let replyMessageId = "";
