@@ -24400,7 +24400,7 @@ function showHome(){
     // Restore normal bottom navigation
     showBottomNav();
 
-setGroupFabVisibility(true);
+showGroupIcon();
 
 
     // Restore chats
@@ -24434,7 +24434,7 @@ function showProfile(){
 
     setGroupFabVisibility(false);
 
-    updateProfileScroll();
+    hideGroupIcon();;
 }
 
 
@@ -24453,7 +24453,7 @@ function showFriends(){
 
     loadFriends();
     
-    updateSmartScroll();
+    hideGroupIcon();;
 }
 
 
@@ -24472,7 +24472,7 @@ function showRequests(){
 
     loadRequests();
     
-    updateSmartScroll();
+    hideGroupIcon();
 }
 
 
@@ -24700,7 +24700,7 @@ function openSettings(){
 
     setGroupFabVisibility(false);
     
-    updateSmartScroll();
+    hideGroupIcon();
 }
 
 
@@ -28096,7 +28096,7 @@ page.style.setProperty(
 
     hideBottomNav();
 
-    setGroupFabVisibility(false);
+    hideGroupIcon();
 
 
     /*
@@ -29903,7 +29903,7 @@ function updateSmartScroll(){
 /* =====================================================
    GROUP ICON -- SHOW ONLY ON HOME
    ===================================================== */
-function setGroupFabVisibility(show){
+function showGroupIcon(){
 
     const fab =
         document.getElementById(
@@ -29912,65 +29912,68 @@ function setGroupFabVisibility(show){
 
     if(!fab) return;
 
+    fab.classList.remove("hidden");
 
-    if(show){
+    fab.style.setProperty(
+        "display",
+        "flex",
+        "important"
+    );
 
-        fab.classList.remove("hidden");
+    fab.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
 
-        fab.style.setProperty(
-            "display",
-            "flex",
-            "important"
+    fab.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+    fab.style.setProperty(
+        "pointer-events",
+        "auto",
+        "important"
+    );
+}
+
+
+function hideGroupIcon(){
+
+    const fab =
+        document.getElementById(
+            "rsengerGroupFab"
         );
 
-        fab.style.setProperty(
-            "visibility",
-            "visible",
-            "important"
-        );
+    if(!fab) return;
 
-        fab.style.setProperty(
-            "opacity",
-            "1",
-            "important"
-        );
+    fab.classList.add("hidden");
 
-        fab.style.setProperty(
-            "pointer-events",
-            "auto",
-            "important"
-        );
+    fab.style.setProperty(
+        "display",
+        "none",
+        "important"
+    );
 
-    }else{
+    fab.style.setProperty(
+        "visibility",
+        "hidden",
+        "important"
+    );
 
-        fab.classList.add("hidden");
+    fab.style.setProperty(
+        "opacity",
+        "0",
+        "important"
+    );
 
-        fab.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        fab.style.setProperty(
-            "visibility",
-            "hidden",
-            "important"
-        );
-
-        fab.style.setProperty(
-            "opacity",
-            "0",
-            "important"
-        );
-
-        fab.style.setProperty(
-            "pointer-events",
-            "none",
-            "important"
-        );
-
-    }
-
+    fab.style.setProperty(
+        "pointer-events",
+        "none",
+        "important"
+    );
 }
 
 /* Check whenever the visible page changes */
