@@ -24417,41 +24417,7 @@ function showHome(){
 
 }
 
-        // =========================
-    // RESTORE GROUP ICON
-    // =========================
-
-    const groupFab =
-        document.getElementById(
-            "rsengerGroupFab"
-        );
-
-    if(groupFab){
-
-        groupFab.style.setProperty(
-            "display",
-            "flex",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "visibility",
-            "visible",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "opacity",
-            "1",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "pointer-events",
-            "auto",
-            "important"
-        );
-    }
+        
 
 
 // ================= PROFILE =================
@@ -29926,38 +29892,35 @@ function updateSmartScroll(){
 /* =====================================================
    GROUP ICON -- SHOW ONLY ON HOME
    ===================================================== */
-function updateGroupFabVisibility() {
+function updateGroupFabVisibility(){
 
     const fab =
-        document.getElementById("rsengerGroupFab");
+        document.getElementById(
+            "rsengerGroupFab"
+        );
 
-    if (!fab) return;
+    if(!fab) return;
 
 
     const home =
-        document.getElementById("homePage");
-
-    if (!home) {
-
-        fab.style.setProperty(
-            "display",
-            "none",
-            "important"
+        document.getElementById(
+            "homePage"
         );
 
-        return;
-    }
+    if(!home) return;
 
 
     const homeVisible =
-        !home.classList.contains("hidden");
+        !home.classList.contains(
+            "hidden"
+        );
 
 
-    if (homeVisible) {
+    if(homeVisible){
 
-        // =========================
-        // HOME = GROUP ICON SHOW
-        // =========================
+        // HOME → SHOW GROUP ICON
+
+        fab.classList.remove("hidden");
 
         fab.style.setProperty(
             "display",
@@ -29983,11 +29946,11 @@ function updateGroupFabVisibility() {
             "important"
         );
 
-    } else {
+    }else{
 
-        // =========================
-        // OTHER PAGE = GROUP ICON HIDE
-        // =========================
+        // OTHER PAGE → HIDE GROUP ICON
+
+        fab.classList.add("hidden");
 
         fab.style.setProperty(
             "display",
@@ -29998,6 +29961,12 @@ function updateGroupFabVisibility() {
         fab.style.setProperty(
             "visibility",
             "hidden",
+            "important"
+        );
+
+        fab.style.setProperty(
+            "opacity",
+            "0",
             "important"
         );
 
