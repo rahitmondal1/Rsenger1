@@ -17745,7 +17745,7 @@ body:not(.dark)
     margin: 0 !important;
     padding: 0 !important;
 
-    display: flex !important;
+    
 
     align-items: center !important;
     justify-content: center !important;
@@ -17920,7 +17920,7 @@ body:not(.dark)
     margin: 0 !important;
     padding: 0 !important;
 
-    display: flex !important;
+    
 
     align-items: center !important;
     justify-content: center !important;
@@ -29900,7 +29900,7 @@ function updateSmartScroll(){
 /* =====================================================
    GROUP ICON -- SHOW ONLY ON HOME
    ===================================================== */
-function updateGroupFabVisibility(){
+function setGroupFabVisibility(show){
 
     const fab =
         document.getElementById(
@@ -29910,23 +29910,7 @@ function updateGroupFabVisibility(){
     if(!fab) return;
 
 
-    const home =
-        document.getElementById(
-            "homePage"
-        );
-
-    if(!home) return;
-
-
-    const homeVisible =
-        !home.classList.contains(
-            "hidden"
-        );
-
-
-    if(homeVisible){
-
-        // HOME → SHOW GROUP ICON
+    if(show){
 
         fab.classList.remove("hidden");
 
@@ -29955,8 +29939,6 @@ function updateGroupFabVisibility(){
         );
 
     }else{
-
-        // OTHER PAGE → HIDE GROUP ICON
 
         fab.classList.add("hidden");
 
