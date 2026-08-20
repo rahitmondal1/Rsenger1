@@ -30032,11 +30032,68 @@ function updateSmartScroll(){
 function showGroupIcon(){
 
     const fab =
-        document.getElementById(
-            "rsengerGroupFab"
+        document.getElementById("rsengerGroupFab");
+
+    const home =
+        document.getElementById("homePage");
+
+    // Safety check
+    if(!fab || !home){
+        return;
+    }
+
+    // =========================================
+    // GROUP ICON IS ALLOWED ONLY ON HOME
+    // =========================================
+
+    const homeHidden =
+        home.classList.contains("hidden");
+
+    const homeDisplay =
+        window.getComputedStyle(home).display;
+
+    const homeVisibility =
+        window.getComputedStyle(home).visibility;
+
+    // Home is NOT visible → NEVER show Group icon
+    if(
+        homeHidden ||
+        homeDisplay === "none" ||
+        homeVisibility === "hidden"
+    ){
+
+        fab.classList.add("hidden");
+
+        fab.style.setProperty(
+            "display",
+            "none",
+            "important"
         );
 
-    if(!fab) return;
+        fab.style.setProperty(
+            "visibility",
+            "hidden",
+            "important"
+        );
+
+        fab.style.setProperty(
+            "opacity",
+            "0",
+            "important"
+        );
+
+        fab.style.setProperty(
+            "pointer-events",
+            "none",
+            "important"
+        );
+
+        return;
+    }
+
+    // =========================================
+    // HOME IS VISIBLE → SHOW GROUP ICON
+    // =========================================
 
     fab.classList.remove("hidden");
 
