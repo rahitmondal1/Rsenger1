@@ -27190,9 +27190,7 @@ let notificationUpdateUnsubscribe = null;
 
     function closeNotifications(){
 
-    if(typeof window.showHome === "function"){
-        window.showHome();
-    }
+    window.showHome();
 
     }
 
@@ -30240,7 +30238,7 @@ window.showNotifications = function () {
         "notificationPage",
         "settingsPage",
         "chatPage",
-        "rsengerGroupPage"
+   
     ];
 
     pages.forEach(function (id) {
@@ -30307,27 +30305,7 @@ window.showNotifications = function () {
     }
 
 
-    // Hide group floating button
-    const groupFab =
-        document.getElementById(
-            "rsengerGroupFab"
-        );
-
-    if (groupFab) {
-
-        groupFab.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "visibility",
-            "hidden",
-            "important"
-        );
-
-    }
+    
 
 
     // =================================================
