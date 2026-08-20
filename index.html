@@ -516,12 +516,12 @@ No chats yet
 
 <button
     id="rsengerGroupFab"
-    class="profile-style-group-btn"
-    onclick="openRsengerGroup()">
+    class="rsenger-group-fab"
+    type="button"
+    onclick="openRsengerGroup()"
+    aria-label="Rsenger Community">
 
     <i data-lucide="users"></i>
-
-    <span>Group</span>
 
 </button>
 
@@ -24458,6 +24458,8 @@ function hideAllPages(){
 
     }
 
+    hideGroupIcon();
+
 }
 
 // ================= HOME =================
@@ -24667,36 +24669,6 @@ function showNotifications(){
     }
 
 
-    // =====================================
-    // HIDE GROUP ICON
-    // =====================================
-
-    const groupFab =
-        document.getElementById(
-            "rsengerGroupFab"
-        );
-
-    if(groupFab){
-
-        groupFab.style.setProperty(
-            "display",
-            "none",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "visibility",
-            "hidden",
-            "important"
-        );
-
-        groupFab.style.setProperty(
-            "pointer-events",
-            "none",
-            "important"
-        );
-
-    }
 
 
     // =====================================
@@ -28151,6 +28123,8 @@ let selectedRsengerGroupPhoto = null;
    ===================================================== */
 
 async function openRsengerGroup(){
+
+    hideGroupIcon();
 
     const me = auth.currentUser;
 
