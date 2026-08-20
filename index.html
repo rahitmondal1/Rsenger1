@@ -24548,7 +24548,6 @@ function showProfile(){
 
     loadProfile();
 
-    setGroupFabVisibility(false);
 
     hideGroupIcon();;
 }
@@ -24565,7 +24564,7 @@ function showFriends(){
 
     showBottomNav();
 
-    setGroupFabVisibility(false);
+    
 
     loadFriends();
     
@@ -24584,7 +24583,7 @@ function showRequests(){
 
     showBottomNav();
 
-    setGroupFabVisibility(false);
+    
 
     loadRequests();
     
@@ -24710,6 +24709,8 @@ function showNotifications(){
 
         hideBottomNav();
 
+        hideGroupIcon();
+
     }
 
 
@@ -24813,8 +24814,6 @@ function openSettings(){
         .classList.remove("hidden");
 
     showBottomNav();
-
-    setGroupFabVisibility(false);
     
     hideGroupIcon();
 }
@@ -27179,8 +27178,12 @@ let notificationUpdateUnsubscribe = null;
 
     setTimeout(function(){
 
-        if(typeof updateGroupFabVisibility === "function"){
-            updateGroupFabVisibility();
+        function closeNotifications(){
+
+    if(typeof window.showHome === "function"){
+        window.showHome();
+    }
+
         }
 
     }, 100);
@@ -28307,7 +28310,7 @@ function closeRsengerGroup(){
 
     showBottomNav();
 
-    setGroupFabVisibility(true);
+    showGroupIcon();
 
 
     if(typeof loadChats === "function"){
