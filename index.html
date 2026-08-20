@@ -24542,6 +24542,40 @@ showGroupIcon();
         updateSmartScroll();
     }
 
+    const groupFab =
+    document.getElementById(
+        "rsengerGroupFab"
+    );
+
+if(groupFab){
+
+    groupFab.classList.remove("hidden");
+
+    groupFab.style.setProperty(
+        "display",
+        "flex",
+        "important"
+    );
+
+    groupFab.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
+
+    groupFab.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+    groupFab.style.setProperty(
+        "pointer-events",
+        "auto",
+        "important"
+    );
+}
+
 }
 
         
@@ -27160,19 +27194,7 @@ let notificationUpdateUnsubscribe = null;
         window.showHome();
     }
 
-    setTimeout(function(){
-
-        function closeNotifications(){
-
-    if(typeof window.showHome === "function"){
-        window.showHome();
     }
-
-        }
-
-    }, 100);
-
-}
 
 
 // =====================================================
@@ -28274,6 +28296,7 @@ function closeRsengerGroup(){
             null;
 
     }
+    showHome();
 
 
     hideAllPages();
