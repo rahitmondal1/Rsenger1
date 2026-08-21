@@ -18412,6 +18412,207 @@ body:not(.dark)
     opacity: 1 !important;
     pointer-events: auto !important;
 }
+
+    /* =========================================================
+   RSENGER GROUP - PREMIUM BLOCK / UNBLOCK MENU
+   ========================================================= */
+
+/* Main menu card */
+.rsenger-group-message-menu,
+.rsenger-group-message-menu.hidden {
+    width: min(340px, calc(100vw - 32px)) !important;
+    padding: 10px !important;
+
+    background: rgba(18, 20, 28, 0.96) !important;
+    backdrop-filter: blur(22px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 20px !important;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 8px 25px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+
+    overflow: hidden !important;
+
+    transform-origin: top right !important;
+    animation: rsengerBlockMenuIn 0.22s cubic-bezier(.2,.8,.2,1) !important;
+}
+
+
+/* Menu buttons */
+.rsenger-group-message-menu button {
+    width: 100% !important;
+    min-height: 54px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 13px !important;
+
+    padding: 0 15px !important;
+    margin: 3px 0 !important;
+
+    border: 0 !important;
+    border-radius: 14px !important;
+
+    background: transparent !important;
+    color: rgba(255,255,255,.92) !important;
+
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: .1px !important;
+
+    cursor: pointer !important;
+
+    transition:
+        background .18s ease,
+        transform .18s ease,
+        color .18s ease !important;
+}
+
+
+/* Icons */
+.rsenger-group-message-menu button svg,
+.rsenger-group-message-menu button i {
+    width: 20px !important;
+    height: 20px !important;
+
+    flex: 0 0 20px !important;
+
+    stroke-width: 2 !important;
+
+    opacity: .9 !important;
+}
+
+
+/* Hover / touch */
+.rsenger-group-message-menu button:hover {
+    background: rgba(255,255,255,.075) !important;
+    transform: translateX(2px) !important;
+}
+
+.rsenger-group-message-menu button:active {
+    transform: scale(.97) !important;
+}
+
+
+/* Block actions */
+.rsenger-group-message-menu button[onclick*="Block"],
+.rsenger-group-message-menu button[onclick*="block"] {
+    color: #ff7676 !important;
+}
+
+.rsenger-group-message-menu button[onclick*="Block"] svg,
+.rsenger-group-message-menu button[onclick*="block"] svg,
+.rsenger-group-message-menu button[onclick*="Block"] i,
+.rsenger-group-message-menu button[onclick*="block"] i {
+    color: #ff7676 !important;
+}
+
+
+/* Unblock */
+.rsenger-group-message-menu button[onclick*="Unblock"],
+.rsenger-group-message-menu button[onclick*="unblock"] {
+    color: #72e6a4 !important;
+}
+
+.rsenger-group-message-menu button[onclick*="Unblock"] svg,
+.rsenger-group-message-menu button[onclick*="unblock"] svg,
+.rsenger-group-message-menu button[onclick*="Unblock"] i,
+.rsenger-group-message-menu button[onclick*="unblock"] i {
+    color: #72e6a4 !important;
+}
+
+
+/* Temporary block */
+.rsenger-group-message-menu button[onclick*="Temporary"] {
+    color: #ffd36a !important;
+}
+
+
+/* Permanent block */
+.rsenger-group-message-menu button[onclick*="Permanent"] {
+    color: #ff7676 !important;
+}
+
+
+/* Remove member */
+.rsenger-group-message-menu button[onclick*="Remove"] {
+    color: #ff9b9b !important;
+}
+
+
+/* Divider effect between options */
+.rsenger-group-message-menu button + button {
+    border-top: 1px solid rgba(255,255,255,.045) !important;
+    border-radius: 0 0 14px 14px !important;
+}
+
+
+/* Keep first button rounded */
+.rsenger-group-message-menu button:first-child {
+    border-radius: 14px !important;
+}
+
+
+/* Animation */
+@keyframes rsengerBlockMenuIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-7px) scale(.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* Mobile */
+@media (max-width: 480px) {
+
+    .rsenger-group-message-menu {
+        width: calc(100vw - 28px) !important;
+        border-radius: 18px !important;
+        padding: 8px !important;
+    }
+
+    .rsenger-group-message-menu button {
+        min-height: 52px !important;
+        font-size: 14px !important;
+        padding: 0 14px !important;
+    }
+
+}
+
+
+/* Light theme support */
+@media (prefers-color-scheme: light) {
+
+    .rsenger-group-message-menu {
+        background: rgba(255,255,255,.96) !important;
+
+        border-color: rgba(0,0,0,.08) !important;
+
+        box-shadow:
+            0 20px 55px rgba(0,0,0,.16),
+            0 5px 18px rgba(0,0,0,.08) !important;
+    }
+
+    .rsenger-group-message-menu button {
+        color: rgba(20,22,30,.90) !important;
+    }
+
+    .rsenger-group-message-menu button:hover {
+        background: rgba(0,0,0,.045) !important;
+    }
+
+}
     
 </style>
 <script>
