@@ -18413,203 +18413,341 @@ body:not(.dark)
     pointer-events: auto !important;
 }
 
-    /* =========================================================
-   RSENGER GROUP - PREMIUM BLOCK / UNBLOCK MENU
+
+        /* =========================================================
+   RSENGER GROUP — PREMIUM ADMIN ACCESS PANEL
    ========================================================= */
 
-/* Main menu card */
-.rsenger-group-message-menu,
-.rsenger-group-message-menu.hidden {
-    width: min(340px, calc(100vw - 32px)) !important;
-    padding: 10px !important;
+#rsengerAdminPanel {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
 
-    background: rgba(18, 20, 28, 0.96) !important;
-    backdrop-filter: blur(22px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(22px) saturate(150%) !important;
+    width: min(390px, calc(100vw - 28px)) !important;
+    max-height: min(620px, calc(100vh - 40px)) !important;
 
-    border: 1px solid rgba(255, 255, 255, 0.10) !important;
-    border-radius: 20px !important;
+    transform: translate(-50%, -50%) !important;
+
+    padding: 0 !important;
+
+    background: rgba(18, 20, 28, 0.98) !important;
+
+    border: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 26px !important;
 
     box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.45),
-        0 8px 25px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+        0 30px 90px rgba(0,0,0,.60),
+        0 10px 35px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.06) !important;
+
+    backdrop-filter: blur(30px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
 
     overflow: hidden !important;
 
-    transform-origin: top right !important;
-    animation: rsengerBlockMenuIn 0.22s cubic-bezier(.2,.8,.2,1) !important;
+    z-index: 100000 !important;
+
+    animation: rsengerAdminPremiumIn .24s cubic-bezier(.2,.8,.2,1) !important;
 }
 
 
-/* Menu buttons */
-.rsenger-group-message-menu button {
-    width: 100% !important;
-    min-height: 54px !important;
+/* =========================================================
+   ADMIN HEADER
+   ========================================================= */
+
+#rsengerAdminPanel .rsenger-admin-panel-header {
+    min-height: 82px !important;
 
     display: flex !important;
     align-items: center !important;
-    gap: 13px !important;
+    justify-content: space-between !important;
 
-    padding: 0 15px !important;
-    margin: 3px 0 !important;
+    padding: 18px 18px 16px !important;
 
-    border: 0 !important;
-    border-radius: 14px !important;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        ) !important;
 
-    background: transparent !important;
-    color: rgba(255,255,255,.92) !important;
+    border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
 
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    letter-spacing: .1px !important;
+
+/* Header title */
+
+#rsengerAdminPanel .rsenger-admin-panel-header strong {
+    display: block !important;
+
+    color: #ffffff !important;
+
+    font-size: 18px !important;
+    font-weight: 800 !important;
+
+    letter-spacing: -.2px !important;
+}
+
+
+/* Header subtitle */
+
+#rsengerAdminPanel .rsenger-admin-panel-header span {
+    display: block !important;
+
+    margin-top: 4px !important;
+
+    color: rgba(255,255,255,.48) !important;
+
+    font-size: 12px !important;
+}
+
+
+/* Close button */
+
+#rsengerAdminPanel .rsenger-admin-panel-header button {
+    width: 40px !important;
+    height: 40px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 13px !important;
+
+    background: rgba(255,255,255,.06) !important;
+
+    color: rgba(255,255,255,.75) !important;
 
     cursor: pointer !important;
 
     transition:
         background .18s ease,
+        transform .18s ease !important;
+}
+
+
+#rsengerAdminPanel .rsenger-admin-panel-header button:hover {
+    background: rgba(255,255,255,.12) !important;
+
+    transform: rotate(4deg) scale(1.04) !important;
+}
+
+
+#rsengerAdminPanel .rsenger-admin-panel-header button:active {
+    transform: scale(.94) !important;
+}
+
+
+/* =========================================================
+   ADMIN OPTIONS
+   ========================================================= */
+
+#rsengerAdminPanel .rsenger-admin-options {
+    padding: 14px !important;
+
+    max-height: calc(100vh - 150px) !important;
+
+    overflow-y: auto !important;
+
+    scrollbar-width: thin !important;
+}
+
+
+/* Each option */
+
+#rsengerAdminPanel .rsenger-admin-options button {
+    width: 100% !important;
+
+    min-height: 62px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 14px !important;
+
+    padding: 0 16px !important;
+    margin: 6px 0 !important;
+
+    border: 1px solid rgba(255,255,255,.055) !important;
+    border-radius: 17px !important;
+
+    background: rgba(255,255,255,.035) !important;
+
+    color: rgba(255,255,255,.90) !important;
+
+    font-family: inherit !important;
+
+    font-size: 14px !important;
+    font-weight: 650 !important;
+
+    text-align: left !important;
+
+    cursor: pointer !important;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
         transform .18s ease,
-        color .18s ease !important;
+        box-shadow .18s ease !important;
 }
 
 
 /* Icons */
-.rsenger-group-message-menu button svg,
-.rsenger-group-message-menu button i {
-    width: 20px !important;
-    height: 20px !important;
 
-    flex: 0 0 20px !important;
+#rsengerAdminPanel .rsenger-admin-options button svg,
+#rsengerAdminPanel .rsenger-admin-options button i {
+    width: 21px !important;
+    height: 21px !important;
+
+    min-width: 21px !important;
 
     stroke-width: 2 !important;
-
-    opacity: .9 !important;
 }
 
 
-/* Hover / touch */
-.rsenger-group-message-menu button:hover {
+/* Hover */
+
+#rsengerAdminPanel .rsenger-admin-options button:hover {
     background: rgba(255,255,255,.075) !important;
-    transform: translateX(2px) !important;
+
+    border-color: rgba(255,255,255,.12) !important;
+
+    transform: translateY(-1px) !important;
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.18) !important;
 }
 
-.rsenger-group-message-menu button:active {
+
+/* Press */
+
+#rsengerAdminPanel .rsenger-admin-options button:active {
     transform: scale(.97) !important;
 }
 
 
-/* Block actions */
-.rsenger-group-message-menu button[onclick*="Block"],
-.rsenger-group-message-menu button[onclick*="block"] {
-    color: #ff7676 !important;
-}
-
-.rsenger-group-message-menu button[onclick*="Block"] svg,
-.rsenger-group-message-menu button[onclick*="block"] svg,
-.rsenger-group-message-menu button[onclick*="Block"] i,
-.rsenger-group-message-menu button[onclick*="block"] i {
-    color: #ff7676 !important;
-}
-
-
-/* Unblock */
-.rsenger-group-message-menu button[onclick*="Unblock"],
-.rsenger-group-message-menu button[onclick*="unblock"] {
-    color: #72e6a4 !important;
-}
-
-.rsenger-group-message-menu button[onclick*="Unblock"] svg,
-.rsenger-group-message-menu button[onclick*="unblock"] svg,
-.rsenger-group-message-menu button[onclick*="Unblock"] i,
-.rsenger-group-message-menu button[onclick*="unblock"] i {
-    color: #72e6a4 !important;
-}
-
+/* =========================================================
+   BLOCK ACTIONS
+   ========================================================= */
 
 /* Temporary block */
-.rsenger-group-message-menu button[onclick*="Temporary"] {
-    color: #ffd36a !important;
+
+#rsengerAdminPanel
+button[onclick*="adminTemporaryBlockMember"] {
+    color: #ffd76a !important;
+}
+
+#rsengerAdminPanel
+button[onclick*="adminTemporaryBlockMember"] svg,
+#rsengerAdminPanel
+button[onclick*="adminTemporaryBlockMember"] i {
+    color: #ffd76a !important;
 }
 
 
 /* Permanent block */
-.rsenger-group-message-menu button[onclick*="Permanent"] {
-    color: #ff7676 !important;
+
+#rsengerAdminPanel
+button[onclick*="adminPermanentBlockMember"] {
+    color: #ff727f !important;
+}
+
+#rsengerAdminPanel
+button[onclick*="adminPermanentBlockMember"] svg,
+#rsengerAdminPanel
+button[onclick*="adminPermanentBlockMember"] i {
+    color: #ff727f !important;
 }
 
 
-/* Remove member */
-.rsenger-group-message-menu button[onclick*="Remove"] {
-    color: #ff9b9b !important;
+/* Unblock */
+
+#rsengerAdminPanel
+button[onclick*="adminUnblockMember"] {
+    color: #6ee7a0 !important;
+}
+
+#rsengerAdminPanel
+button[onclick*="adminUnblockMember"] svg,
+#rsengerAdminPanel
+button[onclick*="adminUnblockMember"] i {
+    color: #6ee7a0 !important;
 }
 
 
-/* Divider effect between options */
-.rsenger-group-message-menu button + button {
-    border-top: 1px solid rgba(255,255,255,.045) !important;
-    border-radius: 0 0 14px 14px !important;
+/* Delete */
+
+#rsengerAdminPanel
+button[onclick*="adminDeleteSelectedGroupMessage"] {
+    color: #ff8585 !important;
 }
 
 
-/* Keep first button rounded */
-.rsenger-group-message-menu button:first-child {
-    border-radius: 14px !important;
+/* =========================================================
+   SECTION SEPARATION
+   ========================================================= */
+
+#rsengerAdminPanel .rsenger-admin-options button + button {
+    margin-top: 7px !important;
 }
 
 
-/* Animation */
-@keyframes rsengerBlockMenuIn {
+/* =========================================================
+   PREMIUM OPEN ANIMATION
+   ========================================================= */
+
+@keyframes rsengerAdminPremiumIn {
 
     from {
         opacity: 0;
-        transform: translateY(-7px) scale(.96);
+
+        transform:
+            translate(-50%, -47%)
+            scale(.94);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
     }
 
 }
 
 
-/* Mobile */
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media (max-width: 480px) {
 
-    .rsenger-group-message-menu {
-        width: calc(100vw - 28px) !important;
-        border-radius: 18px !important;
-        padding: 8px !important;
+    #rsengerAdminPanel {
+        width: calc(100vw - 22px) !important;
+
+        max-height: calc(100vh - 28px) !important;
+
+        border-radius: 23px !important;
     }
 
-    .rsenger-group-message-menu button {
-        min-height: 52px !important;
-        font-size: 14px !important;
-        padding: 0 14px !important;
+    #rsengerAdminPanel .rsenger-admin-panel-header {
+        min-height: 76px !important;
+
+        padding: 16px !important;
     }
 
-}
-
-
-/* Light theme support */
-@media (prefers-color-scheme: light) {
-
-    .rsenger-group-message-menu {
-        background: rgba(255,255,255,.96) !important;
-
-        border-color: rgba(0,0,0,.08) !important;
-
-        box-shadow:
-            0 20px 55px rgba(0,0,0,.16),
-            0 5px 18px rgba(0,0,0,.08) !important;
+    #rsengerAdminPanel .rsenger-admin-options {
+        padding: 11px !important;
     }
 
-    .rsenger-group-message-menu button {
-        color: rgba(20,22,30,.90) !important;
-    }
+    #rsengerAdminPanel .rsenger-admin-options button {
+        min-height: 58px !important;
 
-    .rsenger-group-message-menu button:hover {
-        background: rgba(0,0,0,.045) !important;
+        border-radius: 15px !important;
     }
 
 }
