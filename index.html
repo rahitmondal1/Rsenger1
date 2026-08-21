@@ -29149,16 +29149,14 @@ async function openRsengerBlockedMembers(){
 }
 
 
-function closeRsengerBlockedMembers(){
+function closeRsengerGroup(){
 
-    const view =
-        document.getElementById(
-            "rsengerBlockedMembersView"
-        );
-
-    if(view){
-        view.classList.add("hidden");
+    if(rsengerGroupListener){
+        rsengerGroupListener();
+        rsengerGroupListener = null;
     }
+
+    showHome();
 
 }
 
@@ -29744,6 +29742,16 @@ async function sendRsengerGroupMessage(){
         "function"
     ){
         showBottomNav();
+    }
+
+    // ===============================
+    // SHOW GROUP ICON ON HOME
+    // ===============================
+    if(
+        typeof showGroupIcon ===
+        "function"
+    ){
+        showGroupIcon();
     }
 
     if(
