@@ -28247,50 +28247,18 @@ setTimeout(function(){
 }
 
 
-
 function closeRsengerGroup(){
 
+    // Stop group listener
     if(rsengerGroupListener){
-
         rsengerGroupListener();
-
-        rsengerGroupListener =
-            null;
-
+        rsengerGroupListener = null;
     }
+
+    // Return directly to Home
     showHome();
 
-
-    hideAllPages();
-
-
-    const home =
-        document.getElementById(
-            "homePage"
-        );
-
-
-    if(home){
-
-        home.classList.remove(
-            "hidden"
-        );
-
     }
-
-
-    showBottomNav();
-
-    showGroupIcon();
-
-
-    if(typeof loadChats === "function"){
-
-        loadChats();
-
-    }
-
-}
 
 /* ==============================
    LOAD GROUP   ===================================================== */
