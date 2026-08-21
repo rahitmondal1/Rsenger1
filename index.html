@@ -18395,16 +18395,22 @@ body:not(.dark)
 
 }
 
-    /* =========================================
+/* =========================================
    GROUP BUTTON — HOME PAGE ONLY
    ========================================= */
 
 #rsengerGroupFab {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
-#homePage #rsengerGroupFab {
+#homePage:not(.hidden) #rsengerGroupFab {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
     
 </style>
