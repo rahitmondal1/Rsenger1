@@ -19396,6 +19396,369 @@ body:not(.dark)
     display: none !important;
 }
 
+    /* =========================================================
+   RSENGER ADMIN — PREMIUM MEMBER SEARCH RESULTS
+   ========================================================= */
+
+#rsengerAdminSearchResults {
+    width: 100%;
+    margin-top: 14px;
+    animation: rsengerSearchResultIn .28s ease;
+}
+
+@keyframes rsengerSearchResultIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* RESULTS HEADER */
+
+.rsenger-admin-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 4px;
+    margin-bottom: 8px;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+
+    color: #8d93a1;
+}
+
+.rsenger-admin-results-header strong {
+    min-width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.07);
+    color: #fff;
+
+    font-size: 11px;
+}
+
+
+/* RESULT LIST */
+
+.rsenger-admin-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+
+/* MEMBER RESULT */
+
+.rsenger-admin-member-result {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 13px;
+
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.04);
+
+    color: #fff;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+
+/* HOVER */
+
+.rsenger-admin-member-result:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(255,255,255,.18);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.11),
+            rgba(255,255,255,.045)
+        );
+
+    box-shadow:
+        0 12px 32px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+
+/* PRESS */
+
+.rsenger-admin-member-result:active {
+    transform: scale(.985);
+}
+
+
+/* LEFT */
+
+.rsenger-admin-member-left {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+}
+
+
+/* AVATAR */
+
+.rsenger-admin-member-avatar,
+.rsenger-admin-member-avatar-fallback {
+    width: 50px;
+    height: 50px;
+
+    flex: 0 0 50px;
+
+    border-radius: 15px;
+
+    object-fit: cover;
+
+    border: 1px solid rgba(255,255,255,.12);
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.25);
+}
+
+
+/* FALLBACK AVATAR */
+
+.rsenger-admin-member-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2c3140,
+            #171a22
+        );
+
+    color: #fff;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+
+/* MEMBER TEXT */
+
+.rsenger-admin-member-info {
+    min-width: 0;
+
+    margin-left: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.rsenger-admin-member-info strong {
+    display: block;
+
+    max-width: 210px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 750;
+}
+
+
+.rsenger-admin-member-info span {
+    display: block;
+
+    max-width: 210px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #8f95a4;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* ARROW */
+
+.rsenger-admin-member-arrow {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: rgba(255,255,255,.055);
+
+    color: #aeb4c2;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        color .2s ease;
+}
+
+
+.rsenger-admin-member-result:hover
+.rsenger-admin-member-arrow {
+
+    background: rgba(255,255,255,.11);
+
+    color: #fff;
+
+    transform: translateX(2px);
+}
+
+
+/* EMPTY RESULT */
+
+.rsenger-admin-search-empty {
+    padding: 38px 20px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(255,255,255,.07);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.018)
+        );
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.18);
+}
+
+
+.rsenger-admin-search-empty-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,.06);
+
+    color: #aeb4c2;
+}
+
+
+.rsenger-admin-search-empty h3 {
+    margin: 0 0 7px;
+
+    color: #fff;
+
+    font-size: 16px;
+    font-weight: 750;
+}
+
+
+.rsenger-admin-search-empty p {
+    margin: 0;
+
+    color: #858b99;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+    .rsenger-admin-member-result {
+        padding: 11px;
+        border-radius: 16px;
+    }
+
+    .rsenger-admin-member-avatar,
+    .rsenger-admin-member-avatar-fallback {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+        border-radius: 14px;
+    }
+
+    .rsenger-admin-member-info {
+        margin-left: 10px;
+    }
+
+    .rsenger-admin-member-info strong {
+        max-width: 175px;
+        font-size: 14px;
+    }
+
+    .rsenger-admin-member-info span {
+        max-width: 175px;
+        font-size: 11px;
+    }
+
+    .rsenger-admin-member-arrow {
+        width: 31px;
+        height: 31px;
+        flex-basis: 31px;
+    }
+}
+
     
 </style>
 <script>
