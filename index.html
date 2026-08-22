@@ -19223,31 +19223,89 @@ body:not(.dark)
     display: flex !important;
 }
 
-    /* =========================================================
-   RSENGER - NOTIFICATION PAGE FINAL FIX
+/* =========================================================
+   RSENGER - NOTIFICATION PAGE FINAL POSITION FIX
    ========================================================= */
 
 #notificationsPage {
-    box-sizing: border-box !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    left: 0 !important;
+    position: fixed !important;
+
+    top: 0 !important;
     right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    width: 100vw !important;
+    height: 100dvh !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    transform: none !important;
+
+    z-index: 99990 !important;
 }
 
+
+/* Header */
 #notificationsPage .notification-header {
-    box-sizing: border-box !important;
+    position: relative !important;
+
+    flex: 0 0 auto !important;
+
     width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
 }
 
+
+/* Notification list */
 #notificationsPage .notification-list {
-    box-sizing: border-box !important;
+    flex: 1 1 auto !important;
+
     width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+
+/* Empty notification state */
+#notificationsPage .notification-empty {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    box-sizing: border-box !important;
+
+    margin: 0 !important;
+}
+
+
+/* Hidden হলে অবশ্যই hidden */
+#notificationsPage.hidden {
+    display: none !important;
 }
 
     
