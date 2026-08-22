@@ -18775,7 +18775,6 @@ body:not(.dark)
 
     z-index: 99999 !important;
 
-    display: flex !important;
     flex-direction: column !important;
 
     background:
@@ -19275,6 +19274,15 @@ body:not(.dark)
         transform: scale(1);
     }
 
+}
+
+    /* ADMIN PANEL MUST STAY HIDDEN UNTIL OPENED */
+#rsengerAdminPanel.hidden {
+    display: none !important;
+}
+
+#rsengerAdminPanel:not(.hidden) {
+    display: flex !important;
 }
 
     
