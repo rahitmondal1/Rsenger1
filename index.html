@@ -30706,34 +30706,180 @@ if (blockedDoc.exists) {
     };
 
 
-    window.showNotifications = function(){
+    window.showNotifications = function () {
 
-        window.hideAllPages();
+    // Hide every other page
+    const pageIds = [
+        "splashPage",
+        "loginPage",
+        "registerPage",
+        "homePage",
+        "profilePage",
+        "friendsPage",
+        "requestsPage",
+        "notificationPage",
+        "settingsPage",
+        "chatPage",
+        "rsengerGroupPage"
+    ];
 
-        forceShow(
+    pageIds.forEach(function(id) {
+
+        const el = document.getElementById(id);
+
+        if (el) {
+
+            el.classList.add("hidden");
+
+            el.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+
+            el.style.setProperty(
+                "visibility",
+                "hidden",
+                "important"
+            );
+
+            el.style.setProperty(
+                "opacity",
+                "0",
+                "important"
+            );
+
+            el.style.setProperty(
+                "pointer-events",
+                "none",
+                "important"
+            );
+        }
+    });
+
+
+    // Hide bottom navigation
+    const bottomNav =
+        document.querySelector(".bottom-nav");
+
+    if (bottomNav) {
+
+        bottomNav.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        bottomNav.style.setProperty(
+            "visibility",
+            "hidden",
+            "important"
+        );
+
+        bottomNav.style.setProperty(
+            "pointer-events",
+            "none",
+            "important"
+        );
+    }
+
+
+    // Hide group button
+    const groupFab =
+        document.getElementById(
+            "rsengerGroupFab"
+        );
+
+    if (groupFab) {
+
+        groupFab.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
+        groupFab.style.setProperty(
+            "visibility",
+            "hidden",
+            "important"
+        );
+
+        groupFab.style.setProperty(
+            "pointer-events",
+            "none",
+            "important"
+        );
+    }
+
+
+    // =========================================
+    // SHOW ONLY NOTIFICATION PAGE
+    // =========================================
+
+    const page =
+        document.getElementById(
             "notificationsPage"
         );
 
-        if(
-            typeof showBottomNav ===
-            "function"
-        ){
+    if (!page) {
+        console.error(
+            "notificationsPage not found"
+        );
+        return;
+    }
 
-            showBottomNav();
 
-        }
+    // Remove hidden state
+    page.classList.remove("hidden");
 
-        if(
-            typeof loadNotifications ===
-            "function"
-        ){
 
-            loadNotifications();
+    // Clear previous inline hiding
+    page.style.removeProperty("visibility");
+    page.style.removeProperty("opacity");
+    page.style.removeProperty("pointer-events");
 
-        }
 
-    };
+    // Show notification page
+    page.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
 
+    page.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
+
+    page.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+    page.style.setProperty(
+        "pointer-events",
+        "auto",
+        "important"
+    );
+
+
+    // Load notifications
+    if (
+        typeof loadNotifications ===
+        "function"
+    ) {
+        loadNotifications();
+    }
+
+
+    // Refresh icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
+};
 
     window.openSettings = function(){
 
