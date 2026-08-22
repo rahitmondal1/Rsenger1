@@ -714,26 +714,377 @@ No chats yet
 
 </section>
 
+<!-- =====================================================
+     RSENGER PREMIUM ADMIN PANEL
+     ===================================================== -->
+
 <div
     id="rsengerAdminPanel"
     class="rsenger-admin-panel hidden">
 
-    <div class="rsenger-admin-panel-header">
-
-        <div>
-            <strong>Admin Controls</strong>
-            <span>Rsenger Community</span>
-        </div>
+    <!-- HEADER -->
+    <div class="rsenger-admin-header">
 
         <button
+            type="button"
+            class="rsenger-admin-back"
             onclick="closeRsengerAdminPanel()"
-            aria-label="Close">
+            aria-label="Back">
 
-            <i data-lucide="x"></i>
+            <i data-lucide="arrow-left"></i>
 
         </button>
 
+        <div class="rsenger-admin-title">
+
+            <div class="rsenger-admin-crown">
+                <i data-lucide="shield-check"></i>
+            </div>
+
+            <div>
+                <h2>Rsenger Admin Panel</h2>
+
+                <span>
+                    Manage your community
+                </span>
+            </div>
+
+        </div>
+
     </div>
+
+
+    <!-- SEARCH MEMBER -->
+    <div class="rsenger-admin-search-wrap">
+
+        <div class="rsenger-admin-search">
+
+            <i data-lucide="search"></i>
+
+            <input
+                id="rsengerAdminMemberSearch"
+                type="text"
+                placeholder="Search members..."
+                autocomplete="off"
+                oninput="searchRsengerAdminMembers(this.value)"
+            >
+
+            <button
+                type="button"
+                id="rsengerAdminSearchClear"
+                onclick="clearRsengerAdminSearch()"
+                aria-label="Clear">
+
+                <i data-lucide="x"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH RESULTS -->
+    <div
+        id="rsengerAdminSearchResults"
+        class="rsenger-admin-search-results hidden">
+    </div>
+
+
+    <!-- MAIN ADMIN CONTENT -->
+    <div
+        id="rsengerAdminMain"
+        class="rsenger-admin-main">
+
+
+        <!-- MEMBER MANAGEMENT -->
+        <div class="rsenger-admin-section">
+
+            <div class="rsenger-admin-section-title">
+
+                <span>MEMBER MANAGEMENT</span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerBlockedMembers()">
+
+                <div class="rsenger-admin-card-icon blocked">
+                    <i data-lucide="shield-ban"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Blocked Members</strong>
+
+                    <span>
+                        Manage blocked accounts
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerRestrictedMembers()">
+
+                <div class="rsenger-admin-card-icon restricted">
+                    <i data-lucide="user-round-x"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Restricted Members</strong>
+
+                    <span>
+                        Manage restricted accounts
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerAdmins()">
+
+                <div class="rsenger-admin-card-icon admins">
+                    <i data-lucide="crown"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Group Admins</strong>
+
+                    <span>
+                        Manage administrator access
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+        </div>
+
+
+        <!-- MESSAGE MANAGEMENT -->
+        <div class="rsenger-admin-section">
+
+            <div class="rsenger-admin-section-title">
+                <span>MESSAGE MANAGEMENT</span>
+            </div>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerPinnedMessages()">
+
+                <div class="rsenger-admin-card-icon pinned">
+                    <i data-lucide="pin"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Pinned Messages</strong>
+
+                    <span>
+                        View and manage pinned messages
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card danger"
+                onclick="clearAllRsengerMessages()">
+
+                <div class="rsenger-admin-card-icon danger">
+                    <i data-lucide="trash-2"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Clear All Messages</strong>
+
+                    <span>
+                        Remove all group messages
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="toggleRsengerGroupMessages()">
+
+                <div class="rsenger-admin-card-icon messages">
+                    <i data-lucide="message-square-off"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Message Control</strong>
+
+                    <span id="rsengerMessageControlStatus">
+                        Manage group messaging
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+        </div>
+
+
+        <!-- PERMISSIONS -->
+        <div class="rsenger-admin-section">
+
+            <div class="rsenger-admin-section-title">
+                <span>GROUP PERMISSIONS</span>
+            </div>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerMessagePermission()">
+
+                <div class="rsenger-admin-card-icon permission">
+                    <i data-lucide="messages-square"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Message Permission</strong>
+
+                    <span>
+                        Choose who can send messages
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerMediaPermission()">
+
+                <div class="rsenger-admin-card-icon media">
+                    <i data-lucide="images"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Media Permission</strong>
+
+                    <span>
+                        Control photos, videos and files
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+        </div>
+
+
+        <!-- ACTIVITY -->
+        <div class="rsenger-admin-section">
+
+            <div class="rsenger-admin-section-title">
+                <span>SECURITY & ACTIVITY</span>
+            </div>
+
+
+            <button
+                type="button"
+                class="rsenger-admin-card"
+                onclick="openRsengerAdminActivity()">
+
+                <div class="rsenger-admin-card-icon activity">
+                    <i data-lucide="history"></i>
+                </div>
+
+                <div class="rsenger-admin-card-text">
+
+                    <strong>Admin Activity</strong>
+
+                    <span>
+                        See who changed what
+                    </span>
+
+                </div>
+
+                <i
+                    data-lucide="chevron-right"
+                    class="rsenger-admin-arrow">
+                </i>
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
 
     <div class="rsenger-admin-options">
 
@@ -18414,343 +18765,518 @@ body:not(.dark)
 }
 
 
-        /* =========================================================
-   RSENGER GROUP — PREMIUM ADMIN ACCESS PANEL
+/* =========================================================
+   RSENGER PREMIUM ADMIN PANEL
    ========================================================= */
 
 #rsengerAdminPanel {
     position: fixed !important;
-    left: 50% !important;
-    top: 50% !important;
+    inset: 0 !important;
 
-    width: min(390px, calc(100vw - 28px)) !important;
-    max-height: min(620px, calc(100vh - 40px)) !important;
+    z-index: 99999 !important;
 
-    transform: translate(-50%, -50%) !important;
+    display: flex !important;
+    flex-direction: column !important;
 
-    padding: 0 !important;
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(90,100,255,.16),
+            transparent 38%
+        ),
+        #090b11 !important;
 
-    background: rgba(18, 20, 28, 0.98) !important;
-
-    border: 1px solid rgba(255,255,255,.10) !important;
-    border-radius: 26px !important;
-
-    box-shadow:
-        0 30px 90px rgba(0,0,0,.60),
-        0 10px 35px rgba(0,0,0,.30),
-        inset 0 1px 0 rgba(255,255,255,.06) !important;
-
-    backdrop-filter: blur(30px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
+    color: #fff !important;
 
     overflow: hidden !important;
 
-    z-index: 100000 !important;
-
-    animation: rsengerAdminPremiumIn .24s cubic-bezier(.2,.8,.2,1) !important;
+    animation: rsengerAdminOpen .24s ease-out !important;
 }
 
 
-/* =========================================================
-   ADMIN HEADER
-   ========================================================= */
+/* HEADER */
 
-#rsengerAdminPanel .rsenger-admin-panel-header {
-    min-height: 82px !important;
+#rsengerAdminPanel .rsenger-admin-header {
 
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
+    min-height: 76px;
 
-    padding: 18px 18px 16px !important;
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        calc(10px + env(safe-area-inset-top))
+        16px
+        12px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.07);
+
+    background:
+        rgba(13,15,23,.86);
+
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+
+.rsenger-admin-back {
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    color: #fff;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+
+.rsenger-admin-back:active {
+    transform: scale(.92);
+}
+
+
+.rsenger-admin-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+}
+
+
+.rsenger-admin-crown {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,.075),
-            rgba(255,255,255,.025)
-        ) !important;
+            rgba(126,92,255,.25),
+            rgba(55,145,255,.12)
+        );
 
-    border-bottom: 1px solid rgba(255,255,255,.08) !important;
+    border:
+        1px solid rgba(140,120,255,.18);
+
+    color: #b9a7ff;
 }
 
 
-/* Header title */
+.rsenger-admin-title h2 {
 
-#rsengerAdminPanel .rsenger-admin-panel-header strong {
-    display: block !important;
+    margin: 0;
 
-    color: #ffffff !important;
+    font-size: 17px;
 
-    font-size: 18px !important;
-    font-weight: 800 !important;
+    font-weight: 800;
 
-    letter-spacing: -.2px !important;
+    letter-spacing: -.25px;
 }
 
 
-/* Header subtitle */
+.rsenger-admin-title span {
 
-#rsengerAdminPanel .rsenger-admin-panel-header span {
-    display: block !important;
+    display: block;
 
-    margin-top: 4px !important;
+    margin-top: 3px;
 
-    color: rgba(255,255,255,.48) !important;
+    color: rgba(255,255,255,.45);
 
-    font-size: 12px !important;
+    font-size: 11px;
 }
 
 
-/* Close button */
+/* SEARCH */
 
-#rsengerAdminPanel .rsenger-admin-panel-header button {
-    width: 40px !important;
-    height: 40px !important;
+.rsenger-admin-search-wrap {
 
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    padding: 0 !important;
-
-    border: 1px solid rgba(255,255,255,.08) !important;
-    border-radius: 13px !important;
-
-    background: rgba(255,255,255,.06) !important;
-
-    color: rgba(255,255,255,.75) !important;
-
-    cursor: pointer !important;
-
-    transition:
-        background .18s ease,
-        transform .18s ease !important;
+    padding: 14px 15px 8px;
 }
 
 
-#rsengerAdminPanel .rsenger-admin-panel-header button:hover {
-    background: rgba(255,255,255,.12) !important;
+.rsenger-admin-search {
 
-    transform: rotate(4deg) scale(1.04) !important;
-}
+    height: 52px;
 
+    display: flex;
 
-#rsengerAdminPanel .rsenger-admin-panel-header button:active {
-    transform: scale(.94) !important;
-}
+    align-items: center;
 
+    gap: 10px;
 
-/* =========================================================
-   ADMIN OPTIONS
-   ========================================================= */
+    padding: 0 13px;
 
-#rsengerAdminPanel .rsenger-admin-options {
-    padding: 14px !important;
+    border:
+        1px solid rgba(255,255,255,.08);
 
-    max-height: calc(100vh - 150px) !important;
+    border-radius: 17px;
 
-    overflow-y: auto !important;
-
-    scrollbar-width: thin !important;
-}
-
-
-/* Each option */
-
-#rsengerAdminPanel .rsenger-admin-options button {
-    width: 100% !important;
-
-    min-height: 62px !important;
-
-    display: flex !important;
-    align-items: center !important;
-
-    gap: 14px !important;
-
-    padding: 0 16px !important;
-    margin: 6px 0 !important;
-
-    border: 1px solid rgba(255,255,255,.055) !important;
-    border-radius: 17px !important;
-
-    background: rgba(255,255,255,.035) !important;
-
-    color: rgba(255,255,255,.90) !important;
-
-    font-family: inherit !important;
-
-    font-size: 14px !important;
-    font-weight: 650 !important;
-
-    text-align: left !important;
-
-    cursor: pointer !important;
-
-    transition:
-        background .18s ease,
-        border-color .18s ease,
-        transform .18s ease,
-        box-shadow .18s ease !important;
-}
-
-
-/* Icons */
-
-#rsengerAdminPanel .rsenger-admin-options button svg,
-#rsengerAdminPanel .rsenger-admin-options button i {
-    width: 21px !important;
-    height: 21px !important;
-
-    min-width: 21px !important;
-
-    stroke-width: 2 !important;
-}
-
-
-/* Hover */
-
-#rsengerAdminPanel .rsenger-admin-options button:hover {
-    background: rgba(255,255,255,.075) !important;
-
-    border-color: rgba(255,255,255,.12) !important;
-
-    transform: translateY(-1px) !important;
+    background:
+        rgba(255,255,255,.055);
 
     box-shadow:
-        0 8px 22px rgba(0,0,0,.18) !important;
+        inset 0 1px 0 rgba(255,255,255,.035);
+
+    transition: .2s ease;
 }
 
 
-/* Press */
+.rsenger-admin-search:focus-within {
 
-#rsengerAdminPanel .rsenger-admin-options button:active {
-    transform: scale(.97) !important;
+    border-color:
+        rgba(130,120,255,.45);
+
+    background:
+        rgba(255,255,255,.075);
+
+    box-shadow:
+        0 0 0 3px rgba(120,110,255,.08);
 }
 
 
-/* =========================================================
-   BLOCK ACTIONS
-   ========================================================= */
+.rsenger-admin-search > i {
 
-/* Temporary block */
+    width: 19px;
 
-#rsengerAdminPanel
-button[onclick*="adminTemporaryBlockMember"] {
-    color: #ffd76a !important;
-}
-
-#rsengerAdminPanel
-button[onclick*="adminTemporaryBlockMember"] svg,
-#rsengerAdminPanel
-button[onclick*="adminTemporaryBlockMember"] i {
-    color: #ffd76a !important;
+    color:
+        rgba(255,255,255,.45);
 }
 
 
-/* Permanent block */
+.rsenger-admin-search input {
 
-#rsengerAdminPanel
-button[onclick*="adminPermanentBlockMember"] {
-    color: #ff727f !important;
-}
+    flex: 1;
 
-#rsengerAdminPanel
-button[onclick*="adminPermanentBlockMember"] svg,
-#rsengerAdminPanel
-button[onclick*="adminPermanentBlockMember"] i {
-    color: #ff727f !important;
-}
+    min-width: 0;
 
+    border: 0;
 
-/* Unblock */
+    outline: 0;
 
-#rsengerAdminPanel
-button[onclick*="adminUnblockMember"] {
-    color: #6ee7a0 !important;
-}
+    background: transparent;
 
-#rsengerAdminPanel
-button[onclick*="adminUnblockMember"] svg,
-#rsengerAdminPanel
-button[onclick*="adminUnblockMember"] i {
-    color: #6ee7a0 !important;
+    color: #fff;
+
+    font-size: 14px;
+
+    font-family: inherit;
 }
 
 
-/* Delete */
+.rsenger-admin-search input::placeholder {
 
-#rsengerAdminPanel
-button[onclick*="adminDeleteSelectedGroupMessage"] {
-    color: #ff8585 !important;
+    color:
+        rgba(255,255,255,.38);
 }
 
 
-/* =========================================================
-   SECTION SEPARATION
-   ========================================================= */
+#rsengerAdminSearchClear {
 
-#rsengerAdminPanel .rsenger-admin-options button + button {
-    margin-top: 7px !important;
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    color:
+        rgba(255,255,255,.6);
 }
 
 
-/* =========================================================
-   PREMIUM OPEN ANIMATION
-   ========================================================= */
+/* MAIN */
 
-@keyframes rsengerAdminPremiumIn {
+.rsenger-admin-main {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding:
+        4px
+        15px
+        calc(25px + env(safe-area-inset-bottom));
+
+    scrollbar-width: none;
+}
+
+
+.rsenger-admin-main::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* SECTION */
+
+.rsenger-admin-section {
+
+    margin-top: 18px;
+}
+
+
+.rsenger-admin-section-title {
+
+    padding:
+        0 4px
+        8px;
+
+    color:
+        rgba(255,255,255,.36);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.1px;
+}
+
+
+/* CARD */
+
+.rsenger-admin-card {
+
+    width: 100%;
+
+    min-height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 9px;
+
+    padding: 11px 13px;
+
+    border:
+        1px solid rgba(255,255,255,.065);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.065),
+            rgba(255,255,255,.025)
+        );
+
+    color: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
+
+
+.rsenger-admin-card:hover {
+
+    background:
+        rgba(255,255,255,.085);
+
+    border-color:
+        rgba(255,255,255,.12);
+}
+
+
+.rsenger-admin-card:active {
+
+    transform: scale(.985);
+}
+
+
+/* ICON */
+
+.rsenger-admin-card-icon {
+
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,255,255,.065);
+
+    color: #b8c0ff;
+}
+
+
+.rsenger-admin-card-icon.blocked {
+    color: #ff7180;
+    background: rgba(255,90,110,.10);
+}
+
+
+.rsenger-admin-card-icon.restricted {
+    color: #ffca68;
+    background: rgba(255,190,70,.10);
+}
+
+
+.rsenger-admin-card-icon.admins {
+    color: #b99cff;
+    background: rgba(145,100,255,.11);
+}
+
+
+.rsenger-admin-card-icon.pinned {
+    color: #71d8ff;
+    background: rgba(60,190,255,.10);
+}
+
+
+.rsenger-admin-card-icon.danger {
+    color: #ff7777;
+    background: rgba(255,70,70,.10);
+}
+
+
+.rsenger-admin-card-icon.messages {
+    color: #77c9ff;
+    background: rgba(70,160,255,.10);
+}
+
+
+.rsenger-admin-card-icon.permission {
+    color: #7be8b1;
+    background: rgba(70,220,140,.10);
+}
+
+
+.rsenger-admin-card-icon.media {
+    color: #d59aff;
+    background: rgba(180,100,255,.10);
+}
+
+
+.rsenger-admin-card-icon.activity {
+    color: #8fc4ff;
+    background: rgba(80,150,255,.10);
+}
+
+
+/* TEXT */
+
+.rsenger-admin-card-text {
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.rsenger-admin-card-text strong {
+
+    display: block;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.rsenger-admin-card-text span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color:
+        rgba(255,255,255,.38);
+
+    font-size: 11px;
+}
+
+
+.rsenger-admin-arrow {
+
+    width: 17px;
+
+    color:
+        rgba(255,255,255,.25);
+}
+
+
+/* SEARCH RESULTS */
+
+#rsengerAdminSearchResults {
+
+    max-height: 300px;
+
+    overflow-y: auto;
+
+    margin:
+        0 15px
+        8px;
+
+    border-radius: 17px;
+
+    background:
+        rgba(20,22,31,.98);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+}
+
+
+@keyframes rsengerAdminOpen {
 
     from {
         opacity: 0;
-
-        transform:
-            translate(-50%, -47%)
-            scale(.94);
+        transform: scale(.985);
     }
 
     to {
         opacity: 1;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1);
+        transform: scale(1);
     }
 
 }
 
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 480px) {
-
-    #rsengerAdminPanel {
-        width: calc(100vw - 22px) !important;
-
-        max-height: calc(100vh - 28px) !important;
-
-        border-radius: 23px !important;
-    }
-
-    #rsengerAdminPanel .rsenger-admin-panel-header {
-        min-height: 76px !important;
-
-        padding: 16px !important;
-    }
-
-    #rsengerAdminPanel .rsenger-admin-options {
-        padding: 11px !important;
-    }
-
-    #rsengerAdminPanel .rsenger-admin-options button {
-        min-height: 58px !important;
-
-        border-radius: 15px !important;
-    }
-
-}
     
 </style>
 <script>
@@ -29435,7 +29961,7 @@ function openRsengerGroupInfo(){
         return;
     }
 
-    openRsengerBlockedMembers();
+    openRsengerAdminPanel();
 
 }
 
@@ -29742,6 +30268,22 @@ function updateRsengerGroupSendButton(){
 }
 
 async function sendRsengerGroupMessage(){
+
+    const blockedDoc = await db
+    .collection("groups")
+    .doc(RSENGER_GROUP_ID)
+    .collection("blockedMembers")
+    .doc(me.uid)
+    .get();
+
+if (blockedDoc.exists) {
+    premiumAlert(
+        "You are blocked from sending messages in this group.",
+        "Message Blocked",
+        "error"
+    );
+    return;
+}
 
     const me = auth.currentUser;
 
