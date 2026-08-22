@@ -20082,6 +20082,566 @@ body:not(.dark)
 
 }
 
+    /* =========================================================
+   RSENGER ADMIN — PREMIUM MEMBER SEARCH RESULTS
+   D INDEX.HTML — FINAL
+   ========================================================= */
+
+#rsengerAdminSearchResults {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+}
+
+#rsengerAdminSearchResults.hidden {
+    display: none !important;
+}
+
+
+/* ===============================
+   RESULTS HEADER
+   =============================== */
+
+.rsenger-admin-results-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+
+    padding: 4px 6px 10px;
+
+    color: #8e95a7;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+.rsenger-admin-results-header strong {
+    min-width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.07);
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+
+/* ===============================
+   RESULTS LIST
+   =============================== */
+
+.rsenger-admin-results-list {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    box-sizing: border-box;
+}
+
+
+/* ===============================
+   MEMBER CARD
+   =============================== */
+
+.rsenger-admin-member-result {
+
+    position: relative;
+
+    width: 100%;
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+
+    padding: 9px 10px;
+
+    margin: 0;
+
+    border: 1px solid rgba(255,255,255,.075);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.045);
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+}
+
+
+/* shine */
+
+.rsenger-admin-member-result::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 70%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            105deg,
+            transparent,
+            rgba(255,255,255,.055),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    transition: left .55s ease;
+
+    pointer-events: none;
+}
+
+.rsenger-admin-member-result:hover::before {
+    left: 140%;
+}
+
+
+/* hover */
+
+.rsenger-admin-member-result:hover {
+
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(150,135,255,.28);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.105),
+            rgba(255,255,255,.035)
+        );
+
+    box-shadow:
+        0 13px 32px rgba(0,0,0,.27),
+        inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+
+/* tap */
+
+.rsenger-admin-member-result:active {
+    transform: scale(.985);
+}
+
+
+/* ===============================
+   LEFT CONTENT
+   =============================== */
+
+.rsenger-admin-member-left {
+
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+
+/* ===============================
+   PROFILE PHOTO
+   =============================== */
+
+.rsenger-admin-member-avatar,
+.rsenger-admin-member-avatar-fallback {
+
+    width: 52px;
+    height: 52px;
+
+    min-width: 52px;
+    min-height: 52px;
+
+    max-width: 52px;
+    max-height: 52px;
+
+    flex: 0 0 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border-radius: 16px;
+
+    object-fit: cover;
+
+    border: 1px solid rgba(255,255,255,.13);
+
+    background:
+        linear-gradient(
+            145deg,
+            #343a4b,
+            #181b24
+        );
+
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.30);
+}
+
+
+/* ===============================
+   MEMBER INFO
+   =============================== */
+
+.rsenger-admin-member-info {
+
+    min-width: 0;
+
+    flex: 1;
+
+    margin-left: 12px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    overflow: hidden;
+}
+
+
+/* NAME */
+
+.rsenger-admin-member-info strong {
+
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    line-height: 20px;
+
+    font-weight: 750;
+}
+
+
+/* USERNAME */
+
+.rsenger-admin-member-info span {
+
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #858c9d;
+
+    font-size: 11px;
+
+    line-height: 16px;
+
+    font-weight: 550;
+}
+
+
+/* ===============================
+   ARROW
+   =============================== */
+
+.rsenger-admin-member-arrow {
+
+    position: relative;
+    z-index: 2;
+
+    width: 35px;
+    height: 35px;
+
+    min-width: 35px;
+    min-height: 35px;
+
+    flex: 0 0 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: 8px;
+
+    box-sizing: border-box;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    color: #969dac;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        color .18s ease;
+}
+
+
+.rsenger-admin-member-arrow i,
+.rsenger-admin-member-arrow svg {
+
+    width: 18px;
+    height: 18px;
+
+    max-width: 18px;
+    max-height: 18px;
+
+    stroke-width: 2.3;
+}
+
+
+.rsenger-admin-member-result:hover
+.rsenger-admin-member-arrow {
+
+    transform: translateX(3px);
+
+    background:
+        rgba(255,255,255,.10);
+
+    color: #ffffff;
+}
+
+
+/* ===============================
+   EMPTY / ERROR CARD
+   =============================== */
+
+.rsenger-admin-search-empty {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 34px 20px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.055),
+            rgba(255,255,255,.018)
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.20);
+}
+
+
+.rsenger-admin-search-empty-icon {
+
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    color: #949bad;
+}
+
+
+.rsenger-admin-search-empty-icon svg {
+
+    width: 24px;
+    height: 24px;
+}
+
+
+.rsenger-admin-search-empty h3 {
+
+    margin: 0 0 6px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 750;
+}
+
+
+.rsenger-admin-search-empty p {
+
+    margin: 0;
+
+    color: #808899;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 480px) {
+
+    #rsengerAdminSearchResults {
+        margin-top: 10px;
+    }
+
+    .rsenger-admin-results-list {
+        gap: 8px;
+    }
+
+    .rsenger-admin-member-result {
+
+        min-height: 68px;
+
+        padding: 8px 9px;
+
+        border-radius: 16px;
+    }
+
+    .rsenger-admin-member-avatar,
+    .rsenger-admin-member-avatar-fallback {
+
+        width: 48px;
+        height: 48px;
+
+        min-width: 48px;
+        min-height: 48px;
+
+        max-width: 48px;
+        max-height: 48px;
+
+        flex-basis: 48px;
+
+        border-radius: 14px;
+    }
+
+    .rsenger-admin-member-info {
+        margin-left: 10px;
+    }
+
+    .rsenger-admin-member-info strong {
+        font-size: 14px;
+        line-height: 19px;
+    }
+
+    .rsenger-admin-member-info span {
+        font-size: 10.5px;
+    }
+
+    .rsenger-admin-member-arrow {
+
+        width: 32px;
+        height: 32px;
+
+        min-width: 32px;
+        min-height: 32px;
+
+        flex-basis: 32px;
+
+        border-radius: 10px;
+    }
+}
 
     
 </style>
