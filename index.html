@@ -19396,102 +19396,376 @@ body:not(.dark)
     display: none !important;
 }
 
-    /* =========================================================
-   RSENGER ADMIN — PREMIUM MEMBER SEARCH RESULTS
+/* =========================================================
+   RSENGER ADMIN
+   PREMIUM MEMBER CONTROL PANEL
    ========================================================= */
 
-#rsengerAdminSearchResults {
+.rsenger-admin-control-page {
     width: 100%;
-    margin-top: 14px;
-    animation: rsengerSearchResultIn .28s ease;
+    min-height: 100%;
+
+    padding: 18px;
+
+    box-sizing: border-box;
+
+    color: #fff;
+
+    animation:
+        rsengerControlEnter .28s ease;
 }
 
-@keyframes rsengerSearchResultIn {
+
+@keyframes rsengerControlEnter {
+
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(15px) scale(.98);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
+
 }
 
 
-/* RESULTS HEADER */
+/* =========================================================
+   TOP BAR
+   ========================================================= */
 
-.rsenger-admin-results-header {
+.rsenger-admin-control-top {
+
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
 
-    padding: 10px 4px;
-    margin-bottom: 8px;
+    height: 48px;
 
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.4px;
+    margin-bottom: 22px;
 
-    color: #8d93a1;
+    color: #fff;
+
+    font-size: 16px;
+    font-weight: 750;
 }
 
-.rsenger-admin-results-header strong {
-    min-width: 25px;
-    height: 25px;
+
+.rsenger-admin-control-back {
+
+    width: 42px;
+    height: 42px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.09);
 
-    background: rgba(255,255,255,.07);
-    color: #fff;
-
-    font-size: 11px;
-}
-
-
-/* RESULT LIST */
-
-.rsenger-admin-results-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-
-/* MEMBER RESULT */
-
-.rsenger-admin-member-result {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 12px 13px;
-
-    border: 1px solid rgba(255,255,255,.075);
-    border-radius: 18px;
+    border-radius: 14px;
 
     background:
         linear-gradient(
-            135deg,
-            rgba(255,255,255,.075),
-            rgba(255,255,255,.025)
+            145deg,
+            rgba(255,255,255,.09),
+            rgba(255,255,255,.035)
         );
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.04);
 
     color: #fff;
 
     cursor: pointer;
 
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+
+.rsenger-admin-control-back:hover {
+
+    background:
+        rgba(255,255,255,.13);
+
+    transform: translateX(-2px);
+
+}
+
+
+.rsenger-admin-control-back:active {
+
+    transform: scale(.92);
+
+}
+
+
+/* =========================================================
+   MEMBER PROFILE
+   ========================================================= */
+
+.rsenger-admin-control-profile {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    padding: 22px;
+
+    margin-bottom: 16px;
+
+    border-radius: 24px;
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.095),
+            rgba(255,255,255,.025)
+        );
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.05);
+
+    overflow: hidden;
+}
+
+
+.rsenger-admin-control-profile::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    top: -65px;
+    right: -45px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.05);
+
+    filter: blur(3px);
+
+}
+
+
+.rsenger-admin-control-avatar,
+.rsenger-admin-control-avatar-fallback {
+
+    position: relative;
+
+    width: 68px;
+    height: 68px;
+
+    flex: 0 0 68px;
+
+    border-radius: 21px;
+
+    object-fit: cover;
+
+    border: 2px solid rgba(255,255,255,.12);
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,.3);
+}
+
+
+.rsenger-admin-control-avatar-fallback {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #343a4a,
+            #171a22
+        );
+
+    color: #fff;
+
+    font-size: 25px;
+    font-weight: 850;
+}
+
+
+.rsenger-admin-control-profile > div:last-child {
+
+    position: relative;
+
+    min-width: 0;
+
+    margin-left: 15px;
+}
+
+
+.rsenger-admin-control-profile h2 {
+
+    margin: 0 0 5px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #fff;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+
+.rsenger-admin-control-profile p {
+
+    margin: 0;
+
+    color: #9298a7;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   STATUS CARD
+   ========================================================= */
+
+.rsenger-admin-control-status {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+}
+
+
+.rsenger-admin-control-status > div {
+
+    padding: 13px 10px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255,255,255,.065);
+
+    background:
+        rgba(255,255,255,.035);
+
+    text-align: center;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+
+.rsenger-admin-control-status > div:hover {
+
+    transform: translateY(-2px);
+
+    background:
+        rgba(255,255,255,.065);
+
+}
+
+
+.rsenger-admin-control-status span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #777e8e;
+
+    font-size: 10px;
+
+    font-weight: 750;
+
+    text-transform: uppercase;
+
+    letter-spacing: .8px;
+}
+
+
+.rsenger-admin-control-status strong {
+
+    display: block;
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   ACTION SECTION
+   ========================================================= */
+
+.rsenger-admin-control-actions {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 11px;
+}
+
+
+/* =========================================================
+   CONTROL BUTTON
+   ========================================================= */
+
+.rsenger-member-control-btn {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 13px 15px;
+
+    border: 1px solid rgba(255,255,255,.075);
+
+    border-radius: 19px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    color: #fff;
+
     text-align: left;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.15),
+        inset 0 1px 0 rgba(255,255,255,.035);
 
     transition:
         transform .2s ease,
@@ -19501,262 +19775,311 @@ body:not(.dark)
 }
 
 
-/* HOVER */
+.rsenger-member-control-btn::after {
 
-.rsenger-admin-member-result:hover {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 70%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.07),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    transition: left .55s ease;
+}
+
+
+.rsenger-member-control-btn:hover::after {
+
+    left: 140%;
+
+}
+
+
+.rsenger-member-control-btn:hover {
+
     transform: translateY(-2px);
 
-    border-color: rgba(255,255,255,.18);
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,.11),
-            rgba(255,255,255,.045)
-        );
-
-    box-shadow:
-        0 12px 32px rgba(0,0,0,.25),
-        inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-
-/* PRESS */
-
-.rsenger-admin-member-result:active {
-    transform: scale(.985);
-}
-
-
-/* LEFT */
-
-.rsenger-admin-member-left {
-    display: flex;
-    align-items: center;
-
-    min-width: 0;
-}
-
-
-/* AVATAR */
-
-.rsenger-admin-member-avatar,
-.rsenger-admin-member-avatar-fallback {
-    width: 50px;
-    height: 50px;
-
-    flex: 0 0 50px;
-
-    border-radius: 15px;
-
-    object-fit: cover;
-
-    border: 1px solid rgba(255,255,255,.12);
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,.25);
-}
-
-
-/* FALLBACK AVATAR */
-
-.rsenger-admin-member-avatar-fallback {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2c3140,
-            #171a22
-        );
-
-    color: #fff;
-
-    font-size: 19px;
-    font-weight: 800;
-}
-
-
-/* MEMBER TEXT */
-
-.rsenger-admin-member-info {
-    min-width: 0;
-
-    margin-left: 12px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-
-.rsenger-admin-member-info strong {
-    display: block;
-
-    max-width: 210px;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    color: #fff;
-
-    font-size: 15px;
-    font-weight: 750;
-}
-
-
-.rsenger-admin-member-info span {
-    display: block;
-
-    max-width: 210px;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    color: #8f95a4;
-
-    font-size: 12px;
-    font-weight: 500;
-}
-
-
-/* ARROW */
-
-.rsenger-admin-member-arrow {
-    width: 34px;
-    height: 34px;
-
-    flex: 0 0 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: rgba(255,255,255,.055);
-
-    color: #aeb4c2;
-
-    transition:
-        background .2s ease,
-        transform .2s ease,
-        color .2s ease;
-}
-
-
-.rsenger-admin-member-result:hover
-.rsenger-admin-member-arrow {
-
-    background: rgba(255,255,255,.11);
-
-    color: #fff;
-
-    transform: translateX(2px);
-}
-
-
-/* EMPTY RESULT */
-
-.rsenger-admin-search-empty {
-    padding: 38px 20px;
-
-    text-align: center;
-
-    border-radius: 20px;
-
-    border: 1px solid rgba(255,255,255,.07);
+    border-color:
+        rgba(255,255,255,.15);
 
     background:
         linear-gradient(
             145deg,
-            rgba(255,255,255,.055),
-            rgba(255,255,255,.018)
+            rgba(255,255,255,.105),
+            rgba(255,255,255,.04)
         );
 
     box-shadow:
-        0 12px 35px rgba(0,0,0,.18);
+        0 13px 32px rgba(0,0,0,.23),
+        inset 0 1px 0 rgba(255,255,255,.06);
 }
 
 
-.rsenger-admin-search-empty-icon {
-    width: 58px;
-    height: 58px;
+.rsenger-member-control-btn:active {
 
-    margin: 0 auto 14px;
+    transform: scale(.985);
+
+}
+
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.rsenger-member-control-btn
+.control-icon {
+
+    width: 45px;
+    height: 45px;
+
+    flex: 0 0 45px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    border-radius: 18px;
+    margin-right: 13px;
 
-    background: rgba(255,255,255,.06);
+    border-radius: 15px;
 
-    color: #aeb4c2;
+    background:
+        rgba(255,255,255,.065);
+
+    color: #dfe3eb;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06);
 }
 
 
-.rsenger-admin-search-empty h3 {
-    margin: 0 0 7px;
+.rsenger-member-control-btn
+.control-icon svg {
+
+    width: 20px;
+    height: 20px;
+
+    stroke-width: 2;
+}
+
+
+/* =========================================================
+   TEXT
+   ========================================================= */
+
+.rsenger-member-control-btn
+.control-text {
+
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.rsenger-member-control-btn
+.control-text strong {
 
     color: #fff;
 
-    font-size: 16px;
+    font-size: 14px;
+
     font-weight: 750;
 }
 
 
-.rsenger-admin-search-empty p {
-    margin: 0;
+.rsenger-member-control-btn
+.control-text small {
 
-    color: #858b99;
+    color: #858c9b;
 
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 11px;
+
+    line-height: 1.35;
+
+    font-weight: 500;
 }
 
 
-/* MOBILE */
+/* =========================================================
+   BLOCK
+   ========================================================= */
+
+.rsenger-member-control-btn.block
+.control-icon {
+
+    background:
+        rgba(255,70,70,.10);
+
+    color:
+        #ff7777;
+}
+
+
+.rsenger-member-control-btn.block:hover {
+
+    border-color:
+        rgba(255,80,80,.25);
+
+}
+
+
+/* =========================================================
+   UNBLOCK
+   ========================================================= */
+
+.rsenger-member-control-btn.unblock
+.control-icon {
+
+    background:
+        rgba(60,210,140,.10);
+
+    color:
+        #61e0a5;
+}
+
+
+/* =========================================================
+   RESTRICT
+   ========================================================= */
+
+.rsenger-member-control-btn.restrict
+.control-icon {
+
+    background:
+        rgba(255,180,65,.10);
+
+    color:
+        #ffc05e;
+}
+
+
+/* =========================================================
+   UNRESTRICT
+   ========================================================= */
+
+.rsenger-member-control-btn.unrestrict
+.control-icon {
+
+    background:
+        rgba(60,210,140,.10);
+
+    color:
+        #61e0a5;
+}
+
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+.rsenger-member-control-btn.admin
+.control-icon {
+
+    background:
+        rgba(160,120,255,.11);
+
+    color:
+        #b99aff;
+}
+
+
+.rsenger-member-control-btn.admin:hover {
+
+    border-color:
+        rgba(160,120,255,.25);
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 480px) {
 
-    .rsenger-admin-member-result {
-        padding: 11px;
-        border-radius: 16px;
+    .rsenger-admin-control-page {
+
+        padding: 14px;
+
     }
 
-    .rsenger-admin-member-avatar,
-    .rsenger-admin-member-avatar-fallback {
-        width: 46px;
-        height: 46px;
-        flex-basis: 46px;
-        border-radius: 14px;
+
+    .rsenger-admin-control-profile {
+
+        padding: 18px;
+
+        border-radius: 21px;
+
     }
 
-    .rsenger-admin-member-info {
-        margin-left: 10px;
+
+    .rsenger-admin-control-avatar,
+    .rsenger-admin-control-avatar-fallback {
+
+        width: 60px;
+        height: 60px;
+
+        flex-basis: 60px;
+
+        border-radius: 18px;
+
     }
 
-    .rsenger-admin-member-info strong {
-        max-width: 175px;
-        font-size: 14px;
+
+    .rsenger-admin-control-profile h2 {
+
+        font-size: 17px;
+
     }
 
-    .rsenger-admin-member-info span {
-        max-width: 175px;
-        font-size: 11px;
+
+    .rsenger-admin-control-status > div {
+
+        padding: 11px 6px;
+
     }
 
-    .rsenger-admin-member-arrow {
-        width: 31px;
-        height: 31px;
-        flex-basis: 31px;
+
+    .rsenger-member-control-btn {
+
+        min-height: 68px;
+
+        border-radius: 17px;
+
     }
+
+
+    .rsenger-member-control-btn
+    .control-icon {
+
+        width: 42px;
+        height: 42px;
+
+        flex-basis: 42px;
+
+        margin-right: 11px;
+
+    }
+
 }
 
     
