@@ -30388,25 +30388,32 @@ function updateRsengerGroupSendButton(){
 
 async function sendRsengerGroupMessage(){
 
-    const blockedDoc = await db
+    const me = auth.currentUser;
+
+if(!me) return;
+
+
+/* =========================================
+   BLOCK CHECK
+   ========================================= */
+
+const blockedDoc = await db
     .collection("groups")
     .doc(RSENGER_GROUP_ID)
     .collection("blockedMembers")
     .doc(me.uid)
     .get();
 
-if (blockedDoc.exists) {
+if(blockedDoc.exists){
+
     premiumAlert(
         "You are blocked from sending messages in this group.",
         "Message Blocked",
         "error"
     );
+
     return;
 }
-
-    const me = auth.currentUser;
-
-    if(!me) return;
 
 
     const input =
