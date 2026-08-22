@@ -30415,6 +30415,28 @@ if(blockedDoc.exists){
     return;
 }
 
+    /* =========================================
+   RESTRICT CHECK
+   ========================================= */
+
+const restrictedDoc = await db
+    .collection("groups")
+    .doc(RSENGER_GROUP_ID)
+    .collection("restrictedMembers")
+    .doc(me.uid)
+    .get();
+
+if(restrictedDoc.exists){
+
+    premiumAlert(
+        "Your messaging access is restricted in this group.",
+        "Message Restricted",
+        "error"
+    );
+
+    return;
+}
+
 
     const input =
         document.getElementById(
@@ -31746,4 +31768,629 @@ async function adminBlockSelectedMessage(){
 
     }
 
-}</script>
+}
+
+/* =====================================================
+   RSENGER - PREMIUM RESTRICTED MEMBERS PANEL
+   ===================================================== */
+
+async function openRsengerRestrictedMembers(){
+
+    const me = auth.currentUser;
+
+    if(!me){
+        return;
+    }
+
+    /* =========================================
+       ADMIN ACCESS
+       ========================================= */
+
+    if(me.uid !== window.RSENGER_ADMIN_UID){
+
+        premiumAlert(
+            "Only the group admin can manage restricted members.",
+            "Admin Access",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const groupId = RSENGER_GROUP_ID;
+
+    if(!groupId){
+        premiumAlert(
+            "Group could not be loaded.",
+            "Error",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* =========================================
+       LOAD RESTRICTED MEMBERS
+       ========================================= */
+
+    try{
+
+        const snapshot =
+            await db
+            .collection("groups")
+            .doc(groupId)
+            .collection("restrictedMembers")
+            .get();
+
+
+        let members = [];
+
+
+        snapshot.forEach(function(doc){
+
+            const data =
+                doc.data() || {};
+
+            members.push({
+
+                uid: doc.id,
+
+                name:
+                    data.name ||
+                    data.nickname ||
+                    data.username ||
+                    "Unknown Member",
+
+                username:
+                    data.username ||
+                    "",
+
+                profilePic:
+                    data.profilePic ||
+                    "",
+
+                restrictedAt:
+                    data.restrictedAt ||
+                    null
+
+            });
+
+        });
+
+
+        /* =========================================
+           REMOVE OLD PANEL
+           ========================================= */
+
+        const oldPanel =
+            document.getElementById(
+                "rsengerRestrictedMembersPanel"
+            );
+
+        if(oldPanel){
+            oldPanel.remove();
+        }
+
+
+        /* =========================================
+           CREATE PANEL
+           ========================================= */
+
+        const panel =
+            document.createElement("div");
+
+        panel.id =
+            "rsengerRestrictedMembersPanel";
+
+
+        panel.innerHTML = `
+
+        <div class="rsenger-restricted-overlay">
+
+            <div class="rsenger-restricted-panel">
+
+                <!-- HEADER -->
+
+                <div class="rsenger-restricted-header">
+
+                    <button
+                        type="button"
+                        class="rsenger-restricted-back"
+                        id="rsengerRestrictedBackBtn">
+
+                        <i data-lucide="arrow-left"></i>
+
+                    </button>
+
+
+                    <div class="rsenger-restricted-title">
+
+                        <div class="rsenger-restricted-title-icon">
+
+                            <i data-lucide="user-round-x"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Restricted Members
+                            </h2>
+
+                            <p>
+                                Manage restricted members
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="rsenger-restricted-search">
+
+                    <i data-lucide="search"></i>
+
+                    <input
+                        type="text"
+                        id="rsengerRestrictedSearch"
+                        placeholder="Search members..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- COUNT -->
+
+                <div class="rsenger-restricted-count">
+
+                    <span>
+                        Restricted members
+                    </span>
+
+                    <strong id="rsengerRestrictedCount">
+                        ${members.length}
+                    </strong>
+
+                </div>
+
+
+                <!-- MEMBER LIST -->
+
+                <div
+                    class="rsenger-restricted-list"
+                    id="rsengerRestrictedList">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+
+        document.body.appendChild(panel);
+
+
+        /* =========================================
+           RENDER MEMBERS
+           ========================================= */
+
+        const list =
+            document.getElementById(
+                "rsengerRestrictedList"
+            );
+
+        const searchInput =
+            document.getElementById(
+                "rsengerRestrictedSearch"
+            );
+
+
+        function renderMembers(searchText = ""){
+
+            const query =
+                searchText
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                members.filter(function(member){
+
+                    return (
+
+                        member.name
+                        .toLowerCase()
+                        .includes(query)
+
+                        ||
+
+                        member.username
+                        .toLowerCase()
+                        .includes(query)
+
+                    );
+
+                });
+
+
+            if(filtered.length === 0){
+
+                list.innerHTML = `
+
+                    <div class="rsenger-restricted-empty">
+
+                        <div class="rsenger-restricted-empty-icon">
+
+                            <i data-lucide="user-round-search"></i>
+
+                        </div>
+
+                        <h3>
+                            No restricted members
+                        </h3>
+
+                        <p>
+                            ${
+                                members.length === 0
+                                ? "No members are currently restricted."
+                                : "No member matches your search."
+                            }
+                        </p>
+
+                    </div>
+
+                `;
+
+                if(window.lucide){
+                    lucide.createIcons();
+                }
+
+                return;
+            }
+
+
+            list.innerHTML =
+                filtered.map(function(member){
+
+                    const avatar =
+                        member.profilePic
+                        ?
+
+                        `<img
+                            src="${member.profilePic}"
+                            alt=""
+                            class="rsenger-restricted-avatar">`
+
+                        :
+
+                        `
+
+                        <div class="rsenger-restricted-avatar-fallback">
+
+                            ${
+                                member.name
+                                .charAt(0)
+                                .toUpperCase()
+                            }
+
+                        </div>
+
+                        `;
+
+
+                    return `
+
+                    <div
+                        class="rsenger-restricted-member"
+                        data-uid="${member.uid}">
+
+                        <div class="rsenger-restricted-member-info">
+
+                            ${avatar}
+
+                            <div class="rsenger-restricted-member-text">
+
+                                <strong>
+                                    ${member.name}
+                                </strong>
+
+                                ${
+                                    member.username
+                                    ?
+
+                                    `<span>
+                                        @${member.username}
+                                    </span>`
+
+                                    :
+
+                                    `<span>
+                                        Restricted member
+                                    </span>`
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="rsenger-unrestrict-btn"
+                            data-uid="${member.uid}">
+
+                            <i data-lucide="user-check"></i>
+
+                            <span>
+                                Unrestrict
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                    `;
+
+                }).join("");
+
+
+            if(window.lucide){
+                lucide.createIcons();
+            }
+
+
+            /* =========================================
+               UNRESTRICT BUTTONS
+               ========================================= */
+
+            list
+            .querySelectorAll(
+                ".rsenger-unrestrict-btn"
+            )
+            .forEach(function(button){
+
+                button.addEventListener(
+                    "click",
+                    async function(event){
+
+                        event.stopPropagation();
+
+                        const uid =
+                            button.dataset.uid;
+
+                        if(!uid){
+                            return;
+                        }
+
+
+                        const member =
+                            members.find(
+                                function(item){
+                                    return item.uid === uid;
+                                }
+                            );
+
+
+                        const memberName =
+                            member
+                            ? member.name
+                            : "this member";
+
+
+                        const confirmed =
+                            confirm(
+                                "Remove restriction from " +
+                                memberName +
+                                "?"
+                            );
+
+
+                        if(!confirmed){
+                            return;
+                        }
+
+
+                        try{
+
+                            button.disabled = true;
+
+                            button.innerHTML = `
+
+                                <i data-lucide="loader-circle"></i>
+
+                                <span>
+                                    Removing...
+                                </span>
+
+                            `;
+
+
+                            if(window.lucide){
+                                lucide.createIcons();
+                            }
+
+
+                            /* REMOVE RESTRICTION */
+
+                            await db
+                            .collection("groups")
+                            .doc(groupId)
+                            .collection("restrictedMembers")
+                            .doc(uid)
+                            .delete();
+
+
+                            /* REMOVE LOCAL MEMBER */
+
+                            members =
+                                members.filter(
+                                    function(item){
+                                        return item.uid !== uid;
+                                    }
+                                );
+
+
+                            document
+                            .getElementById(
+                                "rsengerRestrictedCount"
+                            )
+                            .textContent =
+                                members.length;
+
+
+                            /* ACTIVITY LOG */
+
+                            try{
+
+                                await db
+                                .collection("groups")
+                                .doc(groupId)
+                                .collection("adminActivity")
+                                .add({
+
+                                    action:
+                                        "unrestrict_member",
+
+                                    targetUid:
+                                        uid,
+
+                                    targetName:
+                                        memberName,
+
+                                    adminUid:
+                                        me.uid,
+
+                                    time:
+                                        firebase.firestore
+                                        .FieldValue
+                                        .serverTimestamp()
+
+                                });
+
+                            }catch(activityError){
+
+                                console.log(
+                                    "Activity log error:",
+                                    activityError
+                                );
+
+                            }
+
+
+                            premiumAlert(
+                                memberName +
+                                " is no longer restricted.",
+                                "Restriction Removed",
+                                "success"
+                            );
+
+
+                            renderMembers(
+                                searchInput.value
+                            );
+
+
+                        }catch(error){
+
+                            console.error(
+                                "Unrestrict error:",
+                                error
+                            );
+
+
+                            button.disabled = false;
+
+
+                            premiumAlert(
+                                "Could not remove the restriction.",
+                                "Error",
+                                "error"
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+        }
+
+
+        /* =========================================
+           SEARCH
+           ========================================= */
+
+        searchInput.addEventListener(
+            "input",
+            function(){
+
+                renderMembers(
+                    searchInput.value
+                );
+
+            }
+        );
+
+
+        /* =========================================
+           BACK BUTTON
+           ========================================= */
+
+        document
+        .getElementById(
+            "rsengerRestrictedBackBtn"
+        )
+        .addEventListener(
+            "click",
+            function(){
+
+                panel.remove();
+
+            }
+        );
+
+
+        /* =========================================
+           INITIAL RENDER
+           ========================================= */
+
+        renderMembers();
+
+
+        /* =========================================
+           ICONS
+           ========================================= */
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Restricted members panel error:",
+            error
+        );
+
+
+        premiumAlert(
+            "Could not load restricted members.",
+            "Error",
+            "error"
+        );
+
+    }
+
+                            }
+
+</script>
