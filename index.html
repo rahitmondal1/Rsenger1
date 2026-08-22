@@ -33835,7 +33835,7 @@ async function openRsengerAdminMemberControls(member){
                     </button>
 
 
-                    <!-- ADMIN / REMOVE ADMIN -->
+                   <!-- ADMIN / REMOVE ADMIN -->
 
                     <button
                         type="button"
@@ -33853,6 +33853,504 @@ async function openRsengerAdminMemberControls(member){
                                     ${
                                         isAdmin
                                         ? "user-minus"
+                                        : "crown"
+                                    }
+                                "
+                            ></i>
+
+                        </span>
+
+                        <span class="control-text">
+
+                            <strong>
+                                ${
+                                    isAdmin
+                                    ? "Remove Admin"
+                                    : "Make Admin"
+                                }
+                            </strong>
+
+                            <small>
+                                ${
+                                    isAdmin
+                                    ? "Return this account to member role"
+                                    : "Give this member admin access"
+                                }
+                            </small>
+
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+
+        const back =
+            document.getElementById(
+                "rsengerAdminMemberBack"
+            );
+
+
+        if(back){
+
+            back.onclick =
+                function(){
+
+                    const input =
+                        document.getElementById(
+                            "rsengerAdminMemberSearch"
+                        );
+
+                    searchRsengerAdminMembers(
+                        input
+                        ? input.value
+                        : ""
+                    );
+
+                };
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Member controls error:",
+            error
+        );
+
+        premiumAlert(
+            "Could not load member controls.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   BLOCK / UNBLOCK
+   ========================================================= */
+
+async function toggleRsengerMemberBlock(){
+
+    const me = auth.currentUser;
+
+    const member =
+        rsengerAdminSelectedMember;
+
+
+    if(
+        !me ||
+        !member ||
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        member.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        premiumAlert(
+            "The main admin cannot be blocked.",
+            "Action Not Allowed",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const ref =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("blockedMembers")
+            .doc(member.uid);
+
+
+        const current =
+            await ref.get();
+
+
+        if(current.exists){
+
+            await ref.delete();
+
+
+            await addRsengerAdminActivity(
+                "unblock_member",
+                member
+            );
+
+
+        }else{
+
+            await ref.set({
+
+                uid:
+                    member.uid,
+
+                name:
+                    member.name || "",
+
+                username:
+                    member.username || "",
+
+                profilePic:
+                    member.profilePic || "",
+
+                blockedBy:
+                    me.uid,
+
+                blockedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+            await addRsengerAdminActivity(
+                "block_member",
+                member
+            );
+
+        }
+
+
+        await openRsengerAdminMemberControls(
+            member
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Block/unblock error:",
+            error
+        );
+
+        premiumAlert(
+            "Could not update block status.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RESTRICT / UNRESTRICT
+   ========================================================= */
+
+async function toggleRsengerMemberRestriction(){
+
+    const me = auth.currentUser;
+
+    const member =
+        rsengerAdminSelectedMember;
+
+
+    if(
+        !me ||
+        !member ||
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        const ref =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("restrictedMembers")
+            .doc(member.uid);
+
+
+        const current =
+            await ref.get();
+
+
+        if(current.exists){
+
+            await ref.delete();
+
+
+            await addRsengerAdminActivity(
+                "unrestrict_member",
+                member
+            );
+
+
+        }else{
+
+            await ref.set({
+
+                uid:
+                    member.uid,
+
+                name:
+                    member.name || "",
+
+                username:
+                    member.username || "",
+
+                profilePic:
+                    member.profilePic || "",
+
+                restrictedBy:
+                    me.uid,
+
+                restrictedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+            await addRsengerAdminActivity(
+                "restrict_member",
+                member
+            );
+
+        }
+
+
+        await openRsengerAdminMemberControls(
+            member
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Restrict/unrestrict error:",
+            error
+        );
+
+        premiumAlert(
+            "Could not update restriction.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MAKE ADMIN / REMOVE ADMIN
+   ========================================================= */
+
+async function toggleRsengerMemberAdmin(){
+
+    const me = auth.currentUser;
+
+    const member =
+        rsengerAdminSelectedMember;
+
+
+    if(
+        !me ||
+        !member ||
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        member.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        premiumAlert(
+            "The main admin role cannot be removed.",
+            "Action Not Allowed",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const ref =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("admins")
+            .doc(member.uid);
+
+
+        const current =
+            await ref.get();
+
+
+        if(current.exists){
+
+            await ref.delete();
+
+
+            await addRsengerAdminActivity(
+                "remove_admin",
+                member
+            );
+
+
+        }else{
+
+            await ref.set({
+
+                uid:
+                    member.uid,
+
+                name:
+                    member.name || "",
+
+                username:
+                    member.username || "",
+
+                profilePic:
+                    member.profilePic || "",
+
+                addedBy:
+                    me.uid,
+
+                addedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+            await addRsengerAdminActivity(
+                "make_admin",
+                member
+            );
+
+        }
+
+
+        await openRsengerAdminMemberControls(
+            member
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Admin role error:",
+            error
+        );
+
+        premiumAlert(
+            "Could not update admin role.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ADMIN ACTIVITY
+   ========================================================= */
+
+async function addRsengerAdminActivity(
+    action,
+    member
+){
+
+    const me =
+        auth.currentUser;
+
+
+    if(!me || !member){
+        return;
+    }
+
+
+    try{
+
+        await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("adminActivity")
+            .add({
+
+                action:
+                    action,
+
+                targetUid:
+                    member.uid,
+
+                targetName:
+                    member.name || "",
+
+                targetUsername:
+                    member.username || "",
+
+                adminUid:
+                    me.uid,
+
+                time:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+    }catch(error){
+
+        console.log(
+            "Activity log error:",
+            error
+        );
+
+    }
+
+        }
                       
 
 </script>
