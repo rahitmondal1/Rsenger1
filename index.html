@@ -32967,4 +32967,892 @@ async function openRsengerAdminActivity(){
 
 }
 
+    /* =========================================================
+   RSENGER ADMIN - MEMBER SEARCH + MEMBER CONTROL
+   ========================================================= */
+
+let rsengerAdminSelectedMember = null;
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeRsengerAdminHTML(value){
+
+    if(value === null || value === undefined){
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   SEARCH MEMBERS
+   ========================================================= */
+
+async function searchRsengerAdminMembers(value){
+
+    const me = auth.currentUser;
+
+    if(!me){
+        return;
+    }
+
+    if(me.uid !== window.RSENGER_ADMIN_UID){
+        return;
+    }
+
+
+    const input =
+        document.getElementById(
+            "rsengerAdminMemberSearch"
+        );
+
+    const results =
+        document.getElementById(
+            "rsengerAdminSearchResults"
+        );
+
+    const main =
+        document.getElementById(
+            "rsengerAdminMain"
+        );
+
+
+    if(!results){
+        return;
+    }
+
+
+    const query =
+        String(value || "")
+        .trim()
+        .toLowerCase();
+
+
+    /* Empty search */
+
+    if(!query){
+
+        results.innerHTML = "";
+
+        results.classList.add("hidden");
+
+        if(main){
+            main.classList.remove("hidden");
+        }
+
+        rsengerAdminSelectedMember = null;
+
+        return;
+    }
+
+
+    try{
+
+        /*
+         * Search by username first.
+         * Then name/email fallback.
+         */
+
+        const snapshot =
+            await db
+            .collection("users")
+            .get();
+
+
+        const members = [];
+
+
+        snapshot.forEach(function(doc){
+
+            const data =
+                doc.data() || {};
+
+
+            /*
+             * Never show the admin himself
+             */
+
+            if(doc.id === me.uid){
+                return;
+            }
+
+
+            const name =
+                String(
+                    data.name ||
+                    data.nickname ||
+                    ""
+                );
+
+
+            const username =
+                String(
+                    data.username ||
+                    ""
+                );
+
+
+            const email =
+                String(
+                    data.email ||
+                    ""
+                );
+
+
+            const searchable =
+                (
+                    name +
+                    " " +
+                    username +
+                    " " +
+                    email
+                ).toLowerCase();
+
+
+            if(
+                searchable.includes(query)
+            ){
+
+                members.push({
+
+                    uid:
+                        doc.id,
+
+                    name:
+                        name ||
+                        username ||
+                        "Rsenger User",
+
+                    username:
+                        username,
+
+                    email:
+                        email,
+
+                    profilePic:
+                        data.profilePic ||
+                        ""
+
+                });
+
+            }
+
+        });
+
+
+        /*
+         * Maximum 20 search results
+         */
+
+        const limited =
+            members.slice(0, 20);
+
+
+        if(main){
+            main.classList.add("hidden");
+        }
+
+        results.classList.remove("hidden");
+
+
+        if(limited.length === 0){
+
+            results.innerHTML = `
+
+                <div class="rsenger-admin-search-empty">
+
+                    <div class="rsenger-admin-search-empty-icon">
+
+                        <i data-lucide="user-round-search"></i>
+
+                    </div>
+
+                    <h3>
+                        No member found
+                    </h3>
+
+                    <p>
+                        Try another name or username.
+                    </p>
+
+                </div>
+
+            `;
+
+
+            if(window.lucide){
+                lucide.createIcons();
+            }
+
+            return;
+        }
+
+
+        results.innerHTML = `
+
+            <div class="rsenger-admin-results-header">
+
+                <span>
+                    SEARCH RESULTS
+                </span>
+
+                <strong>
+                    ${limited.length}
+                </strong>
+
+            </div>
+
+
+            <div class="rsenger-admin-results-list">
+
+                ${
+                    limited.map(function(member){
+
+                        const safeName =
+                            escapeRsengerAdminHTML(
+                                member.name
+                            );
+
+                        const safeUsername =
+                            escapeRsengerAdminHTML(
+                                member.username
+                            );
+
+                        const safeUid =
+                            escapeRsengerAdminHTML(
+                                member.uid
+                            );
+
+
+                        let avatarHTML = "";
+
+
+                        if(member.profilePic){
+
+                            avatarHTML = `
+
+                                <img
+                                    src="${escapeRsengerAdminHTML(member.profilePic)}"
+                                    class="rsenger-admin-member-avatar"
+                                    alt=""
+                                    onerror="
+                                        this.style.display='none';
+                                        this.nextElementSibling.style.display='flex';
+                                    "
+                                >
+
+                                <div
+                                    class="rsenger-admin-member-avatar-fallback"
+                                    style="display:none;"
+                                >
+                                    ${safeName.charAt(0).toUpperCase()}
+                                </div>
+
+                            `;
+
+                        }else{
+
+                            avatarHTML = `
+
+                                <div
+                                    class="rsenger-admin-member-avatar-fallback"
+                                >
+                                    ${safeName.charAt(0).toUpperCase()}
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        return `
+
+                            <button
+                                type="button"
+                                class="rsenger-admin-member-result"
+                                data-member-uid="${safeUid}"
+                            >
+
+                                <div class="rsenger-admin-member-left">
+
+                                    ${avatarHTML}
+
+                                    <div class="rsenger-admin-member-info">
+
+                                        <strong>
+                                            ${safeName}
+                                        </strong>
+
+                                        ${
+                                            safeUsername
+                                            ?
+
+                                            `<span>
+                                                @${safeUsername}
+                                            </span>`
+
+                                            :
+
+                                            `<span>
+                                                Rsenger Member
+                                            </span>`
+                                        }
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="rsenger-admin-member-arrow">
+
+                                    <i data-lucide="chevron-right"></i>
+
+                                </div>
+
+                            </button>
+
+                        `;
+
+                    }).join("")
+                }
+
+            </div>
+
+        `;
+
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+
+        /*
+         * CLICK MEMBER
+         */
+
+        results
+        .querySelectorAll(
+            ".rsenger-admin-member-result"
+        )
+        .forEach(function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    const uid =
+                        button.dataset.memberUid;
+
+                    if(!uid){
+                        return;
+                    }
+
+
+                    const member =
+                        limited.find(
+                            function(item){
+
+                                return (
+                                    item.uid ===
+                                    uid
+                                );
+
+                            }
+                        );
+
+
+                    if(member){
+
+                        openRsengerAdminMemberControls(
+                            member
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    }catch(error){
+
+        console.error(
+            "Admin member search error:",
+            error
+        );
+
+
+        results.classList.remove(
+            "hidden"
+        );
+
+
+        results.innerHTML = `
+
+            <div class="rsenger-admin-search-empty">
+
+                <div class="rsenger-admin-search-empty-icon">
+
+                    <i data-lucide="triangle-alert"></i>
+
+                </div>
+
+                <h3>
+                    Search failed
+                </h3>
+
+                <p>
+                    Could not load members.
+                </p>
+
+            </div>
+
+        `;
+
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR SEARCH
+   ========================================================= */
+
+function clearRsengerAdminSearch(){
+
+    const input =
+        document.getElementById(
+            "rsengerAdminMemberSearch"
+        );
+
+    const results =
+        document.getElementById(
+            "rsengerAdminSearchResults"
+        );
+
+    const main =
+        document.getElementById(
+            "rsengerAdminMain"
+        );
+
+
+    if(input){
+        input.value = "";
+    }
+
+
+    if(results){
+
+        results.innerHTML = "";
+
+        results.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if(main){
+
+        main.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    rsengerAdminSelectedMember = null;
+
+}
+
+
+/* =========================================================
+   OPEN MEMBER CONTROL PANEL
+   ========================================================= */
+
+async function openRsengerAdminMemberControls(member){
+
+    const me = auth.currentUser;
+
+    if(!me){
+        return;
+    }
+
+
+    if(
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
+
+        return;
+
+    }
+
+
+    if(!member || !member.uid){
+        return;
+    }
+
+
+    rsengerAdminSelectedMember =
+        member;
+
+
+    try{
+
+        /*
+         * Check current states
+         */
+
+        const groupRef =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID);
+
+
+        const blockedDoc =
+            await groupRef
+            .collection("blockedMembers")
+            .doc(member.uid)
+            .get();
+
+
+        const restrictedDoc =
+            await groupRef
+            .collection("restrictedMembers")
+            .doc(member.uid)
+            .get();
+
+
+        const adminDoc =
+            await groupRef
+            .collection("admins")
+            .doc(member.uid)
+            .get();
+
+
+        const isBlocked =
+            blockedDoc.exists;
+
+
+        const isRestricted =
+            restrictedDoc.exists;
+
+
+        const isAdmin =
+            adminDoc.exists;
+
+
+        const results =
+            document.getElementById(
+                "rsengerAdminSearchResults"
+            );
+
+
+        if(!results){
+            return;
+        }
+
+
+        const safeName =
+            escapeRsengerAdminHTML(
+                member.name
+            );
+
+
+        const safeUsername =
+            escapeRsengerAdminHTML(
+                member.username
+            );
+
+
+        let avatarHTML = "";
+
+
+        if(member.profilePic){
+
+            avatarHTML = `
+
+                <img
+                    src="${escapeRsengerAdminHTML(member.profilePic)}"
+                    class="rsenger-admin-control-avatar"
+                    alt=""
+                >
+
+            `;
+
+        }else{
+
+            avatarHTML = `
+
+                <div
+                    class="rsenger-admin-control-avatar-fallback"
+                >
+                    ${safeName.charAt(0).toUpperCase()}
+                </div>
+
+            `;
+
+        }
+
+
+        results.innerHTML = `
+
+            <div class="rsenger-admin-control-page">
+
+                <div class="rsenger-admin-control-top">
+
+                    <button
+                        type="button"
+                        id="rsengerAdminMemberBack"
+                        class="rsenger-admin-control-back">
+
+                        <i data-lucide="arrow-left"></i>
+
+                    </button>
+
+                    <span>
+                        Member Controls
+                    </span>
+
+                </div>
+
+
+                <div class="rsenger-admin-control-profile">
+
+                    ${avatarHTML}
+
+                    <div>
+
+                        <h2>
+                            ${safeName}
+                        </h2>
+
+                        ${
+                            safeUsername
+                            ?
+
+                            `<p>
+                                @${safeUsername}
+                            </p>`
+
+                            :
+
+                            `<p>
+                                Rsenger Member
+                            </p>`
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div class="rsenger-admin-control-status">
+
+                    <div>
+
+                        <span>
+                            Block
+                        </span>
+
+                        <strong
+                            id="rsengerMemberBlockStatus">
+
+                            ${
+                                isBlocked
+                                ? "Blocked"
+                                : "Active"
+                            }
+
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Restriction
+                        </span>
+
+                        <strong
+                            id="rsengerMemberRestrictStatus">
+
+                            ${
+                                isRestricted
+                                ? "Restricted"
+                                : "Normal"
+                            }
+
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Role
+                        </span>
+
+                        <strong
+                            id="rsengerMemberAdminStatus">
+
+                            ${
+                                isAdmin
+                                ? "Admin"
+                                : "Member"
+                            }
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="rsenger-admin-control-actions">
+
+
+                    <!-- BLOCK / UNBLOCK -->
+
+                    <button
+                        type="button"
+                        id="rsengerMemberBlockBtn"
+                        class="
+                            rsenger-member-control-btn
+                            ${
+                                isBlocked
+                                ? "unblock"
+                                : "block"
+                            }
+                        "
+                        onclick="toggleRsengerMemberBlock()">
+
+                        <span class="control-icon">
+
+                            <i
+                                data-lucide="
+                                    ${
+                                        isBlocked
+                                        ? "user-check"
+                                        : "ban"
+                                    }
+                                "
+                            ></i>
+
+                        </span>
+
+                        <span class="control-text">
+
+                            <strong>
+                                ${
+                                    isBlocked
+                                    ? "Unblock Member"
+                                    : "Block Member"
+                                }
+                            </strong>
+
+                            <small>
+                                ${
+                                    isBlocked
+                                    ? "Allow this member to send messages"
+                                    : "Stop this member from sending messages"
+                                }
+                            </small>
+
+                        </span>
+
+                    </button>
+
+
+                    <!-- RESTRICT / UNRESTRICT -->
+
+                    <button
+                        type="button"
+                        id="rsengerMemberRestrictBtn"
+                        class="
+                            rsenger-member-control-btn
+                            ${
+                                isRestricted
+                                ? "unrestrict"
+                                : "restrict"
+                            }
+                        "
+                        onclick="toggleRsengerMemberRestriction()">
+
+                        <span class="control-icon">
+
+                            <i
+                                data-lucide="
+                                    ${
+                                        isRestricted
+                                        ? "user-check"
+                                        : "user-round-x"
+                                    }
+                                "
+                            ></i>
+
+                        </span>
+
+                        <span class="control-text">
+
+                            <strong>
+                                ${
+                                    isRestricted
+                                    ? "Unrestrict Member"
+                                    : "Restrict Member"
+                                }
+                            </strong>
+
+                            <small>
+                                ${
+                                    isRestricted
+                                    ? "Restore normal messaging access"
+                                    : "Prevent this member from messaging"
+                                }
+                            </small>
+
+                        </span>
+
+                    </button>
+
+
+                    <!-- ADMIN / REMOVE ADMIN -->
+
+                    <button
+                        type="button"
+                        id="rsengerMemberAdminBtn"
+                        class="
+                            rsenger-member-control-btn
+                            admin
+                        "
+                        onclick="toggleRsengerMemberAdmin()">
+
+                        <span class="control-icon">
+
+                            <i
+                                data-lucide="
+                                    ${
+                                        isAdmin
+                                        ? "user-minus"
+                      
+
 </script>
