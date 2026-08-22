@@ -1718,7 +1718,7 @@ Friend Requests
 
 <!-- ================= NOTIFICATION PAGE ================= -->
 
-<section id="notificationsPage" class="screen hidden">
+<section id="notificationsPage" class="notification-screen hidden">
 
     <div class="notification-header">
 
@@ -19305,6 +19305,94 @@ body:not(.dark)
 
 /* Hidden হলে অবশ্যই hidden */
 #notificationsPage.hidden {
+    display: none !important;
+}
+
+    /* =====================================================
+   RSENGER NOTIFICATION PAGE - ISOLATED SCREEN
+   ===================================================== */
+
+#notificationsPage.notification-screen {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100dvh !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(96,78,255,.16),
+            transparent 42%
+        ),
+        linear-gradient(
+            180deg,
+            #070914 0%,
+            #090d1b 55%,
+            #060914 100%
+        ) !important;
+
+    z-index: 90000 !important;
+}
+
+
+/* Header */
+#notificationsPage.notification-screen
+.notification-header {
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    flex-shrink: 0 !important;
+
+    box-sizing: border-box !important;
+
+    margin: 0 !important;
+}
+
+
+/* List */
+#notificationsPage.notification-screen
+.notification-list {
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    flex: 1 1 auto !important;
+
+    box-sizing: border-box !important;
+
+    margin: 0 !important;
+}
+
+
+/* Empty state */
+#notificationsPage.notification-screen
+.notification-empty {
+
+    width: 100% !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* Hidden */
+#notificationsPage.notification-screen.hidden {
     display: none !important;
 }
 
