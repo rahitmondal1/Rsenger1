@@ -19223,6 +19223,71 @@ body:not(.dark)
     display: flex !important;
 }
 
+    /* =========================================================
+   FIX NOTIFICATION PAGE LAYOUT
+   ========================================================= */
+
+#notificationsPage {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100dvh !important;
+
+    min-width: 100vw !important;
+    min-height: 100dvh !important;
+
+    margin: 0 !important;
+    padding-bottom: 120px !important;
+
+    box-sizing: border-box !important;
+
+    display: block !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    transform: none !important;
+
+    z-index: 100000 !important;
+}
+
+
+/* Notification hidden হলে একদম hide থাকবে */
+#notificationsPage.hidden {
+    display: none !important;
+}
+
+
+/* Header পুরো width নেবে */
+#notificationsPage .notification-header {
+    width: 100% !important;
+
+    box-sizing: border-box !important;
+
+    margin: 0 !important;
+}
+
+
+/* Notification list পুরো width */
+#notificationsPage .notification-list {
+    width: 100% !important;
+
+    box-sizing: border-box !important;
+
+    margin: 0 !important;
+}
+
+
+/* কোনো পুরোনো admin element যেন Notification-এর উপর না থাকে */
+#rsengerAdminPanel.hidden {
+    display: none !important;
+}
+
     
 </style>
 <script>
