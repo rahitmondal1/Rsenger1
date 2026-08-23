@@ -25674,7 +25674,248 @@ body:not(.dark)
         brightness(1.08) !important;
 
     }
-    
+
+    /* =========================================================
+   RSENGER - FORCE PREMIUM DARK CONFIRM POPUP
+   ========================================================= */
+
+#premiumPopupOverlay.premium-popup-overlay
+#premiumPopup.premium-popup{
+
+    background:
+        linear-gradient(
+            145deg,
+            #191c2d 0%,
+            #111422 52%,
+            #0b0e18 100%
+        ) !important;
+
+    color:#ffffff !important;
+
+    border:
+        1px solid rgba(139,156,255,.16) !important;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.72),
+        0 0 50px rgba(92,85,255,.12),
+        inset 0 1px 0 rgba(255,255,255,.06) !important;
+
+    text-align:center !important;
+
+}
+
+
+/* ---------- Overlay ---------- */
+
+#premiumPopupOverlay.premium-popup-overlay{
+
+    background:
+        rgba(2,4,12,.82) !important;
+
+    backdrop-filter:
+        blur(18px) saturate(130%) !important;
+
+    -webkit-backdrop-filter:
+        blur(18px) saturate(130%) !important;
+
+}
+
+
+/* ---------- Icon ---------- */
+
+#premiumPopupIcon.premium-popup-icon{
+
+    width:64px !important;
+
+    height:64px !important;
+
+    margin:
+        0 auto 17px !important;
+
+    display:flex !important;
+
+    align-items:center !important;
+
+    justify-content:center !important;
+
+    border-radius:21px !important;
+
+    font-size:0 !important;
+
+    color:#ff7184 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,76,100,.20),
+            rgba(183,40,70,.08)
+        ) !important;
+
+    border:
+        1px solid rgba(255,94,116,.25) !important;
+
+    box-shadow:
+        0 12px 35px rgba(255,52,82,.14),
+        inset 0 1px 0 rgba(255,255,255,.06) !important;
+
+}
+
+
+/* Premium trash icon */
+
+#premiumPopupIcon.premium-popup-icon::before{
+
+    content:"";
+
+    width:23px;
+
+    height:27px;
+
+    display:block;
+
+    border-radius:
+        4px 4px 7px 7px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ff8495,
+            #d93658
+        );
+
+    box-shadow:
+        0 5px 16px rgba(255,55,85,.22);
+
+    clip-path:
+        polygon(
+            16% 18%,
+            84% 18%,
+            77% 100%,
+            23% 100%
+        );
+
+}
+
+
+#premiumPopupIcon.premium-popup-icon::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:29px;
+
+    height:4px;
+
+    border-radius:5px;
+
+    background:#ff8495;
+
+    transform:
+        translateY(-16px);
+
+    box-shadow:
+        0 -5px 0 -1px #ff8495;
+
+}
+
+
+/* ---------- Title ---------- */
+
+#premiumPopupTitle{
+
+    color:#ffffff !important;
+
+    text-align:center !important;
+
+    font-weight:850 !important;
+
+    letter-spacing:-.4px !important;
+
+}
+
+
+/* ---------- Message ---------- */
+
+#premiumPopupMessage{
+
+    color:
+        rgba(255,255,255,.62) !important;
+
+    text-align:center !important;
+
+}
+
+
+/* ---------- Buttons ---------- */
+
+#premiumPopup .premium-popup-actions{
+
+    width:100% !important;
+
+    display:flex !important;
+
+    justify-content:center !important;
+
+    gap:10px !important;
+
+}
+
+
+#premiumPopup .premium-popup-btn{
+
+    border-radius:15px !important;
+
+}
+
+
+/* Cancel */
+
+#premiumPopup .premium-popup-btn.secondary{
+
+    color:
+        rgba(255,255,255,.82) !important;
+
+    background:
+        rgba(255,255,255,.055) !important;
+
+    border:
+        1px solid rgba(255,255,255,.10) !important;
+
+}
+
+
+/* Clear */
+
+#premiumPopup.danger
+.premium-popup-btn.primary{
+
+    color:#ffffff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e84d69,
+            #b72e4d
+        ) !important;
+
+    border:
+        1px solid rgba(255,105,127,.22) !important;
+
+    box-shadow:
+        0 10px 28px rgba(220,45,76,.24) !important;
+
+}
+
+
+/* Active */
+
+#premiumPopup .premium-popup-btn:active{
+
+    transform:
+        scale(.95) !important;
+
+}
 
     
 </style>
