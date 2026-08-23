@@ -25374,106 +25374,50 @@ body:not(.dark)
 
 }
 
+    
     /* =========================================================
-   RSENGER PREMIUM CONFIRM POPUP
+   RSENGER — CLEAR ALL MESSAGES ONLY
+   PREMIUM POPUP
    ========================================================= */
 
-.premium-popup-overlay{
-    background:
-        rgba(4, 5, 12, .78) !important;
+#premiumPopup.clear-messages-premium{
 
-    backdrop-filter:
-        blur(18px) saturate(125%) !important;
-
-    -webkit-backdrop-filter:
-        blur(18px) saturate(125%) !important;
-}
-
-
-.premium-popup{
     background:
         linear-gradient(
             145deg,
-            #171927 0%,
-            #10121d 55%,
+            #191b2b 0%,
+            #111422 55%,
             #0b0d16 100%
         ) !important;
 
     border:
-        1px solid rgba(255,255,255,.09) !important;
+        1px solid rgba(137,119,255,.18) !important;
 
     border-radius:
         26px !important;
 
-    box-shadow:
-        0 30px 90px rgba(0,0,0,.65),
-        0 0 45px rgba(118,88,255,.10),
-        inset 0 1px 0 rgba(255,255,255,.055) !important;
-
     color:#fff !important;
 
-    overflow:hidden;
+    text-align:center !important;
 
-    position:relative;
-}
-
-
-.premium-popup::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:180px;
-    height:180px;
-
-    top:-100px;
-    right:-70px;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(126,91,255,.18),
-            transparent 70%
-        );
-
-    pointer-events:none;
-
-}
-
-
-.premium-popup::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:160px;
-    height:160px;
-
-    bottom:-110px;
-    left:-70px;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(63,129,255,.10),
-            transparent 70%
-        );
-
-    pointer-events:none;
+    box-shadow:
+        0 32px 90px rgba(0,0,0,.72),
+        0 0 45px rgba(107,84,255,.13),
+        inset 0 1px 0 rgba(255,255,255,.055) !important;
 
 }
 
 
 /* =========================================
-   PREMIUM DANGER ICON
+   ICON
    ========================================= */
 
-.premium-popup-icon{
+#premiumPopup.clear-messages-premium
+#premiumPopupIcon{
 
-    width:66px !important;
-    height:66px !important;
+    width:68px !important;
+
+    height:68px !important;
 
     margin:
         0 auto 17px !important;
@@ -25481,43 +25425,43 @@ body:not(.dark)
     display:flex !important;
 
     align-items:center !important;
+
     justify-content:center !important;
 
     border-radius:
-        21px !important;
+        22px !important;
+
+    font-size:0 !important;
 
     background:
         linear-gradient(
             145deg,
-            rgba(255,67,102,.16),
-            rgba(177,39,75,.07)
+            rgba(255,67,100,.18),
+            rgba(180,35,68,.055)
         ) !important;
 
     border:
-        1px solid rgba(255,82,111,.20) !important;
+        1px solid rgba(255,91,116,.22) !important;
 
     box-shadow:
-        0 12px 35px rgba(255,48,82,.12),
-        inset 0 1px 0 rgba(255,255,255,.05) !important;
+        0 12px 34px rgba(255,48,80,.13),
+        inset 0 1px 0 rgba(255,255,255,.055) !important;
+
+    position:relative !important;
 
 }
 
 
-/* emoji থাকলে hide করে clean icon look */
+/* Premium trash */
 
-.premium-popup-icon{
-    font-size:0 !important;
-}
-
-
-/* trash icon */
-
-.premium-popup-icon::before{
+#premiumPopup.clear-messages-premium
+#premiumPopupIcon::before{
 
     content:"";
 
-    width:27px;
-    height:30px;
+    width:25px;
+
+    height:29px;
 
     display:block;
 
@@ -25527,42 +25471,47 @@ body:not(.dark)
     background:
         linear-gradient(
             180deg,
-            #ff7188,
-            #d93457
+            #ff7d91,
+            #d93658
         );
 
     box-shadow:
-        0 6px 18px rgba(255,52,84,.20);
+        0 5px 18px rgba(255,52,83,.22);
 
     clip-path:
         polygon(
-            18% 18%,
-            82% 18%,
-            76% 100%,
-            24% 100%
+            17% 18%,
+            83% 18%,
+            77% 100%,
+            23% 100%
         );
 
 }
 
 
-.premium-popup-icon::after{
+/* Trash lid */
+
+#premiumPopup.clear-messages-premium
+#premiumPopupIcon::after{
 
     content:"";
 
     position:absolute;
 
     width:31px;
+
     height:4px;
 
-    margin-top:-34px;
+    top:20px;
+
+    left:50%;
+
+    transform:
+        translateX(-50%);
 
     border-radius:5px;
 
-    background:
-        #ff7188;
-
-    box-shadow:
-        0 -5px 0 -1px #ff7188;
+    background:#ff8295;
 
 }
 
@@ -25571,14 +25520,18 @@ body:not(.dark)
    TITLE
    ========================================= */
 
-.premium-popup h2,
-.premium-popup-title{
+#premiumPopup.clear-messages-premium
+#premiumPopupTitle{
 
-    color:#fff !important;
+    text-align:center !important;
+
+    color:#ffffff !important;
+
+    font-size:21px !important;
 
     font-weight:850 !important;
 
-    letter-spacing:-.4px;
+    letter-spacing:-.45px !important;
 
 }
 
@@ -25587,50 +25540,47 @@ body:not(.dark)
    MESSAGE
    ========================================= */
 
-.premium-popup p,
-.premium-popup-message{
+#premiumPopup.clear-messages-premium
+#premiumPopupMessage{
+
+    text-align:center !important;
 
     color:
-        #969daf !important;
+        rgba(255,255,255,.60) !important;
 
     line-height:
         1.65 !important;
+
+    max-width:300px;
+
+    margin:
+        8px auto 0 !important;
 
 }
 
 
 /* =========================================
-   BUTTONS
+   BUTTON AREA
    ========================================= */
 
-.premium-popup button{
+#premiumPopup.clear-messages-premium
+.premium-popup-actions{
 
-    border-radius:
-        14px !important;
+    display:flex !important;
 
-    font-weight:
-        800 !important;
+    justify-content:center !important;
 
-    transition:
-        transform .16s ease,
-        filter .16s ease,
-        background .16s ease !important;
+    gap:10px !important;
 
-}
-
-
-.premium-popup button:active{
-
-    transform:
-        scale(.95) !important;
+    margin-top:21px !important;
 
 }
 
 
 /* Cancel */
 
-.premium-popup .cancel,
-.premium-popup .premium-popup-cancel{
+#premiumPopup.clear-messages-premium
+#premiumPopupCancel{
 
     background:
         rgba(255,255,255,.055) !important;
@@ -25639,283 +25589,61 @@ body:not(.dark)
         1px solid rgba(255,255,255,.09) !important;
 
     color:
-        #c8ccd6 !important;
-
-}
-
-
-/* Confirm */
-
-.premium-popup .confirm,
-.premium-popup .premium-popup-confirm{
-
-    background:
-        linear-gradient(
-            135deg,
-            #e34b69,
-            #b72d4c
-        ) !important;
-
-    border:
-        1px solid rgba(255,102,127,.25) !important;
-
-    color:#fff !important;
-
-    box-shadow:
-        0 9px 25px rgba(207,48,79,.20) !important;
-
-}
-
-
-.premium-popup .confirm:hover,
-.premium-popup .premium-popup-confirm:hover{
-
-    filter:
-        brightness(1.08) !important;
-
-    }
-
-    /* =========================================================
-   RSENGER - FORCE PREMIUM DARK CONFIRM POPUP
-   ========================================================= */
-
-#premiumPopupOverlay.premium-popup-overlay
-#premiumPopup.premium-popup{
-
-    background:
-        linear-gradient(
-            145deg,
-            #191c2d 0%,
-            #111422 52%,
-            #0b0e18 100%
-        ) !important;
-
-    color:#ffffff !important;
-
-    border:
-        1px solid rgba(139,156,255,.16) !important;
-
-    box-shadow:
-        0 35px 100px rgba(0,0,0,.72),
-        0 0 50px rgba(92,85,255,.12),
-        inset 0 1px 0 rgba(255,255,255,.06) !important;
-
-    text-align:center !important;
-
-}
-
-
-/* ---------- Overlay ---------- */
-
-#premiumPopupOverlay.premium-popup-overlay{
-
-    background:
-        rgba(2,4,12,.82) !important;
-
-    backdrop-filter:
-        blur(18px) saturate(130%) !important;
-
-    -webkit-backdrop-filter:
-        blur(18px) saturate(130%) !important;
-
-}
-
-
-/* ---------- Icon ---------- */
-
-#premiumPopupIcon.premium-popup-icon{
-
-    width:64px !important;
-
-    height:64px !important;
-
-    margin:
-        0 auto 17px !important;
-
-    display:flex !important;
-
-    align-items:center !important;
-
-    justify-content:center !important;
-
-    border-radius:21px !important;
-
-    font-size:0 !important;
-
-    color:#ff7184 !important;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,76,100,.20),
-            rgba(183,40,70,.08)
-        ) !important;
-
-    border:
-        1px solid rgba(255,94,116,.25) !important;
-
-    box-shadow:
-        0 12px 35px rgba(255,52,82,.14),
-        inset 0 1px 0 rgba(255,255,255,.06) !important;
-
-}
-
-
-/* Premium trash icon */
-
-#premiumPopupIcon.premium-popup-icon::before{
-
-    content:"";
-
-    width:23px;
-
-    height:27px;
-
-    display:block;
+        rgba(255,255,255,.80) !important;
 
     border-radius:
-        4px 4px 7px 7px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ff8495,
-            #d93658
-        );
-
-    box-shadow:
-        0 5px 16px rgba(255,55,85,.22);
-
-    clip-path:
-        polygon(
-            16% 18%,
-            84% 18%,
-            77% 100%,
-            23% 100%
-        );
-
-}
-
-
-#premiumPopupIcon.premium-popup-icon::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:29px;
-
-    height:4px;
-
-    border-radius:5px;
-
-    background:#ff8495;
-
-    transform:
-        translateY(-16px);
-
-    box-shadow:
-        0 -5px 0 -1px #ff8495;
-
-}
-
-
-/* ---------- Title ---------- */
-
-#premiumPopupTitle{
-
-    color:#ffffff !important;
-
-    text-align:center !important;
-
-    font-weight:850 !important;
-
-    letter-spacing:-.4px !important;
-
-}
-
-
-/* ---------- Message ---------- */
-
-#premiumPopupMessage{
-
-    color:
-        rgba(255,255,255,.62) !important;
-
-    text-align:center !important;
-
-}
-
-
-/* ---------- Buttons ---------- */
-
-#premiumPopup .premium-popup-actions{
-
-    width:100% !important;
-
-    display:flex !important;
-
-    justify-content:center !important;
-
-    gap:10px !important;
-
-}
-
-
-#premiumPopup .premium-popup-btn{
-
-    border-radius:15px !important;
-
-}
-
-
-/* Cancel */
-
-#premiumPopup .premium-popup-btn.secondary{
-
-    color:
-        rgba(255,255,255,.82) !important;
-
-    background:
-        rgba(255,255,255,.055) !important;
-
-    border:
-        1px solid rgba(255,255,255,.10) !important;
+        14px !important;
 
 }
 
 
 /* Clear */
 
-#premiumPopup.danger
-.premium-popup-btn.primary{
-
-    color:#ffffff !important;
+#premiumPopup.clear-messages-premium
+#premiumPopupConfirm{
 
     background:
         linear-gradient(
             135deg,
-            #e84d69,
-            #b72e4d
+            #e84d6b,
+            #b62d4d
         ) !important;
 
     border:
         1px solid rgba(255,105,127,.22) !important;
 
+    color:#ffffff !important;
+
+    border-radius:
+        14px !important;
+
     box-shadow:
-        0 10px 28px rgba(220,45,76,.24) !important;
+        0 10px 28px rgba(215,45,77,.24) !important;
 
 }
 
 
-/* Active */
+/* =========================================
+   MOBILE
+   ========================================= */
 
-#premiumPopup .premium-popup-btn:active{
+@media(max-width:420px){
 
-    transform:
-        scale(.95) !important;
+    #premiumPopup.clear-messages-premium{
 
-}
+        width:
+            calc(100% - 34px) !important;
+
+        max-width:
+            360px !important;
+
+        padding:
+            23px 19px !important;
+
+    }
+
+                         }
+
 
     
 </style>
