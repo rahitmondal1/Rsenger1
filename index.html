@@ -38446,11 +38446,11 @@ async function makeRsengerGroupAdmin(
 }
 
 
-/* REMOVE ADMIN */
+/* =========================================================
+   REMOVE GROUP ADMIN — PREMIUM CONFIRMATION
+   ========================================================= */
 
-async function removeRsengerGroupAdmin(
-    uid
-){
+async function removeRsengerGroupAdmin(uid){
 
     const me =
         auth.currentUser;
@@ -38461,6 +38461,8 @@ async function removeRsengerGroupAdmin(
     }
 
 
+    /* MAIN ADMIN PROTECTION */
+
     if(
         me.uid !==
         window.RSENGER_ADMIN_UID
@@ -38469,7 +38471,12 @@ async function removeRsengerGroupAdmin(
     }
 
 
-    /* Main Admin protection */
+    if(!uid){
+        return;
+    }
+
+
+    /* MAIN ADMIN CANNOT BE REMOVED */
 
     if(
         uid ===
@@ -38487,10 +38494,34 @@ async function removeRsengerGroupAdmin(
     }
 
 
+    /*
+     * ==========================================
+     * PREMIUM CONFIRMATION
+     * ==========================================
+     */
+
     const confirmed =
-        confirm(
-            "Remove administrator access from this member?"
-        );
+        await premiumConfirm({
+
+            title:
+                "Remove Administrator?",
+
+            message:
+                "This member will lose administrator access and return to the normal member role.",
+
+            type:
+                "danger",
+
+            icon:
+                "🛡️",
+
+            confirmText:
+                "Remove Admin",
+
+            cancelText:
+                "Cancel"
+
+        });
 
 
     if(!confirmed){
@@ -38500,6 +38531,12 @@ async function removeRsengerGroupAdmin(
 
     try{
 
+        /*
+         * ==========================================
+         * REMOVE FROM FIRESTORE
+         * ==========================================
+         */
+
         await db
         .collection("groups")
         .doc(RSENGER_GROUP_ID)
@@ -38508,14 +38545,65 @@ async function removeRsengerGroupAdmin(
         .delete();
 
 
+        /*
+         * ==========================================
+         * ADMIN ACTIVITY
+         * ==========================================
+         */
+
+        try{
+
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("adminActivity")
+            .add({
+
+                action:
+                    "remove_admin",
+
+                targetUid:
+                    uid,
+
+                adminUid:
+                    me.uid,
+
+                time:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+        }
+        catch(activityError){
+
+            console.log(
+                "Admin activity log error:",
+                activityError
+            );
+
+        }
+
+
+        /*
+         * ==========================================
+         * SUCCESS
+         * ==========================================
+         */
+
         premiumAlert(
-            "Administrator access has been removed.",
+            "Administrator access has been removed successfully.",
             "Admin Removed",
             "success"
         );
 
 
-        /* Refresh */
+        /*
+         * ==========================================
+         * REFRESH GROUP ADMINS
+         * ==========================================
+         */
 
         await loadRsengerGroupAdmins();
 
@@ -38531,7 +38619,7 @@ async function removeRsengerGroupAdmin(
         premiumAlert(
             error.message ||
             "Could not remove administrator.",
-            "Admin Error",
+            "Remove Failed",
             "error"
         );
 
