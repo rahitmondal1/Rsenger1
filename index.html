@@ -33632,20 +33632,33 @@ function showPremiumPopup(options = {}) {
     // ================= STYLE =================
 
     popup.classList.remove(
-        "danger",
-        "success",
-        "error"
+    "danger",
+    "success",
+    "error",
+    "clear-messages-premium"
+);
+
+if(options.type){
+
+    popup.classList.add(
+        options.type
     );
 
+}
 
-    if(options.type){
 
-        popup.classList.add(
-            options.type
-        );
+/* =========================================
+   OPTIONAL SPECIAL POPUP STYLE
+   Only specific popup can use this
+   ========================================= */
 
-    }
+if(options.popupClass){
 
+    popup.classList.add(
+        options.popupClass
+    );
+
+}
 
     // ================= ICON =================
 
@@ -33766,11 +33779,14 @@ function premiumConfirm(options = {}){
 
     return new Promise((resolve) => {
 
-        premiumPopupResolve = resolve;
+        premiumPopupResolve =
+            resolve;
+
 
         showPremiumPopup({
 
-            mode: "confirm",
+            mode:
+                "confirm",
 
             title:
                 options.title ||
@@ -33792,7 +33808,12 @@ function premiumConfirm(options = {}){
                 options.confirmText ||
                 "Confirm",
 
-            showCancel: true
+            showCancel:
+                true,
+
+            popupClass:
+                options.popupClass ||
+                ""
 
         });
 
@@ -41098,35 +41119,34 @@ async function openRsengerPinnedMessages(){
        ========================================= */
 
     const confirmed =
-        await premiumConfirm({
+    await premiumConfirm({
 
-            title:
-                "Clear All Messages?",
+        title:
+            "Clear All Messages?",
 
-            message:
-                "All messages in this group will be permanently removed. This action cannot be undone.",
+        message:
+            "All messages in this group will be permanently removed. This action cannot be undone.",
 
-            type:
-                "danger",
+        type:
+            "danger",
 
-            icon:
-                "",
+        icon:
+            "🗑️",
 
-            confirmText:
-                "Clear Messages"
+        confirmText:
+            "Clear Messages",
 
-        });
+        popupClass:
+            "clear-messages-premium"
+
+    });
 
 
-    /* =========================================
-       CANCEL = STOP
-       ========================================= */
+if(!confirmed){
 
-    if(!confirmed){
+    return;
 
-        return;
-
-    }
+}
 
 
     /* =========================================
