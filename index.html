@@ -40804,20 +40804,27 @@ async function openRsengerPinnedMessages(){
 /* =========================================================
    2. CLEAR ALL GROUP MESSAGES
    ========================================================= */
-async function clearAllRsengerMessages(){
+
+    async function clearAllRsengerMessages(){
 
     const me = auth.currentUser;
+
+    /* =========================================
+       ADMIN PERMISSION
+       ========================================= */
 
     if(
         !me ||
         !(await refreshRsengerAdminPermission())
     ){
+
         return;
+
     }
 
 
     /* =========================================
-       PREMIUM CLEAR CONFIRMATION
+       PREMIUM CONFIRMATION
        ========================================= */
 
     const confirmed =
@@ -40842,7 +40849,7 @@ async function clearAllRsengerMessages(){
 
 
     /* =========================================
-       CANCEL = STOP EVERYTHING
+       CANCEL = STOP
        ========================================= */
 
     if(!confirmed){
@@ -40853,12 +40860,12 @@ async function clearAllRsengerMessages(){
 
 
     /* =========================================
-       EXISTING DELETE CODE STARTS HERE
+       CLEAR MESSAGES
        ========================================= */
 
     try{
 
-        const ref =
+        const messagesRef =
             db
             .collection("groups")
             .doc(RSENGER_GROUP_ID)
@@ -40866,8 +40873,12 @@ async function clearAllRsengerMessages(){
 
 
         const snapshot =
-            await ref.get();
+            await messagesRef.get();
 
+
+        /* =====================================
+           NOTHING TO CLEAR
+           ===================================== */
 
         if(snapshot.empty){
 
@@ -40881,6 +40892,10 @@ async function clearAllRsengerMessages(){
 
         }
 
+
+        /* =====================================
+           FIRESTORE BATCH DELETE
+           ===================================== */
 
         let batch =
             db.batch();
@@ -40905,7 +40920,7 @@ async function clearAllRsengerMessages(){
 
 
         /* =====================================
-           ADMIN ACTIVITY
+           ADMIN ACTIVITY LOG
            ===================================== */
 
         try{
@@ -40943,6 +40958,10 @@ async function clearAllRsengerMessages(){
         }
 
 
+        /* =====================================
+           SUCCESS
+           ===================================== */
+
         premiumAlert(
             count +
             " messages were removed from the group.",
@@ -40950,6 +40969,10 @@ async function clearAllRsengerMessages(){
             "success"
         );
 
+
+        /* =====================================
+           REFRESH GROUP CHAT
+           ===================================== */
 
         if(
             typeof loadRsengerGroup ===
@@ -40959,6 +40982,7 @@ async function clearAllRsengerMessages(){
             loadRsengerGroup();
 
         }
+
 
     }
     catch(error){
@@ -40978,109 +41002,7 @@ async function clearAllRsengerMessages(){
 
     }
 
-}
-    
-    try{
-
-        const ref = db
-            .collection("groups")
-            .doc(RSENGER_GROUP_ID)
-            .collection("messages");
-
-        const snapshot = await ref.get();
-
-        if(snapshot.empty){
-
-            premiumAlert(
-                "There are no messages to clear.",
-                "Nothing to Clear",
-                "info"
-            );
-
-            return;
-        }
-
-        let batch = db.batch();
-        let count = 0;
-
-        snapshot.forEach(function(doc){
-
-            batch.delete(doc.ref);
-            count++;
-
-        });
-
-        await batch.commit();
-
-
-        /* ADMIN ACTIVITY */
-
-        try{
-
-            await db
-                .collection("groups")
-                .doc(RSENGER_GROUP_ID)
-                .collection("adminActivity")
-                .add({
-
-                    action:
-                        "clear_all_messages",
-
-                    adminUid:
-                        me.uid,
-
-                    deletedCount:
-                        count,
-
-                    time:
-                        firebase.firestore
-                        .FieldValue
-                        .serverTimestamp()
-
-                });
-
-        }catch(logError){
-
-            console.log(
-                "Activity log error:",
-                logError
-            );
-
-        }
-
-
-        premiumAlert(
-            count +
-            " messages were removed from the group.",
-            "Messages Cleared",
-            "success"
-        );
-
-
-        if(
-            typeof loadRsengerGroup ===
-            "function"
-        ){
-
-            loadRsengerGroup();
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "Clear all messages error:",
-            error
-        );
-
-        premiumAlert(
-            "Could not clear group messages.",
-            "Error",
-            "error"
-        );
     }
-
-}
 
 
 /* =========================================================
