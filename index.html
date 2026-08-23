@@ -2570,6 +2570,117 @@ onclick="closeMessageMenu()"></div>
 
 </section>
 
+    <!-- =========================================================
+     RSENGER PREMIUM PINNED MESSAGES PAGE
+     ========================================================= -->
+
+<section
+    id="rsengerPinnedMessagesPage"
+    class="rsenger-pinned-page"
+    style="display:none;"
+>
+
+    <div class="rsenger-pinned-page-inner">
+
+        <header class="rsenger-pinned-header">
+
+            <button
+                type="button"
+                id="rsengerPinnedBackBtn"
+                class="rsenger-pinned-back">
+
+                <i data-lucide="arrow-left"></i>
+
+            </button>
+
+
+            <div class="rsenger-pinned-heading">
+
+                <div class="rsenger-pinned-icon">
+
+                    <i data-lucide="pin"></i>
+
+                </div>
+
+                <div>
+
+                    <h1>Pinned Messages</h1>
+
+                    <p>
+                        Manage important group messages
+                    </p>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <div class="rsenger-pinned-search">
+
+            <i data-lucide="search"></i>
+
+            <input
+                id="rsengerPinnedSearch"
+                type="text"
+                placeholder="Search pinned messages..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="rsenger-pinned-summary">
+
+            <div class="rsenger-pinned-total">
+
+                <span>PINNED MESSAGES</span>
+
+                <strong id="rsengerPinnedCount">0</strong>
+
+            </div>
+
+            <div class="rsenger-pinned-active">
+
+                <i data-lucide="pin"></i>
+
+                <span>Active pins</span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="rsengerPinnedMessagesList"
+            class="rsenger-pinned-list"
+        >
+
+            <div class="rsenger-pinned-loading">
+
+                <div class="rsenger-pinned-loading-icon">
+
+                    <i data-lucide="loader-circle"></i>
+
+                </div>
+
+                <strong>
+                    Loading pinned messages
+                </strong>
+
+                <span>
+                    Please wait...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -23908,6 +24019,820 @@ body:not(.dark)
 
                  }
 
+
+     /* =========================================================
+    RSENGER PREMIUM PINNED MESSAGES
+    ========================================================= */
+
+#rsengerPinnedMessagesPage{
+
+    position:fixed;
+    inset:0;
+
+    z-index:999999;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    color:#fff;
+
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(155,105,255,.17),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 100% 25%,
+            rgba(70,130,255,.10),
+            transparent 30%
+        ),
+        #080a10;
+
+}
+
+
+.rsenger-pinned-page-inner{
+
+    width:100%;
+    max-width:720px;
+
+    height:100%;
+
+    margin:auto;
+
+    padding:
+        calc(env(safe-area-inset-top) + 10px)
+        14px
+        calc(env(safe-area-inset-bottom) + 14px);
+
+    box-sizing:border-box;
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+
+.rsenger-pinned-header{
+
+    min-height:64px;
+
+    display:flex;
+    align-items:center;
+
+    padding-bottom:13px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+}
+
+
+.rsenger-pinned-back{
+
+    width:44px;
+    height:44px;
+
+    min-width:44px;
+
+    margin-right:11px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:14px;
+
+    border:
+        1px solid rgba(255,255,255,.09);
+
+    background:
+        rgba(255,255,255,.055);
+
+    color:#fff;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+
+}
+
+
+.rsenger-pinned-back:hover{
+
+    background:
+        rgba(255,255,255,.11);
+
+    transform:translateX(-2px);
+
+}
+
+
+.rsenger-pinned-back:active{
+
+    transform:scale(.93);
+
+}
+
+
+.rsenger-pinned-back svg{
+
+    width:19px;
+    height:19px;
+
+    stroke-width:2.5;
+
+}
+
+
+.rsenger-pinned-heading{
+
+    display:flex;
+    align-items:center;
+
+    min-width:0;
+
+}
+
+
+.rsenger-pinned-icon{
+
+    width:44px;
+    height:44px;
+
+    min-width:44px;
+
+    margin-right:10px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:14px;
+
+    color:#c2a0ff;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(170,125,255,.20),
+            rgba(100,65,190,.06)
+        );
+
+    border:
+        1px solid rgba(177,132,255,.17);
+
+}
+
+
+.rsenger-pinned-icon svg{
+
+    width:20px;
+    height:20px;
+
+}
+
+
+.rsenger-pinned-heading h1{
+
+    margin:0;
+
+    color:#fff;
+
+    font-size:19px;
+    line-height:23px;
+
+    font-weight:850;
+
+    letter-spacing:-.35px;
+
+}
+
+
+.rsenger-pinned-heading p{
+
+    margin:3px 0 0;
+
+    color:#7f8798;
+
+    font-size:10.5px;
+
+    font-weight:600;
+
+}
+
+
+.rsenger-pinned-search{
+
+    height:50px;
+
+    margin-top:15px;
+
+    display:flex;
+    align-items:center;
+
+    border-radius:16px;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    background:
+        rgba(255,255,255,.045);
+
+    transition:.18s ease;
+
+}
+
+
+.rsenger-pinned-search:focus-within{
+
+    border-color:
+        rgba(177,132,255,.35);
+
+    box-shadow:
+        0 0 0 3px rgba(151,105,255,.07);
+
+}
+
+
+.rsenger-pinned-search > svg{
+
+    width:18px;
+    height:18px;
+
+    margin-left:15px;
+
+    color:#7d8496;
+
+}
+
+
+.rsenger-pinned-search input{
+
+    flex:1;
+
+    height:100%;
+
+    padding:
+        0 15px 0 10px;
+
+    border:0;
+    outline:0;
+
+    background:transparent;
+
+    color:#fff;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+.rsenger-pinned-search input::placeholder{
+
+    color:#6e7586;
+
+}
+
+
+.rsenger-pinned-summary{
+
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    margin:
+        16px 2px 10px;
+
+}
+
+
+.rsenger-pinned-total{
+
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+
+}
+
+
+.rsenger-pinned-total span{
+
+    color:#7f8798;
+
+    font-size:9.5px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+}
+
+
+.rsenger-pinned-total strong{
+
+    min-width:28px;
+    height:26px;
+
+    padding:0 8px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:9px;
+
+    color:#c3a4ff;
+
+    background:
+        rgba(169,124,255,.11);
+
+    border:
+        1px solid rgba(169,124,255,.14);
+
+    font-size:11px;
+
+}
+
+
+.rsenger-pinned-active{
+
+    display:flex;
+    align-items:center;
+
+    gap:5px;
+
+    padding:
+        6px 9px;
+
+    border-radius:9px;
+
+    background:
+        rgba(169,124,255,.07);
+
+    border:
+        1px solid rgba(169,124,255,.11);
+
+}
+
+
+.rsenger-pinned-active svg{
+
+    width:13px;
+    height:13px;
+
+    color:#bd9fff;
+
+}
+
+
+.rsenger-pinned-active span{
+
+    color:#b99aff;
+
+    font-size:8.5px;
+
+    font-weight:750;
+
+    letter-spacing:.2px;
+
+}
+
+
+.rsenger-pinned-list{
+
+    flex:1;
+
+    min-height:0;
+
+    overflow-y:auto;
+
+    padding:
+        2px 1px 15px;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        rgba(255,255,255,.12)
+        transparent;
+
+}
+
+
+.rsenger-pinned-card{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:11px;
+
+    margin-bottom:10px;
+
+    padding:12px;
+
+    border-radius:19px;
+
+    border:
+        1px solid rgba(255,255,255,.075);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    box-shadow:
+        0 9px 27px rgba(0,0,0,.20);
+
+    transition:.18s ease;
+
+}
+
+
+.rsenger-pinned-card:hover{
+
+    transform:translateY(-2px);
+
+    border-color:
+        rgba(177,132,255,.24);
+
+}
+
+
+.rsenger-pinned-avatar{
+
+    width:46px;
+    height:46px;
+
+    min-width:46px;
+
+    object-fit:cover;
+
+    border-radius:15px;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+}
+
+
+.rsenger-pinned-avatar-fallback{
+
+    width:46px;
+    height:46px;
+
+    min-width:46px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    color:#c4a5ff;
+
+    background:
+        linear-gradient(
+            145deg,
+            #3c3456,
+            #18141f
+        );
+
+    font-size:16px;
+
+    font-weight:850;
+
+}
+
+
+.rsenger-pinned-content{
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+
+.rsenger-pinned-user-row{
+
+    display:flex;
+    align-items:center;
+
+    gap:7px;
+
+    margin-bottom:7px;
+
+}
+
+
+.rsenger-pinned-name{
+
+    max-width:150px;
+
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+
+    color:#fff;
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+
+.rsenger-pinned-admin-badge{
+
+    padding:
+        3px 6px;
+
+    border-radius:6px;
+
+    color:#c2a1ff;
+
+    background:
+        rgba(169,124,255,.10);
+
+    border:
+        1px solid rgba(169,124,255,.12);
+
+    font-size:7.5px;
+
+    font-weight:850;
+
+    letter-spacing:.5px;
+
+}
+
+
+.rsenger-pinned-message{
+
+    padding:
+        10px 11px;
+
+    border-radius:12px 15px 15px 15px;
+
+    color:#d9dce5;
+
+    background:
+        rgba(0,0,0,.20);
+
+    border:
+        1px solid rgba(255,255,255,.055);
+
+    font-size:12px;
+
+    line-height:18px;
+
+    word-break:break-word;
+
+}
+
+
+.rsenger-pinned-photo{
+
+    display:flex;
+    align-items:center;
+
+    gap:7px;
+
+    padding:
+        9px 10px;
+
+    border-radius:12px;
+
+    color:#bca0ff;
+
+    background:
+        rgba(169,124,255,.07);
+
+    font-size:10px;
+
+    font-weight:700;
+
+}
+
+
+.rsenger-pinned-photo svg{
+
+    width:15px;
+    height:15px;
+
+}
+
+
+.rsenger-pinned-time{
+
+    display:block;
+
+    margin-top:7px;
+
+    color:#666e7f;
+
+    font-size:8.5px;
+
+}
+
+
+.rsenger-pinned-unpin{
+
+    min-width:39px;
+    height:36px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:11px;
+
+    border:
+        1px solid rgba(255,110,130,.13);
+
+    background:
+        rgba(255,110,130,.055);
+
+    color:#ff91a3;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+
+}
+
+
+.rsenger-pinned-unpin:hover{
+
+    background:
+        rgba(255,110,130,.12);
+
+    border-color:
+        rgba(255,110,130,.25);
+
+}
+
+
+.rsenger-pinned-unpin:active{
+
+    transform:scale(.92);
+
+}
+
+
+.rsenger-pinned-unpin svg{
+
+    width:16px;
+    height:16px;
+
+}
+
+
+.rsenger-pinned-loading,
+.rsenger-pinned-empty{
+
+    min-height:270px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-direction:column;
+
+    text-align:center;
+
+    border-radius:22px;
+
+    border:
+        1px solid rgba(255,255,255,.065);
+
+    background:
+        rgba(255,255,255,.025);
+
+}
+
+
+.rsenger-pinned-loading-icon{
+
+    width:50px;
+    height:50px;
+
+    margin-bottom:13px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:16px;
+
+    color:#bd9fff;
+
+    background:
+        rgba(169,124,255,.09);
+
+}
+
+
+.rsenger-pinned-loading-icon svg{
+
+    width:21px;
+    height:21px;
+
+    animation:
+        rsengerPinnedSpin 1s linear infinite;
+
+}
+
+
+.rsenger-pinned-empty .rsenger-pinned-loading-icon svg{
+
+    animation:none !important;
+
+    transform:none !important;
+
+}
+
+
+.rsenger-pinned-loading strong,
+.rsenger-pinned-empty strong{
+
+    color:#fff;
+
+    font-size:15px;
+
+}
+
+
+.rsenger-pinned-loading span,
+.rsenger-pinned-empty span{
+
+    margin-top:6px;
+
+    color:#7e8698;
+
+    font-size:10.5px;
+
+}
+
+
+@keyframes rsengerPinnedSpin{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+@media(max-width:480px){
+
+    .rsenger-pinned-page-inner{
+
+        padding-left:10px;
+        padding-right:10px;
+
+    }
+
+
+    .rsenger-pinned-card{
+
+        padding:10px;
+
+    }
+
+
+    .rsenger-pinned-avatar,
+    .rsenger-pinned-avatar-fallback{
+
+        width:43px;
+        height:43px;
+
+        min-width:43px;
+
+        border-radius:14px;
+
+    }
+
+
+    .rsenger-pinned-name{
+
+        max-width:120px;
+
+    }
+
+}
+
     
 
     
@@ -38629,105 +39554,715 @@ window.removeRsengerGroupAdmin = async function(uid){
    1. PINNED MESSAGES
    ========================================================= */
 
+
 async function openRsengerPinnedMessages(){
 
     const me = auth.currentUser;
 
+    if(!me) return;
+
+
     if(
-    !me ||
-    !(await refreshRsengerAdminPermission())
-){
-    return;
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
+
+        premiumAlert(
+            "Only the group admin can manage pinned messages.",
+            "Admin Access",
+            "error"
+        );
+
+        return;
     }
 
-    const groupId = RSENGER_GROUP_ID;
+
+    const page =
+        document.getElementById(
+            "rsengerPinnedMessagesPage"
+        );
+
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanelView"
+        );
+
+
+    if(!page){
+
+        console.error(
+            "Pinned Messages page HTML not found."
+        );
+
+        return;
+    }
+
+
+    /* ================================
+       SHOW PAGE
+       ================================ */
+
+    page.style.display =
+        "block";
+
+
+    if(adminPanel){
+
+        adminPanel.style.display =
+            "none";
+
+    }
+
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
+    }
+
+
+    /* ================================
+       BACK
+       ================================ */
+
+    const back =
+        document.getElementById(
+            "rsengerPinnedBackBtn"
+        );
+
+
+    if(back){
+
+        back.onclick =
+            function(){
+
+                page.style.display =
+                    "none";
+
+
+                if(adminPanel){
+
+                    adminPanel.style.display =
+                        "";
+
+                }
+
+            };
+
+    }
+
+
+    const list =
+        document.getElementById(
+            "rsengerPinnedMessagesList"
+        );
+
+
+    const count =
+        document.getElementById(
+            "rsengerPinnedCount"
+        );
+
+
+    const search =
+        document.getElementById(
+            "rsengerPinnedSearch"
+        );
+
+
+    if(!list) return;
+
+
+    /* ================================
+       LOADING
+       ================================ */
+
+    list.innerHTML = `
+
+        <div class="rsenger-pinned-loading">
+
+            <div class="rsenger-pinned-loading-icon">
+
+                <i data-lucide="loader-circle"></i>
+
+            </div>
+
+            <strong>
+                Loading pinned messages
+            </strong>
+
+            <span>
+                Please wait...
+            </span>
+
+        </div>
+
+    `;
+
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
+    }
+
+
+    let pinnedMessages = [];
+
+
+    /* ================================
+       LOAD PINNED MESSAGES
+       ================================ */
 
     try{
 
-        const snapshot = await db
+        const snapshot =
+            await db
             .collection("groups")
-            .doc(groupId)
+            .doc(RSENGER_GROUP_ID)
             .collection("messages")
-            .where("pinned", "==", true)
+            .where(
+                "pinned",
+                "==",
+                true
+            )
             .get();
 
-        let html = "";
 
-        if(snapshot.empty){
+        snapshot.forEach(
+            function(doc){
 
-            html = `
-                <div class="rsenger-admin-empty">
-                    <div class="rsenger-admin-empty-icon">
-                        <i data-lucide="pin-off"></i>
-                    </div>
-
-                    <h3>No pinned messages</h3>
-
-                    <p>
-                        Pinned group messages will appear here.
-                    </p>
-                </div>
-            `;
-
-        }else{
-
-            snapshot.forEach(function(doc){
-
-                const msg = doc.data() || {};
-
-                html += `
-                    <div class="rsenger-admin-item">
-
-                        <div class="rsenger-admin-item-icon">
-                            <i data-lucide="pin"></i>
-                        </div>
-
-                        <div class="rsenger-admin-item-content">
-
-                            <strong>
-                                ${escapeGroupHTML(
-                                    msg.name || "Member"
-                                )}
-                            </strong>
-
-                            <span>
-                                ${escapeGroupHTML(
-                                    msg.message || "Photo message"
-                                )}
-                            </span>
-
-                        </div>
-
-                    </div>
-                `;
-
-            });
-
-        }
+                const data =
+                    doc.data() || {};
 
 
-        premiumAlert(
-            html,
-            "Pinned Messages",
-            "info"
+                pinnedMessages.push({
+
+                    id:
+                        doc.id,
+
+                    senderUid:
+                        data.senderUid ||
+                        "",
+
+                    name:
+                        data.name ||
+                        "Unknown Member",
+
+                    profilePic:
+                        data.profilePic ||
+                        "",
+
+                    message:
+                        data.message ||
+                        "",
+
+                    photo:
+                        data.photo ||
+                        "",
+
+                    isAdmin:
+                        data.isAdmin === true,
+
+                    time:
+                        data.time || null
+
+                });
+
+            }
         );
 
-        if(window.lucide){
-            lucide.createIcons();
+
+        /* newest first */
+
+        pinnedMessages.sort(
+            function(a,b){
+
+                const aTime =
+                    a.time &&
+                    a.time.toMillis
+                    ? a.time.toMillis()
+                    : 0;
+
+
+                const bTime =
+                    b.time &&
+                    b.time.toMillis
+                    ? b.time.toMillis()
+                    : 0;
+
+
+                return bTime - aTime;
+
+            }
+        );
+
+
+        if(count){
+
+            count.textContent =
+                pinnedMessages.length;
+
         }
 
-    }catch(error){
+
+        function renderPinnedMessages(){
+
+            const query =
+                search
+                ? search.value
+                    .trim()
+                    .toLowerCase()
+                : "";
+
+
+            const filtered =
+                pinnedMessages.filter(
+                    function(item){
+
+                        return (
+
+                            item.name
+                                .toLowerCase()
+                                .includes(query)
+
+                            ||
+
+                            item.message
+                                .toLowerCase()
+                                .includes(query)
+
+                        );
+
+                    }
+                );
+
+
+            if(!filtered.length){
+
+                list.innerHTML = `
+
+                    <div class="rsenger-pinned-empty">
+
+                        <div class="rsenger-pinned-loading-icon">
+
+                            <i data-lucide="pin-off"></i>
+
+                        </div>
+
+                        <strong>
+                            ${
+                                pinnedMessages.length
+                                ? "No pinned message found"
+                                : "No pinned messages"
+                            }
+                        </strong>
+
+                        <span>
+                            ${
+                                pinnedMessages.length
+                                ? "Try another search."
+                                : "Pinned messages will appear here."
+                            }
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                if(window.lucide){
+
+                    lucide.createIcons();
+
+                }
+
+                return;
+
+            }
+
+
+            list.innerHTML =
+                filtered.map(
+                    function(item){
+
+                        const avatar =
+                            item.profilePic
+
+                            ?
+
+                            `
+                            <img
+                                src="${escapeGroupHTML(
+                                    item.profilePic
+                                )}"
+                                class="rsenger-pinned-avatar"
+                                alt="Profile">
+                            `
+
+                            :
+
+                            `
+                            <div
+                                class="rsenger-pinned-avatar-fallback">
+
+                                ${escapeGroupHTML(
+                                    item.name
+                                        .charAt(0)
+                                        .toUpperCase()
+                                )}
+
+                            </div>
+                            `;
+
+
+                        let messageContent = "";
+
+
+                        if(item.message){
+
+                            messageContent = `
+
+                                <div
+                                    class="rsenger-pinned-message">
+
+                                    ${escapeGroupHTML(
+                                        item.message
+                                    )}
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        if(item.photo){
+
+                            messageContent += `
+
+                                <div
+                                    class="rsenger-pinned-photo">
+
+                                    <i data-lucide="image"></i>
+
+                                    <span>
+                                        Photo message
+                                    </span>
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        let timeText = "";
+
+
+                        if(
+                            item.time &&
+                            item.time.toDate
+                        ){
+
+                            timeText =
+                                item.time
+                                .toDate()
+                                .toLocaleString(
+                                    "en-IN",
+                                    {
+                                        day:"2-digit",
+                                        month:"short",
+                                        year:"numeric",
+                                        hour:"2-digit",
+                                        minute:"2-digit"
+                                    }
+                                );
+
+                        }
+
+
+                        return `
+
+                            <div
+                                class="rsenger-pinned-card">
+
+                                ${avatar}
+
+
+                                <div
+                                    class="rsenger-pinned-content">
+
+                                    <div
+                                        class="rsenger-pinned-user-row">
+
+                                        <strong
+                                            class="rsenger-pinned-name">
+
+                                            ${escapeGroupHTML(
+                                                item.name
+                                            )}
+
+                                        </strong>
+
+
+                                        ${
+                                            item.isAdmin
+
+                                            ?
+
+                                            `
+                                            <span
+                                                class="rsenger-pinned-admin-badge">
+
+                                                ADMIN
+
+                                            </span>
+                                            `
+
+                                            :
+
+                                            ""
+
+                                        }
+
+                                    </div>
+
+
+                                    ${messageContent}
+
+
+                                    ${
+                                        timeText
+
+                                        ?
+
+                                        `
+                                        <span
+                                            class="rsenger-pinned-time">
+
+                                            Pinned message •
+                                            ${escapeGroupHTML(
+                                                timeText
+                                            )}
+
+                                        </span>
+                                        `
+
+                                        :
+
+                                        ""
+
+                                    }
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    class="rsenger-pinned-unpin"
+                                    data-id="${escapeGroupHTML(
+                                        item.id
+                                    )}"
+                                    title="Unpin message">
+
+                                    <i data-lucide="pin-off"></i>
+
+                                </button>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+            if(window.lucide){
+
+                lucide.createIcons();
+
+            }
+
+
+            /* ================================
+               UNPIN
+               ================================ */
+
+            list
+            .querySelectorAll(
+                ".rsenger-pinned-unpin"
+            )
+            .forEach(
+                function(button){
+
+                    button.onclick =
+                        async function(){
+
+                            const messageId =
+                                button.dataset.id;
+
+
+                            if(!messageId)
+                                return;
+
+
+                            try{
+
+                                button.disabled =
+                                    true;
+
+
+                                button.innerHTML = `
+
+                                    <i data-lucide="loader-circle"></i>
+
+                                `;
+
+
+                                if(window.lucide){
+
+                                    lucide.createIcons();
+
+                                }
+
+
+                                await db
+                                    .collection("groups")
+                                    .doc(RSENGER_GROUP_ID)
+                                    .collection("messages")
+                                    .doc(messageId)
+                                    .update({
+
+                                        pinned:
+                                            false
+
+                                    });
+
+
+                                pinnedMessages =
+                                    pinnedMessages.filter(
+                                        function(item){
+
+                                            return (
+                                                item.id !==
+                                                messageId
+                                            );
+
+                                        }
+                                    );
+
+
+                                if(count){
+
+                                    count.textContent =
+                                        pinnedMessages.length;
+
+                                }
+
+
+                                renderPinnedMessages();
+
+
+                                premiumAlert(
+                                    "The message has been unpinned.",
+                                    "Message Unpinned",
+                                    "success"
+                                );
+
+
+                            }
+                            catch(error){
+
+                                console.error(
+                                    "Unpin error:",
+                                    error
+                                );
+
+
+                                button.disabled =
+                                    false;
+
+
+                                button.innerHTML = `
+
+                                    <i data-lucide="pin-off"></i>
+
+                                `;
+
+
+                                if(window.lucide){
+
+                                    lucide.createIcons();
+
+                                }
+
+
+                                premiumAlert(
+                                    "Could not unpin this message.",
+                                    "Error",
+                                    "error"
+                                );
+
+                            }
+
+                        };
+
+                }
+            );
+
+        }
+
+
+        if(search){
+
+            search.oninput =
+                renderPinnedMessages;
+
+        }
+
+
+        renderPinnedMessages();
+
+    }
+    catch(error){
 
         console.error(
-            "Pinned messages error:",
+            "Pinned Messages Load Error:",
             error
         );
 
-        premiumAlert(
-            "Could not load pinned messages.",
-            "Error",
-            "error"
-        );
+
+        list.innerHTML = `
+
+            <div class="rsenger-pinned-empty">
+
+                <div class="rsenger-pinned-loading-icon">
+
+                    <i data-lucide="triangle-alert"></i>
+
+                </div>
+
+                <strong>
+                    Unable to load pinned messages
+                </strong>
+
+                <span>
+                    Please try again.
+                </span>
+
+            </div>
+
+        `;
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
     }
 
 }
