@@ -35332,19 +35332,14 @@ async function searchRsengerAdminMembers(value){
                 );
 
 
-            const searchable =
-                (
-                    name +
-                    " " +
-                    username +
-                    " " +
-                    email
-                ).toLowerCase();
+            const nameSearch =
+    name
+        .trim()
+        .toLowerCase();
 
-
-            if(
-                searchable.includes(query)
-            ){
+if(
+    nameSearch.startsWith(query)
+){
 
                 members.push({
 
@@ -36575,7 +36570,7 @@ async function addRsengerAdminActivity(
 
         }
 
-                async function unblockRsengerMember(uid){
+    async function unblockRsengerMember(uid){
 
     const me = auth.currentUser;
 
