@@ -36960,6 +36960,7 @@ async function openRsengerAdmins(){
         return;
     }
 
+
     if(me.uid !== window.RSENGER_ADMIN_UID){
 
         premiumAlert(
@@ -36972,6 +36973,10 @@ async function openRsengerAdmins(){
     }
 
 
+    /* ===============================
+       GROUP ADMINS PAGE
+       =============================== */
+
     const page =
         document.getElementById(
             "rsengerGroupAdminsPage"
@@ -36981,20 +36986,47 @@ async function openRsengerAdmins(){
     if(!page){
 
         console.error(
-            "rsengerGroupAdminsPage not found in HTML."
-        );
-
-        premiumAlert(
-            "Group Admins page was not found.",
-            "Page Error",
-            "error"
+            "rsengerGroupAdminsPage not found."
         );
 
         return;
     }
 
 
-    /* Hide restricted page */
+    /* ===============================
+       REAL ADMIN PANEL
+       =============================== */
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanel"
+        );
+
+
+    /*
+     * VERY IMPORTANT:
+     * Hide the actual Admin Panel
+     */
+
+    if(adminPanel){
+
+        adminPanel.classList.add(
+            "hidden"
+        );
+
+        adminPanel.style.display =
+            "none";
+
+        adminPanel.style.visibility =
+            "hidden";
+
+        adminPanel.style.pointerEvents =
+            "none";
+
+    }
+
+
+    /* Hide other admin pages */
 
     const restricted =
         document.getElementById(
@@ -37002,21 +37034,83 @@ async function openRsengerAdmins(){
         );
 
     if(restricted){
-        restricted.style.display = "none";
+
+        restricted.style.display =
+            "none";
+
     }
 
 
-    /* Show Group Admins */
+    const blocked =
+        document.getElementById(
+            "rsengerBlockedMembersView"
+        );
 
-    page.style.display = "block";
+    if(blocked){
+
+        blocked.style.display =
+            "none";
+
+        blocked.classList.add(
+            "hidden"
+        );
+
+    }
 
 
-    /* Back button */
+    /* ===============================
+       SHOW GROUP ADMINS PAGE
+       =============================== */
+
+    page.classList.remove(
+        "hidden"
+    );
+
+
+    page.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
+
+
+    page.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
+
+
+    page.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+
+    page.style.setProperty(
+        "pointer-events",
+        "auto",
+        "important"
+    );
+
+
+    page.style.setProperty(
+        "z-index",
+        "999999",
+        "important"
+    );
+
+
+    /* ===============================
+       BACK BUTTON
+       =============================== */
 
     const back =
         document.getElementById(
             "rsengerGroupAdminsBack"
         );
+
 
     if(back){
 
@@ -37026,95 +37120,131 @@ async function openRsengerAdmins(){
     }
 
 
-    /* Search */
+    /* ===============================
+       SEARCH
+       =============================== */
 
     const search =
         document.getElementById(
             "rsengerGroupAdminSearch"
         );
 
+
     if(search){
 
-        search.oninput = function(){
+        search.oninput =
+            function(){
 
-            searchRsengerGroupMembers(
-                this.value
-            );
+                searchRsengerGroupMembers(
+                    this.value
+                );
 
-        };
+            };
 
     }
 
 
-    /* Clear search */
+    /* SEARCH CLEAR */
 
     const clear =
         document.getElementById(
             "rsengerGroupAdminSearchClear"
         );
 
+
     if(clear){
 
-        clear.onclick = function(){
+        clear.onclick =
+            function(){
 
-            if(search){
-                search.value = "";
-            }
-
-            clear.style.display =
-                "none";
+                if(search){
+                    search.value = "";
+                }
 
 
-            const results =
-                document.getElementById(
-                    "rsengerGroupAdminSearchResults"
-                );
-
-            if(results){
-
-                results.innerHTML = "";
-
-                results.style.display =
+                clear.style.display =
                     "none";
 
-            }
 
-        };
+                const results =
+                    document.getElementById(
+                        "rsengerGroupAdminSearchResults"
+                    );
+
+
+                if(results){
+
+                    results.innerHTML =
+                        "";
+
+                    results.style.display =
+                        "none";
+
+                }
+
+            };
 
     }
 
+
+    /* Icons */
 
     if(window.lucide){
+
         lucide.createIcons();
+
     }
 
+
+    /* Load admins */
 
     await loadRsengerGroupAdmins();
 
-}
+            }
 
 
 /* CLOSE GROUP ADMINS */
 
 function closeRsengerAdmins(){
 
+    /* ===============================
+       HIDE GROUP ADMINS PAGE
+       =============================== */
+
     const page =
         document.getElementById(
             "rsengerGroupAdminsPage"
         );
 
+
     if(page){
-        page.style.display = "none";
+
+        page.style.display =
+            "none";
+
+        page.style.visibility =
+            "hidden";
+
+        page.style.pointerEvents =
+            "none";
+
     }
 
+
+    /* ===============================
+       CLEAR SEARCH
+       =============================== */
 
     const search =
         document.getElementById(
             "rsengerGroupAdminSearch"
         );
 
+
     if(search){
+
         search.value = "";
+
     }
 
 
@@ -37123,9 +37253,11 @@ function closeRsengerAdmins(){
             "rsengerGroupAdminSearchResults"
         );
 
+
     if(results){
 
-        results.innerHTML = "";
+        results.innerHTML =
+            "";
 
         results.style.display =
             "none";
@@ -37138,8 +37270,52 @@ function closeRsengerAdmins(){
             "rsengerGroupAdminSearchClear"
         );
 
+
     if(clear){
-        clear.style.display = "none";
+
+        clear.style.display =
+            "none";
+
+    }
+
+
+    /* ===============================
+       SHOW REAL ADMIN PANEL AGAIN
+       =============================== */
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanel"
+        );
+
+
+    if(adminPanel){
+
+        adminPanel.classList.remove(
+            "hidden"
+        );
+
+
+        adminPanel.style.display =
+            "";
+
+
+        adminPanel.style.visibility =
+            "visible";
+
+
+        adminPanel.style.pointerEvents =
+            "auto";
+
+    }
+
+
+    /* Icons */
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
     }
 
 }
