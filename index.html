@@ -25232,6 +25232,147 @@ body:not(.dark)
 
 }
 
+    .rsenger-clear-messages-modal{
+
+    width:100%;
+    max-width:360px;
+
+    padding:24px 22px;
+
+    box-sizing:border-box;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,33,43,.98),
+            rgba(13,15,22,.98)
+        );
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.055);
+
+}
+
+
+.rsenger-clear-danger-icon{
+
+    margin:0 auto 16px;
+
+}
+
+
+.rsenger-clear-modal-content{
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+
+.rsenger-clear-modal-content h2{
+
+    width:100%;
+
+    margin:0;
+
+    text-align:center;
+
+    color:#fff;
+
+    font-size:20px;
+
+    line-height:25px;
+
+    font-weight:850;
+
+}
+
+
+.rsenger-clear-modal-content p{
+
+    width:100%;
+
+    margin:9px auto 0;
+
+    text-align:center;
+
+    color:#9299aa;
+
+    font-size:12px;
+
+    line-height:18px;
+
+}
+
+
+.rsenger-clear-warning{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    margin:17px 0 0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    gap:7px;
+
+}
+
+
+.rsenger-clear-warning span{
+
+    text-align:center;
+
+}
+
+
+.rsenger-clear-actions{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:9px;
+
+    margin-top:20px;
+
+}
+
+
+.rsenger-clear-actions button{
+
+    text-align:center;
+
+}
+
+
+.rsenger-clear-confirm{
+
+    justify-content:center;
+
+}
     
 
     
@@ -40683,7 +40824,6 @@ async function clearAllRsengerMessages(){
     overlay.className =
         "rsenger-clear-messages-overlay";
 
-
     overlay.innerHTML = `
 
         <div class="rsenger-clear-messages-modal">
@@ -40693,7 +40833,6 @@ async function clearAllRsengerMessages(){
                 <i data-lucide="trash-2"></i>
 
             </div>
-
 
             <div class="rsenger-clear-modal-content">
 
@@ -40708,7 +40847,6 @@ async function clearAllRsengerMessages(){
 
             </div>
 
-
             <div class="rsenger-clear-warning">
 
                 <i data-lucide="triangle-alert"></i>
@@ -40719,7 +40857,6 @@ async function clearAllRsengerMessages(){
 
             </div>
 
-
             <div class="rsenger-clear-actions">
 
                 <button
@@ -40729,7 +40866,6 @@ async function clearAllRsengerMessages(){
                     Cancel
 
                 </button>
-
 
                 <button
                     type="button"
@@ -40749,24 +40885,16 @@ async function clearAllRsengerMessages(){
 
     `;
 
-
-    document.body.appendChild(
-        overlay
-    );
-
+    document.body.appendChild(overlay);
 
     if(window.lucide){
-
         lucide.createIcons();
-
     }
-
 
     const cancel =
         overlay.querySelector(
             ".rsenger-clear-cancel"
         );
-
 
     const confirmBtn =
         overlay.querySelector(
@@ -40774,12 +40902,16 @@ async function clearAllRsengerMessages(){
         );
 
 
+    let finished = false;
+
+
     function closePopup(value){
 
-        overlay.classList.add(
-            "closing"
-        );
+        if(finished) return;
 
+        finished = true;
+
+        overlay.classList.add("closing");
 
         setTimeout(function(){
 
@@ -40792,35 +40924,35 @@ async function clearAllRsengerMessages(){
     }
 
 
-    cancel.onclick =
-        function(){
+    /* CANCEL = NEVER CLEAR */
+
+    cancel.onclick = function(){
+
+        closePopup(false);
+
+    };
+
+
+    /* CONFIRM = CLEAR */
+
+    confirmBtn.onclick = function(){
+
+        closePopup(true);
+
+    };
+
+
+    /* Outside click = CANCEL */
+
+    overlay.onclick = function(event){
+
+        if(event.target === overlay){
 
             closePopup(false);
 
-        };
-
-
-    confirmBtn.onclick =
-        function(){
-
-            closePopup(true);
-
-        };
-
-
-    overlay.addEventListener(
-        "click",
-        function(event){
-
-            if(event.target === overlay){
-
-                closePopup(false);
-
-            }
-
         }
-    );
 
+    };
 
 });
 
