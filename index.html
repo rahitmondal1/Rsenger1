@@ -23908,44 +23908,7 @@ body:not(.dark)
 
                  }
 
-    /* =========================================================
-   RSENGER PREMIUM POPUP — ALWAYS ABOVE ALL ADMIN PAGES
-   ========================================================= */
-
-#premiumPopupOverlay{
-    position: fixed !important;
-
-    inset: 0 !important;
-
-    width: 100vw !important;
-    height: 100vh !important;
-
-    z-index: 2147483647 !important;
-
-    display: flex !important;
-
-    align-items: center !important;
-    justify-content: center !important;
-
-    pointer-events: auto !important;
-}
-
-
-/* Hidden হলে অবশ্যই hidden থাকবে */
-
-#premiumPopupOverlay.hidden{
-    display: none !important;
-    pointer-events: none !important;
-}
-
-
-/* Popup card-ও top layer-এ */
-
-#premiumPopupOverlay #premiumPopup{
-    position: relative !important;
-
-    z-index: 2147483647 !important;
-}
+    
 
     
 </style>
@@ -40741,6 +40704,141 @@ async function addRsengerAdminActivity(
     }
 
                 }
+
+    /* =========================================================
+   RSENGER PREMIUM POPUP — FORCE TOP LAYER
+   ========================================================= */
+
+(function(){
+
+    const originalShowPremiumPopup =
+        window.showPremiumPopup;
+
+
+    if(
+        typeof originalShowPremiumPopup !==
+        "function"
+    ){
+
+        console.error(
+            "showPremiumPopup() not found."
+        );
+
+        return;
+
+    }
+
+
+    window.showPremiumPopup =
+        function(options = {}){
+
+            const overlay =
+                document.getElementById(
+                    "premiumPopupOverlay"
+                );
+
+
+            if(overlay){
+
+                /*
+                 * IMPORTANT:
+                 * Move popup outside every admin/page
+                 * stacking context.
+                 */
+
+                if(
+                    overlay.parentElement !==
+                    document.body
+                ){
+
+                    document.body.appendChild(
+                        overlay
+                    );
+
+                }
+
+
+                /*
+                 * Force absolute top layer
+                 */
+
+                overlay.style.setProperty(
+                    "position",
+                    "fixed",
+                    "important"
+                );
+
+
+                overlay.style.setProperty(
+                    "inset",
+                    "0",
+                    "important"
+                );
+
+
+                overlay.style.setProperty(
+                    "width",
+                    "100vw",
+                    "important"
+                );
+
+
+                overlay.style.setProperty(
+                    "height",
+                    "100vh",
+                    "important"
+                );
+
+
+                overlay.style.setProperty(
+                    "z-index",
+                    "2147483647",
+                    "important"
+                );
+
+
+                overlay.style.setProperty(
+                    "pointer-events",
+                    "auto",
+                    "important"
+                );
+
+            }
+
+
+            /*
+             * Open original Rsenger popup
+             */
+
+            originalShowPremiumPopup(
+                options
+            );
+
+
+            /*
+             * Re-apply after opening
+             * so existing CSS cannot push it back.
+             */
+
+            if(overlay){
+
+                requestAnimationFrame(
+                    function(){
+
+                        overlay.style.setProperty(
+                            "z-index",
+                            "2147483647",
+                            "important"
+                        );
+
+                    }
+                );
+
+            }
+
+        };
+
+})();
                       
 
 </script>
