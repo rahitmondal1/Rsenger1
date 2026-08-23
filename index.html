@@ -24833,6 +24833,405 @@ body:not(.dark)
 
 }
 
+    /* =========================================================
+   RSENGER PREMIUM CLEAR ALL MESSAGES POPUP
+   ========================================================= */
+
+.rsenger-clear-messages-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:1000000;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    box-sizing:border-box;
+
+    background:
+        rgba(3,5,10,.72);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    animation:
+        rsengerClearOverlayIn .18s ease forwards;
+
+}
+
+
+.rsenger-clear-messages-modal{
+
+    width:100%;
+
+    max-width:360px;
+
+    padding:22px;
+
+    box-sizing:border-box;
+
+    border-radius:24px;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,33,43,.98),
+            rgba(13,15,22,.98)
+        );
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.055);
+
+    transform:
+        scale(.94)
+        translateY(8px);
+
+    animation:
+        rsengerClearModalIn .22s cubic-bezier(.2,.8,.2,1)
+        forwards;
+
+}
+
+
+.rsenger-clear-danger-icon{
+
+    width:58px;
+
+    height:58px;
+
+    margin-bottom:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:18px;
+
+    color:#ff7d91;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,77,105,.17),
+            rgba(255,77,105,.055)
+        );
+
+    border:
+        1px solid rgba(255,90,115,.18);
+
+    box-shadow:
+        0 10px 30px rgba(255,60,90,.08);
+
+}
+
+
+.rsenger-clear-danger-icon svg{
+
+    width:24px;
+
+    height:24px;
+
+    stroke-width:2.2;
+
+}
+
+
+.rsenger-clear-modal-content h2{
+
+    margin:0;
+
+    color:#fff;
+
+    font-size:20px;
+
+    line-height:25px;
+
+    font-weight:850;
+
+    letter-spacing:-.4px;
+
+}
+
+
+.rsenger-clear-modal-content p{
+
+    margin:8px 0 0;
+
+    color:#9299aa;
+
+    font-size:12px;
+
+    line-height:18px;
+
+}
+
+
+.rsenger-clear-warning{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:17px;
+
+    padding:10px 11px;
+
+    border-radius:12px;
+
+    background:
+        rgba(255,181,71,.065);
+
+    border:
+        1px solid rgba(255,181,71,.11);
+
+    color:#e6b56b;
+
+}
+
+
+.rsenger-clear-warning svg{
+
+    width:16px;
+
+    height:16px;
+
+    min-width:16px;
+
+}
+
+
+.rsenger-clear-warning span{
+
+    font-size:10px;
+
+    line-height:14px;
+
+    font-weight:650;
+
+}
+
+
+.rsenger-clear-actions{
+
+    display:flex;
+
+    gap:9px;
+
+    margin-top:19px;
+
+}
+
+
+.rsenger-clear-actions button{
+
+    flex:1;
+
+    height:44px;
+
+    border-radius:13px;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:
+        transform .16s ease,
+        background .16s ease,
+        border-color .16s ease;
+
+}
+
+
+.rsenger-clear-cancel{
+
+    border:
+        1px solid rgba(255,255,255,.09);
+
+    background:
+        rgba(255,255,255,.045);
+
+    color:#c4c8d2;
+
+}
+
+
+.rsenger-clear-cancel:hover{
+
+    background:
+        rgba(255,255,255,.085);
+
+}
+
+
+.rsenger-clear-confirm{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    border:
+        1px solid rgba(255,82,108,.25);
+
+    background:
+        linear-gradient(
+            135deg,
+            #d94862,
+            #a92845
+        );
+
+    color:#fff;
+
+    box-shadow:
+        0 8px 22px rgba(214,50,80,.20);
+
+}
+
+
+.rsenger-clear-confirm:hover{
+
+    filter:brightness(1.08);
+
+    box-shadow:
+        0 10px 28px rgba(214,50,80,.30);
+
+}
+
+
+.rsenger-clear-actions button:active{
+
+    transform:scale(.95);
+
+}
+
+
+.rsenger-clear-confirm svg{
+
+    width:15px;
+
+    height:15px;
+
+}
+
+
+.rsenger-clear-messages-overlay.closing{
+
+    animation:
+        rsengerClearOverlayOut .15s ease forwards;
+
+}
+
+
+.rsenger-clear-messages-overlay.closing
+.rsenger-clear-messages-modal{
+
+    animation:
+        rsengerClearModalOut .15s ease forwards;
+
+}
+
+
+@keyframes rsengerClearOverlayIn{
+
+    from{
+        opacity:0;
+    }
+
+    to{
+        opacity:1;
+    }
+
+}
+
+
+@keyframes rsengerClearModalIn{
+
+    from{
+        opacity:0;
+        transform:
+            scale(.94)
+            translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:
+            scale(1)
+            translateY(0);
+    }
+
+}
+
+
+@keyframes rsengerClearOverlayOut{
+
+    from{
+        opacity:1;
+    }
+
+    to{
+        opacity:0;
+    }
+
+}
+
+
+@keyframes rsengerClearModalOut{
+
+    from{
+        opacity:1;
+        transform:
+            scale(1)
+            translateY(0);
+    }
+
+    to{
+        opacity:0;
+        transform:
+            scale(.95)
+            translateY(6px);
+    }
+
+}
+
+
+@media(max-width:420px){
+
+    .rsenger-clear-messages-modal{
+
+        max-width:100%;
+
+        padding:20px;
+
+        border-radius:22px;
+
+    }
+
+}
+
     
 
     
@@ -40276,13 +40675,154 @@ async function clearAllRsengerMessages(){
     return;
     }
 
-    const confirmed = confirm(
-        "Are you sure you want to delete ALL group messages?"
+    const confirmed = await new Promise(function(resolve){
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.className =
+        "rsenger-clear-messages-overlay";
+
+
+    overlay.innerHTML = `
+
+        <div class="rsenger-clear-messages-modal">
+
+            <div class="rsenger-clear-danger-icon">
+
+                <i data-lucide="trash-2"></i>
+
+            </div>
+
+
+            <div class="rsenger-clear-modal-content">
+
+                <h2>
+                    Clear All Messages?
+                </h2>
+
+                <p>
+                    This will permanently remove
+                    all messages from this group.
+                </p>
+
+            </div>
+
+
+            <div class="rsenger-clear-warning">
+
+                <i data-lucide="triangle-alert"></i>
+
+                <span>
+                    This action cannot be undone.
+                </span>
+
+            </div>
+
+
+            <div class="rsenger-clear-actions">
+
+                <button
+                    type="button"
+                    class="rsenger-clear-cancel">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="rsenger-clear-confirm">
+
+                    <i data-lucide="trash-2"></i>
+
+                    <span>
+                        Clear Messages
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        overlay
     );
 
-    if(!confirmed){
-        return;
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
     }
+
+
+    const cancel =
+        overlay.querySelector(
+            ".rsenger-clear-cancel"
+        );
+
+
+    const confirmBtn =
+        overlay.querySelector(
+            ".rsenger-clear-confirm"
+        );
+
+
+    function closePopup(value){
+
+        overlay.classList.add(
+            "closing"
+        );
+
+
+        setTimeout(function(){
+
+            overlay.remove();
+
+            resolve(value);
+
+        },150);
+
+    }
+
+
+    cancel.onclick =
+        function(){
+
+            closePopup(false);
+
+        };
+
+
+    confirmBtn.onclick =
+        function(){
+
+            closePopup(true);
+
+        };
+
+
+    overlay.addEventListener(
+        "click",
+        function(event){
+
+            if(event.target === overlay){
+
+                closePopup(false);
+
+            }
+
+        }
+    );
+
+
+});
 
     try{
 
