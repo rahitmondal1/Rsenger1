@@ -20643,6 +20643,863 @@ body:not(.dark)
     }
 }
 
+    /* =========================================================
+   RSENGER — PREMIUM BLOCKED MEMBERS PAGE
+   ========================================================= */
+
+#rsengerBlockedMembersView {
+
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    z-index: 99999 !important;
+
+    display: flex;
+
+    flex-direction: column;
+
+    box-sizing: border-box;
+
+    padding:
+        calc(env(safe-area-inset-top) + 12px)
+        14px
+        calc(env(safe-area-inset-bottom) + 18px);
+
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(112, 91, 255, .16),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 100% 30%,
+            rgba(48, 168, 255, .10),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            #0d1019,
+            #080a10
+        );
+
+    color: #fff;
+
+    overflow: hidden;
+}
+
+
+/* Hidden state */
+
+#rsengerBlockedMembersView.hidden {
+
+    display: none !important;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+#rsengerBlockedMembersView .rsenger-blocked-header {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 62px;
+
+    box-sizing: border-box;
+
+    padding: 8px 4px 12px;
+
+    flex-shrink: 0;
+
+}
+
+
+/* header bottom glow */
+
+#rsengerBlockedMembersView
+.rsenger-blocked-header::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.10),
+            transparent
+        );
+
+}
+
+
+/* BACK BUTTON */
+
+#rsengerBlockedMembersView
+.rsenger-blocked-back {
+
+    width: 43px;
+    height: 43px;
+
+    min-width: 43px;
+    min-height: 43px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 11px;
+
+    padding: 0;
+
+    border-radius: 14px;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    background:
+        rgba(255,255,255,.055);
+
+    color: #fff;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 7px 20px rgba(0,0,0,.18);
+
+    cursor: pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease;
+}
+
+
+#rsengerBlockedMembersView
+.rsenger-blocked-back:hover {
+
+    background:
+        rgba(255,255,255,.10);
+
+    transform:
+        translateX(-2px);
+
+}
+
+
+#rsengerBlockedMembersView
+.rsenger-blocked-back:active {
+
+    transform:
+        scale(.94);
+
+}
+
+
+#rsengerBlockedMembersView
+.rsenger-blocked-back svg {
+
+    width: 19px;
+    height: 19px;
+
+    stroke-width: 2.4;
+
+}
+
+
+/* HEADER TEXT */
+
+#rsengerBlockedMembersView
+.rsenger-blocked-header > div {
+
+    min-width: 0;
+
+}
+
+
+#rsengerBlockedMembersView
+.rsenger-blocked-header h2 {
+
+    margin: 0;
+
+    color: #fff;
+
+    font-size: 20px;
+
+    line-height: 24px;
+
+    font-weight: 800;
+
+    letter-spacing: -.35px;
+
+}
+
+
+#rsengerBlockedMembersView
+.rsenger-blocked-header span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #7f8798;
+
+    font-size: 10.5px;
+
+    font-weight: 650;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* =========================================================
+   LIST AREA
+   ========================================================= */
+
+#rsengerBlockedMembersList {
+
+    width: 100%;
+
+    flex: 1;
+
+    box-sizing: border-box;
+
+    padding:
+        15px
+        1px
+        8px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(255,255,255,.15)
+        transparent;
+}
+
+
+/* =========================================================
+   BLOCKED MEMBER CARD
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 76px;
+
+    display: flex;
+
+    align-items: center;
+
+    box-sizing: border-box;
+
+    margin-bottom: 10px;
+
+    padding: 10px 10px 10px 11px;
+
+    border-radius: 20px;
+
+    border:
+        1px solid rgba(255,255,255,.075);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.075),
+            rgba(255,255,255,.025)
+        );
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.045);
+
+    overflow: hidden;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+}
+
+
+/* subtle red security glow */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 13px;
+    bottom: 13px;
+
+    width: 3px;
+
+    border-radius: 0 5px 5px 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ff5b6e,
+            #ff304d
+        );
+
+    opacity: .85;
+
+}
+
+
+/* hover */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(255,82,105,.22);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.095),
+            rgba(255,255,255,.032)
+        );
+
+    box-shadow:
+        0 15px 34px rgba(0,0,0,.27),
+        inset 0 1px 0 rgba(255,255,255,.065);
+}
+
+
+/* =========================================================
+   PROFILE IMAGE
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member img,
+#rsengerBlockedMembersList
+.rsenger-blocked-avatar-letter {
+
+    width: 54px !important;
+    height: 54px !important;
+
+    min-width: 54px !important;
+    min-height: 54px !important;
+
+    max-width: 54px !important;
+    max-height: 54px !important;
+
+    flex: 0 0 54px;
+
+    box-sizing: border-box;
+
+    border-radius: 17px;
+
+    object-fit: cover;
+
+    border:
+        1px solid rgba(255,255,255,.14);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.32);
+}
+
+
+/* fallback avatar */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-avatar-letter {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #363c4d,
+            #171a23
+        );
+
+    color: #fff;
+
+    font-size: 19px;
+
+    font-weight: 850;
+}
+
+
+/* =========================================================
+   MEMBER INFO
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member-info {
+
+    min-width: 0;
+
+    flex: 1;
+
+    margin-left: 12px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member-info strong {
+
+    display: block;
+
+    min-width: 0;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    line-height: 20px;
+
+    font-weight: 760;
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member-info span {
+
+    display: flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 4px 8px;
+
+    border-radius: 7px;
+
+    background:
+        rgba(255,70,92,.085);
+
+    border:
+        1px solid rgba(255,70,92,.10);
+
+    color: #ff7b89;
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   UNBLOCK BUTTON
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member button {
+
+    position: relative;
+
+    z-index: 2;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    min-width: 84px;
+
+    height: 38px;
+
+    margin-left: 8px;
+
+    padding: 0 11px;
+
+    border-radius: 12px;
+
+    border:
+        1px solid rgba(93,220,159,.18);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(76,220,151,.13),
+            rgba(47,170,113,.06)
+        );
+
+    color: #72e0a7;
+
+    font-family: inherit;
+
+    font-size: 10.5px;
+
+    font-weight: 800;
+
+    letter-spacing: .1px;
+
+    cursor: pointer;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.045),
+        0 6px 18px rgba(0,0,0,.15);
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease;
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member button:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(76,220,151,.22),
+            rgba(47,170,113,.10)
+        );
+
+    border-color:
+        rgba(93,220,159,.35);
+
+    color: #9af2c3;
+
+    transform:
+        translateY(-1px);
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member button:active {
+
+    transform:
+        scale(.95);
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-member button svg {
+
+    width: 15px;
+    height: 15px;
+
+    stroke-width: 2.4;
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-blocked-loading {
+
+    min-height: 180px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    color: #858d9e;
+
+    font-size: 12px;
+
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-blocked-loading::before {
+
+    content: "";
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,.08);
+
+    border-top-color:
+        rgba(255,255,255,.65);
+
+    animation:
+        rsengerBlockedSpin .75s linear infinite;
+}
+
+
+@keyframes rsengerBlockedSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+#rsengerBlockedMembersList
+.rsenger-no-blocked {
+
+    min-height: 260px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    padding: 30px 20px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    border-radius: 24px;
+
+    border:
+        1px solid rgba(255,255,255,.065);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.015)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-no-blocked svg {
+
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 15px;
+
+    padding: 14px;
+
+    box-sizing: content-box;
+
+    border-radius: 19px;
+
+    background:
+        rgba(87,214,151,.08);
+
+    border:
+        1px solid rgba(87,214,151,.12);
+
+    color: #69dda3;
+
+    stroke-width: 1.8;
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-no-blocked strong {
+
+    color: #fff;
+
+    font-size: 16px;
+
+    font-weight: 780;
+}
+
+
+#rsengerBlockedMembersList
+.rsenger-no-blocked span {
+
+    max-width: 260px;
+
+    margin-top: 7px;
+
+    color: #7f8798;
+
+    font-size: 11.5px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    #rsengerBlockedMembersView {
+
+        padding-left: 10px;
+        padding-right: 10px;
+
+    }
+
+    #rsengerBlockedMembersView
+    .rsenger-blocked-header {
+
+        min-height: 58px;
+
+    }
+
+    #rsengerBlockedMembersView
+    .rsenger-blocked-header h2 {
+
+        font-size: 18px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member {
+
+        min-height: 70px;
+
+        padding: 8px 8px 8px 10px;
+
+        border-radius: 17px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member img,
+    #rsengerBlockedMembersList
+    .rsenger-blocked-avatar-letter {
+
+        width: 48px !important;
+        height: 48px !important;
+
+        min-width: 48px !important;
+        min-height: 48px !important;
+
+        max-width: 48px !important;
+        max-height: 48px !important;
+
+        flex-basis: 48px;
+
+        border-radius: 14px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member-info {
+
+        margin-left: 9px;
+
+        gap: 4px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member-info strong {
+
+        font-size: 13.5px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member-info span {
+
+        padding: 3px 6px;
+
+        font-size: 8px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member button {
+
+        min-width: 70px;
+
+        height: 34px;
+
+        margin-left: 5px;
+
+        padding: 0 8px;
+
+        border-radius: 10px;
+
+        font-size: 9px;
+
+    }
+
+    #rsengerBlockedMembersList
+    .rsenger-blocked-member button svg {
+
+        width: 13px;
+        height: 13px;
+
+    }
+
+    }
+
     
 </style>
 <script>
@@ -35594,6 +36451,158 @@ async function addRsengerAdminActivity(
     }
 
         }
+
+                async function unblockRsengerMember(uid){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        me.uid !== window.RSENGER_ADMIN_UID
+    ){
+        return;
+    }
+
+    if(!uid){
+        return;
+    }
+
+    try{
+
+        /* ===============================
+           LOADING STATE
+           =============================== */
+
+        const button =
+            document.querySelector(
+                `.rsenger-blocked-member[data-uid="${uid}"] button`
+            );
+
+        if(button){
+
+            button.disabled = true;
+
+            button.innerHTML = `
+                <span
+                    style="
+                        width:14px;
+                        height:14px;
+                        border:2px solid rgba(255,255,255,.20);
+                        border-top-color:#72e0a7;
+                        border-radius:50%;
+                        display:inline-block;
+                        animation:rsengerBlockedSpin .7s linear infinite;
+                    "
+                ></span>
+                Removing
+            `;
+
+        }
+
+
+        /* ===============================
+           DELETE BLOCK
+           =============================== */
+
+        await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("blockedMembers")
+            .doc(uid)
+            .delete();
+
+
+        /* ===============================
+           ADMIN ACTIVITY
+           =============================== */
+
+        try{
+
+            await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .collection("adminActivity")
+                .add({
+
+                    action:
+                        "unblock_member",
+
+                    targetUid:
+                        uid,
+
+                    adminUid:
+                        me.uid,
+
+                    time:
+                        firebase.firestore
+                        .FieldValue
+                        .serverTimestamp()
+
+                });
+
+        }catch(activityError){
+
+            console.log(
+                "Unblock activity log:",
+                activityError
+            );
+
+        }
+
+
+        /* ===============================
+           SUCCESS
+           =============================== */
+
+        if(typeof premiumAlert === "function"){
+
+            premiumAlert(
+                "This member can now participate in the group again.",
+                "Member Unblocked",
+                "success"
+            );
+
+        }
+
+
+        /* ===============================
+           RELOAD LIST
+           =============================== */
+
+        await loadRsengerBlockedMembers();
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Unblock member error:",
+            error
+        );
+
+
+        if(typeof premiumAlert === "function"){
+
+            premiumAlert(
+                "The member could not be unblocked. Please try again.",
+                "Unblock Failed",
+                "error"
+            );
+
+        }
+
+
+        await loadRsengerBlockedMembers();
+
+    }
+
+                }
                       
 
 </script>
