@@ -34574,23 +34574,29 @@ async function sendRsengerGroupPhoto(){
    GROUP INFO
    ===================================================== */
 
-function openRsengerGroupInfo(){
+async function openRsengerGroupInfo(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
+
 
     if(!me){
         return;
     }
 
-    // Only Admin
-    if(
-        me.uid !==
-        window.RSENGER_ADMIN_UID
-    ){
+
+    const allowed =
+        await refreshRsengerAdminPermission();
+
+
+    if(!allowed){
+
         return;
+
     }
 
-    openRsengerAdminPanel();
+
+    await openRsengerAdminPanel();
 
 }
 
@@ -34914,11 +34920,10 @@ async function unblockRsengerMember(uid){
     const me = auth.currentUser;
 
     if(
-        !me ||
-        me.uid !==
-        window.RSENGER_ADMIN_UID
-    ){
-        return;
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
 
@@ -36140,39 +36145,55 @@ window.showNotifications = function () {
 
 };
 
-function openRsengerAdminPanel(){
+async function openRsengerAdminPanel(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
+
 
     if(!me){
         return;
     }
 
-    // Only the real Admin can open this
-    if(
-        me.uid !==
-        window.RSENGER_ADMIN_UID
-    ){
+
+    const allowed =
+        await refreshRsengerAdminPermission();
+
+
+    if(!allowed){
+
+        premiumAlert(
+            "You do not have administrator access.",
+            "Admin Access",
+            "error"
+        );
+
         return;
+
     }
+
 
     const panel =
         document.getElementById(
             "rsengerAdminPanel"
         );
 
+
     if(!panel){
         return;
     }
 
-    panel.classList.remove("hidden");
+
+    panel.classList.remove(
+        "hidden"
+    );
+
 
     if(window.lucide){
         lucide.createIcons();
     }
 
 }
-
 
 function closeRsengerAdminPanel(){
 
@@ -36370,17 +36391,17 @@ async function openRsengerRestrictedMembers(){
 
 
     if(
-        me.uid !==
-        window.RSENGER_ADMIN_UID
-    ){
+    !(await refreshRsengerAdminPermission())
+){
 
-        premiumAlert(
-            "Only the group admin can manage restricted members.",
-            "Admin Access",
-            "error"
-        );
+    premiumAlert(
+        "You do not have administrator access.",
+        "Admin Access",
+        "error"
+    );
 
-        return;
+    return;
+
     }
 
 
@@ -38612,8 +38633,11 @@ async function openRsengerPinnedMessages(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     const groupId = RSENGER_GROUP_ID;
@@ -38717,8 +38741,11 @@ async function clearAllRsengerMessages(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     const confirmed = confirm(
@@ -38840,8 +38867,11 @@ async function toggleRsengerGroupMessages(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     const groupRef = db
@@ -38941,8 +38971,11 @@ async function openRsengerMessagePermission(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     const choice =
@@ -39018,8 +39051,11 @@ async function openRsengerMediaPermission(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     const choice =
@@ -39095,8 +39131,11 @@ async function openRsengerAdminActivity(){
 
     const me = auth.currentUser;
 
-    if(!me || me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     try{
@@ -39212,8 +39251,10 @@ async function searchRsengerAdminMembers(value){
         return;
     }
 
-    if(me.uid !== window.RSENGER_ADMIN_UID){
-        return;
+    if(
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
 
@@ -40558,10 +40599,10 @@ async function addRsengerAdminActivity(
     const me = auth.currentUser;
 
     if(
-        !me ||
-        me.uid !== window.RSENGER_ADMIN_UID
-    ){
-        return;
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
     if(!uid){
@@ -40839,6 +40880,123 @@ async function addRsengerAdminActivity(
         };
 
 })();
+
+    /* =========================================================
+   RSENGER ADMIN PERMISSION ENGINE
+   MAIN ADMIN + GROUP ADMIN
+   ========================================================= */
+
+window.rsengerIsGroupAdmin = false;
+
+
+/* CHECK CURRENT USER */
+
+async function refreshRsengerAdminPermission(){
+
+    const me = auth.currentUser;
+
+    if(!me){
+
+        window.rsengerIsGroupAdmin = false;
+
+        return false;
+    }
+
+
+    /* MAIN ADMIN */
+
+    if(
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        window.rsengerIsGroupAdmin = true;
+
+        return true;
+    }
+
+
+    try{
+
+        const adminDoc =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("admins")
+            .doc(me.uid)
+            .get();
+
+
+        window.rsengerIsGroupAdmin =
+            adminDoc.exists;
+
+
+        return adminDoc.exists;
+
+    }
+    catch(error){
+
+        console.error(
+            "Rsenger admin permission error:",
+            error
+        );
+
+
+        window.rsengerIsGroupAdmin =
+            false;
+
+
+        return false;
+    }
+
+}
+
+
+/* MAIN ADMIN ONLY */
+
+function isRsengerMainAdmin(){
+
+    const me =
+        auth.currentUser;
+
+
+    return !!(
+        me &&
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    );
+
+}
+
+
+/* MAIN ADMIN OR GROUP ADMIN */
+
+function isRsengerAdminUser(){
+
+    const me =
+        auth.currentUser;
+
+
+    if(!me){
+        return false;
+    }
+
+
+    if(
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        return true;
+
+    }
+
+
+    return (
+        window.rsengerIsGroupAdmin === true
+    );
+
+}
                       
 
 </script>
