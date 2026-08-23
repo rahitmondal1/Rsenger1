@@ -920,7 +920,7 @@ No chats yet
             <button
                 type="button"
                 class="rsenger-admin-card"
-                onclick="toggleRsengerGroupMessages()">
+                onclick="openRsengerMessageControl()"
 
                 <div class="rsenger-admin-card-icon messages">
                     <i data-lucide="message-square-off"></i>
@@ -944,6 +944,109 @@ No chats yet
             </button>
 
         </div>
+
+    <div
+    id="rsengerMessageControlPage"
+    class="rsenger-message-control-page hidden"
+>
+
+    <div class="rsenger-message-control-header">
+
+        <button
+            type="button"
+            onclick="
+                document
+                .getElementById(
+                    'rsengerMessageControlPage'
+                )
+                .classList.add('hidden');
+
+                document
+                .getElementById(
+                    'rsengerAdminPanelView'
+                )
+                .classList.remove('hidden');
+
+                document
+                .getElementById(
+                    'rsengerAdminPanelView'
+                )
+                .style.display='block';
+            "
+            class="rsenger-message-control-back"
+        >
+
+            <i data-lucide="arrow-left"></i>
+
+        </button>
+
+
+        <div>
+
+            <strong>
+                Message Control
+            </strong>
+
+            <span>
+                Manage group messaging
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="rsenger-message-control-card">
+
+        <div class="rsenger-message-control-icon">
+
+            <i data-lucide="message-square-off"></i>
+
+        </div>
+
+
+        <div class="rsenger-message-control-title">
+
+            <strong>
+                Group Messaging
+            </strong>
+
+            <span
+                id="rsengerMessageControlBadge"
+            >
+                MESSAGING ON
+            </span>
+
+        </div>
+
+
+        <p
+            id="rsengerMessageControlPageStatus"
+        >
+            Everyone can send messages normally.
+        </p>
+
+
+        <button
+            type="button"
+            id="rsengerMessageControlToggle"
+            onclick="toggleRsengerMessageControl()"
+            class="rsenger-message-control-toggle active"
+        >
+
+            <span class="toggle-dot"></span>
+
+            <span class="toggle-text">
+                Change Messaging
+            </span>
+
+            <i data-lucide="chevron-right"></i>
+
+        </button>
+
+    </div>
+
+    </div>
 
 
         <!-- PERMISSIONS -->
@@ -25644,6 +25747,308 @@ body:not(.dark)
 
                          }
 
+    /* =========================================================
+   RSENGER PREMIUM MESSAGE CONTROL PAGE
+   ========================================================= */
+
+.rsenger-message-control-page{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:99990;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:
+        radial-gradient(
+            circle at 15% 0%,
+            rgba(116,91,255,.15),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 100% 90%,
+            rgba(30,190,220,.08),
+            transparent 35%
+        ),
+        #090b13;
+
+    color:#fff;
+
+}
+
+
+.rsenger-message-control-header{
+
+    min-height:68px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    padding:
+        0 18px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.07);
+
+    background:
+        rgba(10,12,20,.72);
+
+    backdrop-filter:
+        blur(18px);
+
+}
+
+
+.rsenger-message-control-back{
+
+    width:42px;
+    height:42px;
+
+    border:0;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        rgba(255,255,255,.055);
+
+    color:#fff;
+
+}
+
+
+.rsenger-message-control-header strong{
+
+    display:block;
+
+    font-size:17px;
+
+}
+
+
+.rsenger-message-control-header span{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:11px;
+
+    color:
+        rgba(210,216,235,.48);
+
+}
+
+
+.rsenger-message-control-card{
+
+    margin:
+        22px 16px;
+
+    padding:
+        24px 20px;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(28,31,48,.96),
+            rgba(12,15,24,.96)
+        );
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.38),
+        inset 0 1px 0 rgba(255,255,255,.04);
+
+}
+
+
+.rsenger-message-control-icon{
+
+    width:58px;
+    height:58px;
+
+    border-radius:19px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        rgba(108,91,255,.13);
+
+    color:#a496ff;
+
+}
+
+
+.rsenger-message-control-icon svg{
+
+    width:26px;
+    height:26px;
+
+}
+
+
+.rsenger-message-control-title{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-top:20px;
+
+}
+
+
+.rsenger-message-control-title strong{
+
+    font-size:18px;
+
+}
+
+
+.rsenger-message-control-title span{
+
+    padding:
+        6px 9px;
+
+    border-radius:9px;
+
+    font-size:9px;
+
+    font-weight:800;
+
+    letter-spacing:.7px;
+
+    color:#72e5c1;
+
+    background:
+        rgba(58,211,164,.10);
+
+}
+
+
+.rsenger-message-control-title span.off{
+
+    color:#ff8196;
+
+    background:
+        rgba(255,70,100,.10);
+
+}
+
+
+.rsenger-message-control-card p{
+
+    margin:
+        10px 0 22px;
+
+    color:
+        rgba(215,220,235,.55);
+
+    font-size:12px;
+
+    line-height:18px;
+
+}
+
+
+.rsenger-message-control-toggle{
+
+    width:100%;
+
+    min-height:52px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:0 14px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    color:#fff;
+
+}
+
+
+.rsenger-message-control-toggle .toggle-dot{
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#55dfb3;
+
+    box-shadow:
+        0 0 14px rgba(85,223,179,.5);
+
+}
+
+
+.rsenger-message-control-toggle:not(.active)
+.toggle-dot{
+
+    background:#ff637c;
+
+    box-shadow:
+        0 0 14px rgba(255,99,124,.4);
+
+}
+
+
+.rsenger-message-control-toggle .toggle-text{
+
+    flex:1;
+
+    text-align:left;
+
+    font-size:12px;
+
+    font-weight:750;
+
+}
+
+
+.rsenger-message-control-toggle svg{
+
+    width:17px;
+    height:17px;
+
+    color:
+        rgba(255,255,255,.4);
+
+}
+
 
     
 </style>
@@ -43433,6 +43838,292 @@ function isRsengerAdminUser(){
     );
 
 }
+
+    async function openRsengerMessageControl(){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
+        return;
+    }
+
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanelView"
+        );
+
+    const page =
+        document.getElementById(
+            "rsengerMessageControlPage"
+        );
+
+
+    if(!page){
+
+        console.error(
+            "Message Control page not found."
+        );
+
+        premiumAlert(
+            "Message Control page is missing.",
+            "Page Error",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(adminPanel){
+
+        adminPanel.classList.add("hidden");
+
+        adminPanel.style.display =
+            "none";
+
+    }
+
+
+    page.classList.remove("hidden");
+
+    page.style.display =
+        "flex";
+
+
+    await loadRsengerMessageControl();
+
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
+    }
+
+    }
+
+    async function loadRsengerMessageControl(){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
+
+        return;
+
+    }
+
+
+    const statusText =
+        document.getElementById(
+            "rsengerMessageControlPageStatus"
+        );
+
+    const statusBadge =
+        document.getElementById(
+            "rsengerMessageControlBadge"
+        );
+
+    const toggle =
+        document.getElementById(
+            "rsengerMessageControlToggle"
+        );
+
+
+    try{
+
+        const groupDoc =
+            await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .get();
+
+
+        const data =
+            groupDoc.exists
+            ? groupDoc.data() || {}
+            : {};
+
+
+        const disabled =
+            data.messagesDisabled === true;
+
+
+        if(statusText){
+
+            statusText.textContent =
+                disabled
+                ? "Members cannot send messages right now."
+                : "Everyone can send messages normally.";
+
+        }
+
+
+        if(statusBadge){
+
+            statusBadge.textContent =
+                disabled
+                ? "MESSAGING OFF"
+                : "MESSAGING ON";
+
+            statusBadge.classList.toggle(
+                "off",
+                disabled
+            );
+
+        }
+
+
+        if(toggle){
+
+            toggle.classList.toggle(
+                "active",
+                !disabled
+            );
+
+        }
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Message control load error:",
+            error
+        );
+
+    }
+
+    }
+
+    async function toggleRsengerMessageControl(){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
+
+        return;
+
+    }
+
+
+    const confirmed =
+        await premiumConfirm({
+
+            title:
+                "Change Message Control?",
+
+            message:
+                "This will change who can send messages in the group.",
+
+            type:
+                "danger",
+
+            icon:
+                "message-square-off",
+
+            confirmText:
+                "Change Setting"
+
+        });
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        const groupRef =
+            db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID);
+
+
+        const groupDoc =
+            await groupRef.get();
+
+
+        const data =
+            groupDoc.exists
+            ? groupDoc.data() || {}
+            : {};
+
+
+        const currentlyDisabled =
+            data.messagesDisabled === true;
+
+
+        const newState =
+            !currentlyDisabled;
+
+
+        await groupRef.set({
+
+            messagesDisabled:
+                newState,
+
+            messagesDisabledBy:
+                me.uid,
+
+            messagesDisabledAt:
+                firebase.firestore
+                .FieldValue
+                .serverTimestamp()
+
+        },{
+            merge:true
+        });
+
+
+        await loadRsengerMessageControl();
+
+
+        premiumAlert(
+
+            newState
+            ? "Members can no longer send messages."
+            : "Members can send messages again.",
+
+            newState
+            ? "Messaging Disabled"
+            : "Messaging Enabled",
+
+            "success"
+
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Message control error:",
+            error
+        );
+
+
+        premiumAlert(
+            error.message ||
+            "Could not update message control.",
+            "Message Control Error",
+            "error"
+        );
+
+    }
+
+    }
                       
 
 </script>
