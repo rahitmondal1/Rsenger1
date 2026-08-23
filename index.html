@@ -37846,11 +37846,11 @@ function updateRsengerAdminCounts(){
 }
 
 
-/* SEARCH GROUP MEMBERS */
+/* =========================================================
+   GROUP ADMINS — PREFIX SEARCH
+   ========================================================= */
 
-async function searchRsengerGroupMembers(
-    value
-){
+async function searchRsengerGroupMembers(value){
 
     const query =
         String(value || "")
@@ -37875,6 +37875,8 @@ async function searchRsengerGroupMembers(
     }
 
 
+    /* CLEAR BUTTON */
+
     if(clear){
 
         clear.style.display =
@@ -37882,6 +37884,8 @@ async function searchRsengerGroupMembers(
 
     }
 
+
+    /* EMPTY SEARCH */
 
     if(!query){
 
@@ -37894,6 +37898,8 @@ async function searchRsengerGroupMembers(
 
     }
 
+
+    /* LOADING */
 
     results.style.display =
         "block";
@@ -37924,7 +37930,7 @@ async function searchRsengerGroupMembers(
         const snapshot =
             await db
             .collection("users")
-            .limit(50)
+            .limit(100)
             .get();
 
 
@@ -37941,62 +37947,88 @@ async function searchRsengerGroupMembers(
                 doc.id;
 
 
+            /* Main admin বাদ */
+
             if(
                 uid ===
                 window.RSENGER_ADMIN_UID
             ){
+
                 return;
+
             }
 
 
             const name =
-                data.nickname ||
-                data.name ||
-                data.username ||
-                "Rsenger User";
+                String(
+                    data.nickname ||
+                    data.name ||
+                    data.username ||
+                    "Rsenger User"
+                ).trim();
 
 
             const username =
-                data.username ||
-                "";
+                String(
+                    data.username ||
+                    ""
+                ).trim();
 
 
-            const searchText =
-                (
-                    name +
-                    " " +
-                    username +
-                    " " +
-                    (data.email || "")
-                )
-                .toLowerCase();
+            /*
+             * ==========================================
+             * IMPORTANT:
+             *
+             * শুধু NAME-এর শুরুতে match করবে।
+             *
+             * includes() ব্যবহার করা হয়নি।
+             *
+             * তাই:
+             *
+             * R  → Rahit / Rahul / Rakesh / Rimi
+             *
+             * কিন্তু Pritam আসবে না।
+             * ==========================================
+             */
+
+            const nameLower =
+                name.toLowerCase();
 
 
             if(
-                searchText.includes(query)
+                !nameLower.startsWith(
+                    query
+                )
             ){
 
-                users.push({
-
-                    uid: uid,
-
-                    name: name,
-
-                    username: username,
-
-                    profilePic:
-                        data.profilePic ||
-                        data.photoURL ||
-                        ""
-
-                });
+                return;
 
             }
+
+
+            users.push({
+
+                uid: uid,
+
+                name: name,
+
+                username: username,
+
+                profilePic:
+                    data.profilePic ||
+                    data.photoURL ||
+                    ""
+
+            });
 
         });
 
 
-        /* Remove existing admins */
+        /*
+         * ==========================================
+         * ALREADY ADMIN বাদ
+         * ==========================================
+         */
 
         users =
             users.filter(
@@ -38017,9 +38049,38 @@ async function searchRsengerGroupMembers(
             );
 
 
+        /*
+         * ==========================================
+         * NAME অনুযায়ী alphabetical order
+         * ==========================================
+         */
+
+        users.sort(
+            function(a,b){
+
+                return a.name
+                    .localeCompare(
+                        b.name,
+                        undefined,
+                        {
+                            sensitivity:
+                                "base"
+                        }
+                    );
+
+            }
+        );
+
+
+        /*
+         * সর্বোচ্চ 8টা result
+         */
+
         users =
             users.slice(0,8);
 
+
+        /* NO RESULT */
 
         if(!users.length){
 
@@ -38034,7 +38095,7 @@ async function searchRsengerGroupMembers(
                     </strong>
 
                     <span>
-                        Try another name or username.
+                        No member starts with "${escapeGroupHTML(query)}".
                     </span>
 
                 </div>
@@ -38051,23 +38112,29 @@ async function searchRsengerGroupMembers(
         }
 
 
+        /*
+         * ==========================================
+         * RESULTS
+         * ==========================================
+         */
+
         results.innerHTML =
             users
             .map(function(user){
 
-                const name =
+                const safeName =
                     escapeGroupHTML(
                         user.name
                     );
 
 
-                const username =
+                const safeUsername =
                     escapeGroupHTML(
                         user.username
                     );
 
 
-                const uid =
+                const safeUid =
                     escapeGroupHTML(
                         user.uid
                     );
@@ -38081,7 +38148,9 @@ async function searchRsengerGroupMembers(
                     avatar = `
 
                         <img
-                            class="rsenger-admin-search-avatar"
+                            class="
+                                rsenger-admin-search-avatar
+                            "
                             src="${escapeGroupHTML(
                                 user.profilePic
                             )}"
@@ -38094,10 +38163,14 @@ async function searchRsengerGroupMembers(
 
                     avatar = `
 
-                        <div class="rsenger-admin-search-avatar-letter">
+                        <div
+                            class="
+                                rsenger-admin-search-avatar-letter
+                            "
+                        >
 
                             ${escapeGroupHTML(
-                                name
+                                user.name
                                 .charAt(0)
                                 .toUpperCase()
                             )}
@@ -38111,22 +38184,31 @@ async function searchRsengerGroupMembers(
 
                 return `
 
-                    <div class="rsenger-admin-search-item">
+                    <div
+                        class="
+                            rsenger-admin-search-item
+                        "
+                    >
 
                         ${avatar}
 
-                        <div class="rsenger-admin-search-info">
+
+                        <div
+                            class="
+                                rsenger-admin-search-info
+                            "
+                        >
 
                             <strong>
-                                ${name}
+                                ${safeName}
                             </strong>
 
                             ${
-                                username
+                                safeUsername
                                 ?
                                 `
                                 <span>
-                                    @${username}
+                                    @${safeUsername}
                                 </span>
                                 `
                                 :
@@ -38138,15 +38220,19 @@ async function searchRsengerGroupMembers(
 
                         <button
                             type="button"
-                            class="rsenger-make-admin-btn"
+                            class="
+                                rsenger-make-admin-btn
+                            "
                             onclick="
                                 makeRsengerGroupAdmin(
-                                    '${uid}'
+                                    '${safeUid}'
                                 )
                             "
                         >
 
-                            <i data-lucide="shield-plus"></i>
+                            <i
+                                data-lucide="shield-plus"
+                            ></i>
 
                             Make Admin
 
@@ -38168,16 +38254,22 @@ async function searchRsengerGroupMembers(
     catch(error){
 
         console.error(
-            "Search members error:",
+            "Group admin search error:",
             error
         );
 
 
         results.innerHTML = `
 
-            <div class="rsenger-group-admin-empty">
+            <div
+                class="
+                    rsenger-group-admin-empty
+                "
+            >
 
-                <i data-lucide="triangle-alert"></i>
+                <i
+                    data-lucide="triangle-alert"
+                ></i>
 
                 <strong>
                     Search failed
@@ -38198,7 +38290,8 @@ async function searchRsengerGroupMembers(
 
     }
 
-    }
+}
+    
 
     /* =========================================================
    GROUP ADMINS — PART 3
