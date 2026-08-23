@@ -2210,6 +2210,52 @@ onclick="closeMessageMenu()"></div>
 
 </div>
 
+    <!-- =========================================================
+     RSENGER PREMIUM — BLOCKED MEMBERS PAGE
+     ========================================================= -->
+
+<div
+    id="rsengerBlockedMembersView"
+    class="hidden"
+    style="display:none;"
+>
+
+    <!-- Header -->
+    <div class="rsenger-blocked-header">
+
+        <button
+            type="button"
+            class="rsenger-blocked-back"
+            onclick="closeRsengerBlockedMembers()"
+            aria-label="Back"
+        >
+            <i data-lucide="arrow-left"></i>
+        </button>
+
+        <div>
+            <h2>Blocked Members</h2>
+
+            <span>
+                Manage members blocked from this group
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- Members -->
+    <div
+        id="rsengerBlockedMembersList"
+    >
+
+        <div class="rsenger-blocked-loading">
+            Loading blocked members...
+        </div>
+
+    </div>
+
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -32204,21 +32250,75 @@ function escapeGroupHTML(value){
 
 }
 
-async function openRsengerBlockedMembers(){
+function openRsengerBlockedMembers(){
 
-    const me = auth.currentUser;
+    const view =
+        document.getElementById(
+            "rsengerBlockedMembersView"
+        );
 
-    if(!me){
+    if(!view){
+        console.error(
+            "Blocked Members view not found"
+        );
         return;
     }
 
-    // Admin only
+
+    /*
+     * Hide Admin Panel
+     */
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanelView"
+        );
+
+    if(adminPanel){
+
+        adminPanel.classList.add("hidden");
+
+        adminPanel.style.display = "none";
+
+    }
+
+
+    /*
+     * Show Blocked Members
+     */
+
+    view.classList.remove("hidden");
+
+    view.style.display = "flex";
+
+
+    /*
+     * Load members
+     */
+
     if(
-        me.uid !==
-        window.RSENGER_ADMIN_UID
+        typeof loadRsengerBlockedMembers ===
+        "function"
     ){
-        return;
+
+        loadRsengerBlockedMembers();
+
     }
+
+
+    /*
+     * Icons
+     */
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
+    }
+
+}
+
+function closeRsengerBlockedMembers(){
 
     const view =
         document.getElementById(
@@ -32229,15 +32329,38 @@ async function openRsengerBlockedMembers(){
         return;
     }
 
-    view.classList.remove("hidden");
+    view.classList.add("hidden");
 
-    await loadRsengerBlockedMembers();
+    view.style.display = "none";
 
-    if(window.lucide){
-        lucide.createIcons();
+    /*
+     * Return to Admin Panel
+     */
+
+    const adminPanel =
+        document.getElementById(
+            "rsengerAdminPanelView"
+        );
+
+    if(adminPanel){
+
+        adminPanel.classList.remove("hidden");
+
+        adminPanel.style.display = "block";
+
     }
 
-}
+    /*
+     * Re-create icons
+     */
+
+    if(window.lucide){
+
+        lucide.createIcons();
+
+    }
+
+        }
 
 
 function closeRsengerGroup(){
