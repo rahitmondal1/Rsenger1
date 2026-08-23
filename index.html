@@ -34005,11 +34005,14 @@ async function openRsengerRestrictedMembers(){
         return;
     }
 
-    /* =========================================
-       ADMIN ACCESS
-       ========================================= */
+    /* ================================
+       ADMIN CHECK
+       ================================ */
 
-    if(me.uid !== window.RSENGER_ADMIN_UID){
+    if(
+        me.uid !==
+        window.RSENGER_ADMIN_UID
+    ){
 
         premiumAlert(
             "Only the group admin can manage restricted members.",
@@ -34021,9 +34024,11 @@ async function openRsengerRestrictedMembers(){
     }
 
 
-    const groupId = RSENGER_GROUP_ID;
+    const groupId =
+        RSENGER_GROUP_ID;
 
     if(!groupId){
+
         premiumAlert(
             "Group could not be loaded.",
             "Error",
@@ -34034,81 +34039,32 @@ async function openRsengerRestrictedMembers(){
     }
 
 
-    /* =========================================
-       LOAD RESTRICTED MEMBERS
-       ========================================= */
+    /* ================================
+       REMOVE OLD PANEL
+       ================================ */
 
-    try{
+    const oldPanel =
+        document.getElementById(
+            "rsengerRestrictedMembersPanel"
+        );
 
-        const snapshot =
-            await db
-            .collection("groups")
-            .doc(groupId)
-            .collection("restrictedMembers")
-            .get();
-
-
-        let members = [];
+    if(oldPanel){
+        oldPanel.remove();
+    }
 
 
-        snapshot.forEach(function(doc){
+    /* ================================
+       CREATE PANEL IMMEDIATELY
+       ================================ */
 
-            const data =
-                doc.data() || {};
+    const panel =
+        document.createElement("div");
 
-            members.push({
-
-                uid: doc.id,
-
-                name:
-                    data.name ||
-                    data.nickname ||
-                    data.username ||
-                    "Unknown Member",
-
-                username:
-                    data.username ||
-                    "",
-
-                profilePic:
-                    data.profilePic ||
-                    "",
-
-                restrictedAt:
-                    data.restrictedAt ||
-                    null
-
-            });
-
-        });
+    panel.id =
+        "rsengerRestrictedMembersPanel";
 
 
-        /* =========================================
-           REMOVE OLD PANEL
-           ========================================= */
-
-        const oldPanel =
-            document.getElementById(
-                "rsengerRestrictedMembersPanel"
-            );
-
-        if(oldPanel){
-            oldPanel.remove();
-        }
-
-
-        /* =========================================
-           CREATE PANEL
-           ========================================= */
-
-        const panel =
-            document.createElement("div");
-
-        panel.id =
-            "rsengerRestrictedMembersPanel";
-
-
-        panel.innerHTML = `
+    panel.innerHTML = `
 
         <div class="rsenger-restricted-overlay">
 
@@ -34135,6 +34091,7 @@ async function openRsengerRestrictedMembers(){
                             <i data-lucide="user-round-x"></i>
 
                         </div>
+
 
                         <div>
 
@@ -34176,18 +34133,39 @@ async function openRsengerRestrictedMembers(){
                         Restricted members
                     </span>
 
-                    <strong id="rsengerRestrictedCount">
-                        ${members.length}
+                    <strong
+                        id="rsengerRestrictedCount">
+
+                        0
+
                     </strong>
 
                 </div>
 
 
-                <!-- MEMBER LIST -->
+                <!-- LIST -->
 
                 <div
                     class="rsenger-restricted-list"
                     id="rsengerRestrictedList">
+
+                    <div class="rsenger-restricted-empty">
+
+                        <div class="rsenger-restricted-empty-icon">
+
+                            <i data-lucide="loader-circle"></i>
+
+                        </div>
+
+                        <h3>
+                            Loading members
+                        </h3>
+
+                        <p>
+                            Please wait...
+                        </p>
+
+                    </div>
 
                 </div>
 
@@ -34195,150 +34173,224 @@ async function openRsengerRestrictedMembers(){
 
         </div>
 
-        `;
+    `;
 
 
-        document.body.appendChild(panel);
+    /* ================================
+       APPEND FIRST
+       ================================ */
+
+    document.body.appendChild(panel);
 
 
-        /* =========================================
-           RENDER MEMBERS
-           ========================================= */
+    /* ================================
+       ICONS
+       ================================ */
 
-        const list =
-            document.getElementById(
-                "rsengerRestrictedList"
-            );
+    if(window.lucide){
 
-        const searchInput =
-            document.getElementById(
-                "rsengerRestrictedSearch"
-            );
+        lucide.createIcons();
+
+    }
 
 
-        function renderMembers(searchText = ""){
+    /* ================================
+       BACK BUTTON
+       ================================ */
 
-            const query =
-                searchText
-                .trim()
-                .toLowerCase();
+    const backBtn =
+        document.getElementById(
+            "rsengerRestrictedBackBtn"
+        );
 
+    if(backBtn){
 
-            const filtered =
-                members.filter(function(member){
+        backBtn.addEventListener(
+            "click",
+            function(){
 
-                    return (
+                panel.remove();
 
-                        member.name
-                        .toLowerCase()
-                        .includes(query)
+            }
+        );
 
-                        ||
-
-                        member.username
-                        .toLowerCase()
-                        .includes(query)
-
-                    );
-
-                });
+    }
 
 
-            if(filtered.length === 0){
+    /* ================================
+       ELEMENTS
+       ================================ */
 
-                list.innerHTML = `
+    const list =
+        document.getElementById(
+            "rsengerRestrictedList"
+        );
 
-                    <div class="rsenger-restricted-empty">
+    const count =
+        document.getElementById(
+            "rsengerRestrictedCount"
+        );
 
-                        <div class="rsenger-restricted-empty-icon">
+    const searchInput =
+        document.getElementById(
+            "rsengerRestrictedSearch"
+        );
 
-                            <i data-lucide="user-round-search"></i>
 
-                        </div>
+    let members = [];
 
-                        <h3>
-                            No restricted members
-                        </h3>
 
-                        <p>
-                            ${
-                                members.length === 0
-                                ? "No members are currently restricted."
-                                : "No member matches your search."
-                            }
-                        </p>
+    /* ================================
+       RENDER MEMBERS
+       ================================ */
+
+    function renderMembers(){
+
+        const query =
+            (searchInput.value || "")
+            .trim()
+            .toLowerCase();
+
+
+        const filtered =
+            members.filter(function(member){
+
+                return (
+
+                    member.name
+                    .toLowerCase()
+                    .includes(query)
+
+                    ||
+
+                    member.username
+                    .toLowerCase()
+                    .includes(query)
+
+                );
+
+            });
+
+
+        count.textContent =
+            members.length;
+
+
+        if(filtered.length === 0){
+
+            list.innerHTML = `
+
+                <div class="rsenger-restricted-empty">
+
+                    <div class="rsenger-restricted-empty-icon">
+
+                        <i data-lucide="user-round-search"></i>
 
                     </div>
 
-                `;
+                    <h3>
+                        ${
+                            members.length === 0
+                            ? "No restricted members"
+                            : "No member found"
+                        }
+                    </h3>
 
-                if(window.lucide){
-                    lucide.createIcons();
-                }
+                    <p>
+                        ${
+                            members.length === 0
+                            ? "No members are currently restricted."
+                            : "Try another search."
+                        }
+                    </p>
 
-                return;
+                </div>
+
+            `;
+
+
+            if(window.lucide){
+
+                lucide.createIcons();
+
             }
 
+            return;
 
-            list.innerHTML =
-                filtered.map(function(member){
+        }
 
-                    const avatar =
-                        member.profilePic
-                        ?
 
-                        `<img
-                            src="${member.profilePic}"
-                            alt=""
-                            class="rsenger-restricted-avatar">`
+        list.innerHTML =
+            filtered.map(function(member){
 
-                        :
+                const avatar =
 
-                        `
+                    member.profilePic
 
-                        <div class="rsenger-restricted-avatar-fallback">
+                    ?
 
-                            ${
-                                member.name
+                    `
+                    <img
+                        src="${escapeGroupHTML(
+                            member.profilePic
+                        )}"
+                        alt="Profile"
+                        class="rsenger-restricted-avatar">
+                    `
+
+                    :
+
+                    `
+                    <div
+                        class="rsenger-restricted-avatar-fallback">
+
+                        ${escapeGroupHTML(
+                            member.name
                                 .charAt(0)
                                 .toUpperCase()
-                            }
+                        )}
 
-                        </div>
+                    </div>
+                    `;
 
-                        `;
 
-
-                    return `
+                return `
 
                     <div
                         class="rsenger-restricted-member"
-                        data-uid="${member.uid}">
+                        data-uid="${escapeGroupHTML(
+                            member.uid
+                        )}">
 
                         <div class="rsenger-restricted-member-info">
 
                             ${avatar}
 
-                            <div class="rsenger-restricted-member-text">
+
+                            <div
+                                class="rsenger-restricted-member-text">
 
                                 <strong>
-                                    ${member.name}
+                                    ${escapeGroupHTML(
+                                        member.name
+                                    )}
                                 </strong>
 
-                                ${
-                                    member.username
-                                    ?
 
-                                    `<span>
-                                        @${member.username}
-                                    </span>`
+                                <span>
 
-                                    :
+                                    ${
+                                        member.username
+                                        ?
+                                        "@" +
+                                        escapeGroupHTML(
+                                            member.username
+                                        )
+                                        :
+                                        "Restricted member"
+                                    }
 
-                                    `<span>
-                                        Restricted member
-                                    </span>`
-                                }
+                                </span>
 
                             </div>
 
@@ -34348,7 +34400,9 @@ async function openRsengerRestrictedMembers(){
                         <button
                             type="button"
                             class="rsenger-unrestrict-btn"
-                            data-uid="${member.uid}">
+                            data-uid="${escapeGroupHTML(
+                                member.uid
+                            )}">
 
                             <i data-lucide="user-check"></i>
 
@@ -34360,261 +34414,286 @@ async function openRsengerRestrictedMembers(){
 
                     </div>
 
-                    `;
+                `;
 
-                }).join("");
-
-
-            if(window.lucide){
-                lucide.createIcons();
-            }
+            }).join("");
 
 
-            /* =========================================
-               UNRESTRICT BUTTONS
-               ========================================= */
+        if(window.lucide){
 
-            list
-            .querySelectorAll(
-                ".rsenger-unrestrict-btn"
-            )
-            .forEach(function(button){
+            lucide.createIcons();
 
-                button.addEventListener(
-                    "click",
-                    async function(event){
-
-                        event.stopPropagation();
-
-                        const uid =
-                            button.dataset.uid;
-
-                        if(!uid){
-                            return;
-                        }
+        }
 
 
-                        const member =
-                            members.find(
-                                function(item){
-                                    return item.uid === uid;
-                                }
-                            );
+        /* ================================
+           UNRESTRICT
+           ================================ */
+
+        list
+        .querySelectorAll(
+            ".rsenger-unrestrict-btn"
+        )
+        .forEach(function(button){
+
+            button.addEventListener(
+                "click",
+                async function(){
+
+                    const uid =
+                        button.dataset.uid;
+
+                    if(!uid){
+                        return;
+                    }
 
 
-                        const memberName =
-                            member
-                            ? member.name
-                            : "this member";
+                    const member =
+                        members.find(
+                            function(item){
 
+                                return (
+                                    item.uid === uid
+                                );
 
-                        const confirmed =
-                            confirm(
-                                "Remove restriction from " +
-                                memberName +
-                                "?"
-                            );
-
-
-                        if(!confirmed){
-                            return;
-                        }
-
-
-                        try{
-
-                            button.disabled = true;
-
-                            button.innerHTML = `
-
-                                <i data-lucide="loader-circle"></i>
-
-                                <span>
-                                    Removing...
-                                </span>
-
-                            `;
-
-
-                            if(window.lucide){
-                                lucide.createIcons();
                             }
+                        );
 
 
-                            /* REMOVE RESTRICTION */
+                    const memberName =
+                        member
+                        ? member.name
+                        : "this member";
 
-                            await db
+
+                    const confirmed =
+                        confirm(
+                            "Remove restriction from " +
+                            memberName +
+                            "?"
+                        );
+
+
+                    if(!confirmed){
+                        return;
+                    }
+
+
+                    try{
+
+                        button.disabled =
+                            true;
+
+
+                        button.innerHTML = `
+
+                            <i data-lucide="loader-circle"></i>
+
+                            <span>
+                                Removing...
+                            </span>
+
+                        `;
+
+
+                        if(window.lucide){
+
+                            lucide.createIcons();
+
+                        }
+
+
+                        await db
                             .collection("groups")
                             .doc(groupId)
-                            .collection("restrictedMembers")
+                            .collection(
+                                "restrictedMembers"
+                            )
                             .doc(uid)
                             .delete();
 
 
-                            /* REMOVE LOCAL MEMBER */
+                        members =
+                            members.filter(
+                                function(item){
 
-                            members =
-                                members.filter(
-                                    function(item){
-                                        return item.uid !== uid;
-                                    }
-                                );
+                                    return (
+                                        item.uid !== uid
+                                    );
 
-
-                            document
-                            .getElementById(
-                                "rsengerRestrictedCount"
-                            )
-                            .textContent =
-                                members.length;
-
-
-                            /* ACTIVITY LOG */
-
-                            try{
-
-                                await db
-                                .collection("groups")
-                                .doc(groupId)
-                                .collection("adminActivity")
-                                .add({
-
-                                    action:
-                                        "unrestrict_member",
-
-                                    targetUid:
-                                        uid,
-
-                                    targetName:
-                                        memberName,
-
-                                    adminUid:
-                                        me.uid,
-
-                                    time:
-                                        firebase.firestore
-                                        .FieldValue
-                                        .serverTimestamp()
-
-                                });
-
-                            }catch(activityError){
-
-                                console.log(
-                                    "Activity log error:",
-                                    activityError
-                                );
-
-                            }
-
-
-                            premiumAlert(
-                                memberName +
-                                " is no longer restricted.",
-                                "Restriction Removed",
-                                "success"
+                                }
                             );
 
 
-                            renderMembers(
-                                searchInput.value
-                            );
+                        renderMembers();
 
 
-                        }catch(error){
-
-                            console.error(
-                                "Unrestrict error:",
-                                error
-                            );
-
-
-                            button.disabled = false;
+                        premiumAlert(
+                            memberName +
+                            " is no longer restricted.",
+                            "Restriction Removed",
+                            "success"
+                        );
 
 
-                            premiumAlert(
-                                "Could not remove the restriction.",
-                                "Error",
-                                "error"
-                            );
+                    }
+                    catch(error){
+
+                        console.error(
+                            "Unrestrict error:",
+                            error
+                        );
+
+
+                        button.disabled =
+                            false;
+
+
+                        button.innerHTML = `
+
+                            <i data-lucide="user-check"></i>
+
+                            <span>
+                                Unrestrict
+                            </span>
+
+                        `;
+
+
+                        if(window.lucide){
+
+                            lucide.createIcons();
 
                         }
 
+
+                        premiumAlert(
+                            "Could not remove the restriction.",
+                            "Error",
+                            "error"
+                        );
+
                     }
-                );
 
-            });
+                }
+            );
 
-        }
+        });
+
+    }
 
 
-        /* =========================================
-           SEARCH
-           ========================================= */
+    /* ================================
+       SEARCH
+       ================================ */
+
+    if(searchInput){
 
         searchInput.addEventListener(
             "input",
-            function(){
-
-                renderMembers(
-                    searchInput.value
-                );
-
-            }
-        );
-
-
-        /* =========================================
-           BACK BUTTON
-           ========================================= */
-
-        document
-        .getElementById(
-            "rsengerRestrictedBackBtn"
-        )
-        .addEventListener(
-            "click",
-            function(){
-
-                panel.remove();
-
-            }
-        );
-
-
-        /* =========================================
-           INITIAL RENDER
-           ========================================= */
-
-        renderMembers();
-
-
-        /* =========================================
-           ICONS
-           ========================================= */
-
-        if(window.lucide){
-            lucide.createIcons();
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Restricted members panel error:",
-            error
-        );
-
-
-        premiumAlert(
-            "Could not load restricted members.",
-            "Error",
-            "error"
+            renderMembers
         );
 
     }
 
-                            }
+
+    /* ================================
+       LOAD FROM FIRESTORE
+       ================================ */
+
+    try{
+
+        const snapshot =
+            await db
+            .collection("groups")
+            .doc(groupId)
+            .collection("restrictedMembers")
+            .get();
+
+
+        members = [];
+
+
+        snapshot.forEach(
+            function(doc){
+
+                const data =
+                    doc.data() || {};
+
+
+                members.push({
+
+                    uid:
+                        doc.id,
+
+                    name:
+                        data.name ||
+                        data.nickname ||
+                        data.username ||
+                        "Unknown Member",
+
+                    username:
+                        data.username ||
+                        "",
+
+                    profilePic:
+                        data.profilePic ||
+                        "",
+
+                    restrictedAt:
+                        data.restrictedAt ||
+                        null
+
+                });
+
+            }
+        );
+
+
+        renderMembers();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Restricted members load error:",
+            error
+        );
+
+
+        list.innerHTML = `
+
+            <div class="rsenger-restricted-empty">
+
+                <div class="rsenger-restricted-empty-icon">
+
+                    <i data-lucide="triangle-alert"></i>
+
+                </div>
+
+                <h3>
+                    Unable to load members
+                </h3>
+
+                <p>
+                    Please check your connection and try again.
+                </p>
+
+            </div>
+
+        `;
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
+    }
+
+}
 
     /* =========================================================
    RSENGER ADMIN PANEL - MISSING BUTTON ENGINE
