@@ -39563,17 +39563,10 @@ async function openRsengerPinnedMessages(){
 
 
     if(
-        me.uid !==
-        window.RSENGER_ADMIN_UID
-    ){
-
-        premiumAlert(
-            "Only the group admin can manage pinned messages.",
-            "Admin Access",
-            "error"
-        );
-
-        return;
+    !me ||
+    !(await refreshRsengerAdminPermission())
+){
+    return;
     }
 
 
