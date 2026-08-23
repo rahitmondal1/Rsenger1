@@ -25373,6 +25373,307 @@ body:not(.dark)
     justify-content:center;
 
 }
+
+    /* =========================================================
+   RSENGER PREMIUM CONFIRM POPUP
+   ========================================================= */
+
+.premium-popup-overlay{
+    background:
+        rgba(4, 5, 12, .78) !important;
+
+    backdrop-filter:
+        blur(18px) saturate(125%) !important;
+
+    -webkit-backdrop-filter:
+        blur(18px) saturate(125%) !important;
+}
+
+
+.premium-popup{
+    background:
+        linear-gradient(
+            145deg,
+            #171927 0%,
+            #10121d 55%,
+            #0b0d16 100%
+        ) !important;
+
+    border:
+        1px solid rgba(255,255,255,.09) !important;
+
+    border-radius:
+        26px !important;
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.65),
+        0 0 45px rgba(118,88,255,.10),
+        inset 0 1px 0 rgba(255,255,255,.055) !important;
+
+    color:#fff !important;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+
+.premium-popup::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    top:-100px;
+    right:-70px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(126,91,255,.18),
+            transparent 70%
+        );
+
+    pointer-events:none;
+
+}
+
+
+.premium-popup::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:160px;
+    height:160px;
+
+    bottom:-110px;
+    left:-70px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(63,129,255,.10),
+            transparent 70%
+        );
+
+    pointer-events:none;
+
+}
+
+
+/* =========================================
+   PREMIUM DANGER ICON
+   ========================================= */
+
+.premium-popup-icon{
+
+    width:66px !important;
+    height:66px !important;
+
+    margin:
+        0 auto 17px !important;
+
+    display:flex !important;
+
+    align-items:center !important;
+    justify-content:center !important;
+
+    border-radius:
+        21px !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,67,102,.16),
+            rgba(177,39,75,.07)
+        ) !important;
+
+    border:
+        1px solid rgba(255,82,111,.20) !important;
+
+    box-shadow:
+        0 12px 35px rgba(255,48,82,.12),
+        inset 0 1px 0 rgba(255,255,255,.05) !important;
+
+}
+
+
+/* emoji থাকলে hide করে clean icon look */
+
+.premium-popup-icon{
+    font-size:0 !important;
+}
+
+
+/* trash icon */
+
+.premium-popup-icon::before{
+
+    content:"";
+
+    width:27px;
+    height:30px;
+
+    display:block;
+
+    border-radius:
+        5px 5px 8px 8px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ff7188,
+            #d93457
+        );
+
+    box-shadow:
+        0 6px 18px rgba(255,52,84,.20);
+
+    clip-path:
+        polygon(
+            18% 18%,
+            82% 18%,
+            76% 100%,
+            24% 100%
+        );
+
+}
+
+
+.premium-popup-icon::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:31px;
+    height:4px;
+
+    margin-top:-34px;
+
+    border-radius:5px;
+
+    background:
+        #ff7188;
+
+    box-shadow:
+        0 -5px 0 -1px #ff7188;
+
+}
+
+
+/* =========================================
+   TITLE
+   ========================================= */
+
+.premium-popup h2,
+.premium-popup-title{
+
+    color:#fff !important;
+
+    font-weight:850 !important;
+
+    letter-spacing:-.4px;
+
+}
+
+
+/* =========================================
+   MESSAGE
+   ========================================= */
+
+.premium-popup p,
+.premium-popup-message{
+
+    color:
+        #969daf !important;
+
+    line-height:
+        1.65 !important;
+
+}
+
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.premium-popup button{
+
+    border-radius:
+        14px !important;
+
+    font-weight:
+        800 !important;
+
+    transition:
+        transform .16s ease,
+        filter .16s ease,
+        background .16s ease !important;
+
+}
+
+
+.premium-popup button:active{
+
+    transform:
+        scale(.95) !important;
+
+}
+
+
+/* Cancel */
+
+.premium-popup .cancel,
+.premium-popup .premium-popup-cancel{
+
+    background:
+        rgba(255,255,255,.055) !important;
+
+    border:
+        1px solid rgba(255,255,255,.09) !important;
+
+    color:
+        #c8ccd6 !important;
+
+}
+
+
+/* Confirm */
+
+.premium-popup .confirm,
+.premium-popup .premium-popup-confirm{
+
+    background:
+        linear-gradient(
+            135deg,
+            #e34b69,
+            #b72d4c
+        ) !important;
+
+    border:
+        1px solid rgba(255,102,127,.25) !important;
+
+    color:#fff !important;
+
+    box-shadow:
+        0 9px 25px rgba(207,48,79,.20) !important;
+
+}
+
+
+.premium-popup .confirm:hover,
+.premium-popup .premium-popup-confirm:hover{
+
+    filter:
+        brightness(1.08) !important;
+
+    }
     
 
     
@@ -40840,7 +41141,7 @@ async function openRsengerPinnedMessages(){
                 "danger",
 
             icon:
-                "🗑️",
+                "",
 
             confirmText:
                 "Clear Messages"
