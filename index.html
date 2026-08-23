@@ -22444,6 +22444,467 @@ body:not(.dark)
     transform: none !important;
     }
 
+    /* =========================================================
+   RSENGER GROUP ADMINS - PREMIUM UI
+   ========================================================= */
+
+.rsenger-group-admin-page{
+    width:100%;
+    max-width:620px;
+    margin:0 auto;
+    padding:4px 0 12px;
+    color:#fff;
+}
+
+
+/* TOP */
+
+.rsenger-group-admin-top{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:20px;
+    padding:16px;
+
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(120,90,255,.16),
+            rgba(40,150,255,.07)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.04),
+        0 10px 30px rgba(0,0,0,.18);
+}
+
+
+.rsenger-group-admin-top-icon{
+    width:48px;
+    height:48px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(126,92,255,.30),
+            rgba(55,145,255,.16)
+        );
+
+    border:1px solid rgba(150,130,255,.22);
+
+    color:#c8bcff;
+}
+
+
+.rsenger-group-admin-top-icon svg{
+    width:23px;
+    height:23px;
+}
+
+
+.rsenger-group-admin-top h3{
+    margin:0;
+
+    font-size:17px;
+    font-weight:800;
+    letter-spacing:-.3px;
+}
+
+
+.rsenger-group-admin-top span{
+    display:block;
+
+    margin-top:4px;
+
+    color:rgba(255,255,255,.46);
+
+    font-size:11px;
+}
+
+
+/* SECTION TITLE */
+
+.rsenger-admin-role-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin:18px 5px 9px;
+
+    color:rgba(255,255,255,.40);
+
+    font-size:10px;
+    font-weight:800;
+
+    letter-spacing:1px;
+}
+
+
+.rsenger-admin-role-title b{
+    min-width:23px;
+    height:23px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:8px;
+
+    background:rgba(255,255,255,.07);
+
+    color:rgba(255,255,255,.68);
+
+    font-size:10px;
+}
+
+
+/* ADMIN CARD */
+
+.rsenger-group-admin-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    width:100%;
+    box-sizing:border-box;
+
+    padding:13px;
+
+    margin-bottom:9px;
+
+    border:1px solid rgba(255,255,255,.075);
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.065),
+            rgba(255,255,255,.035)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.025),
+        0 8px 25px rgba(0,0,0,.13);
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease;
+}
+
+
+.rsenger-group-admin-card:active{
+    transform:scale(.985);
+}
+
+
+.rsenger-group-admin-card.primary{
+    border-color:rgba(140,110,255,.25);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(126,92,255,.14),
+            rgba(55,145,255,.055)
+        );
+}
+
+
+/* AVATAR */
+
+.rsenger-group-admin-avatar{
+    width:48px;
+    height:48px;
+
+    flex-shrink:0;
+
+    border-radius:15px;
+
+    object-fit:cover;
+
+    border:1px solid rgba(255,255,255,.10);
+
+    background:#151821;
+}
+
+
+.rsenger-group-admin-avatar.fallback{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6957d9,
+            #387dcf
+        );
+
+    color:#fff;
+
+    font-size:17px;
+    font-weight:800;
+}
+
+
+/* INFO */
+
+.rsenger-group-admin-info{
+    flex:1;
+    min-width:0;
+}
+
+
+.rsenger-group-admin-name{
+    display:flex;
+    align-items:center;
+    gap:5px;
+
+    min-width:0;
+
+    font-size:14px;
+    font-weight:750;
+}
+
+
+.rsenger-group-admin-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+
+.rsenger-admin-verified{
+    width:17px;
+    height:17px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#7563e8;
+
+    color:#fff;
+}
+
+
+.rsenger-admin-verified svg{
+    width:10px;
+    height:10px;
+    stroke-width:3;
+}
+
+
+.rsenger-group-admin-username{
+    display:block;
+
+    margin-top:2px;
+
+    color:rgba(255,255,255,.42);
+
+    font-size:11px;
+}
+
+
+.rsenger-group-admin-role{
+    display:block;
+
+    margin-top:5px;
+
+    color:rgba(255,255,255,.32);
+
+    font-size:10px;
+}
+
+
+/* OWNER BADGE */
+
+.rsenger-main-admin-badge{
+    display:flex;
+    align-items:center;
+    gap:4px;
+
+    padding:6px 8px;
+
+    border-radius:9px;
+
+    background:rgba(126,92,255,.14);
+
+    border:1px solid rgba(140,120,255,.16);
+
+    color:#bdb0ff;
+
+    font-size:8px;
+    font-weight:800;
+    letter-spacing:.5px;
+}
+
+
+.rsenger-main-admin-badge svg{
+    width:11px;
+    height:11px;
+}
+
+
+/* REMOVE BUTTON */
+
+.rsenger-remove-admin-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+
+    flex-shrink:0;
+
+    min-height:36px;
+
+    padding:0 11px;
+
+    border-radius:11px;
+
+    border:1px solid rgba(255,80,100,.16);
+
+    background:rgba(255,70,90,.07);
+
+    color:#ff9ca9;
+
+    font-family:inherit;
+
+    font-size:10px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+
+.rsenger-remove-admin-btn svg{
+    width:14px;
+    height:14px;
+}
+
+
+.rsenger-remove-admin-btn:active{
+    transform:scale(.94);
+
+    background:rgba(255,70,90,.14);
+}
+
+
+/* EMPTY */
+
+.rsenger-group-admin-empty{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:38px 20px;
+
+    border:1px dashed rgba(255,255,255,.09);
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,.025);
+}
+
+
+.rsenger-group-admin-empty-icon{
+    width:54px;
+    height:54px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-bottom:12px;
+
+    border-radius:17px;
+
+    background:rgba(126,92,255,.10);
+
+    color:#9d8eff;
+}
+
+
+.rsenger-group-admin-empty-icon svg{
+    width:24px;
+    height:24px;
+}
+
+
+.rsenger-group-admin-empty strong{
+    font-size:13px;
+}
+
+
+.rsenger-group-admin-empty span{
+    max-width:290px;
+
+    margin-top:6px;
+
+    color:rgba(255,255,255,.38);
+
+    font-size:10px;
+    line-height:1.5;
+}
+
+
+/* FOOTER */
+
+.rsenger-group-admin-footer{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+
+    margin-top:16px;
+    padding:12px 13px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.025);
+
+    color:rgba(255,255,255,.38);
+
+    font-size:10px;
+    line-height:1.5;
+}
+
+
+.rsenger-group-admin-footer svg{
+    width:15px;
+    height:15px;
+
+    flex-shrink:0;
+
+    margin-top:1px;
+
+    color:#8f81e8;
+}
+
+
+.rsenger-group-admin-footer strong{
+    color:rgba(255,255,255,.62);
+}
+
     
 </style>
 <script>
@@ -35475,6 +35936,528 @@ async function openRsengerRestrictedMembers(){
     /* =========================================================
    RSENGER ADMIN PANEL - MISSING BUTTON ENGINE
    ========================================================= */
+
+    /* =========================================================
+   GROUP ADMINS - PREMIUM PAGE
+   ========================================================= */
+
+async function openRsengerAdmins(){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        me.uid !== window.RSENGER_ADMIN_UID
+    ){
+        return;
+    }
+
+    const groupId = RSENGER_GROUP_ID;
+
+    try{
+
+        const mainAdminUid =
+            window.RSENGER_ADMIN_UID;
+
+        const snapshot = await db
+            .collection("groups")
+            .doc(groupId)
+            .collection("admins")
+            .get();
+
+        let admins = [];
+
+        snapshot.forEach(function(doc){
+
+            const data = doc.data() || {};
+
+            admins.push({
+                uid: doc.id,
+                name: data.name || "Rsenger User",
+                username: data.username || "",
+                profilePic: data.profilePic || "",
+                addedAt: data.addedAt || null
+            });
+
+        });
+
+        /*
+         * Main Admin always appears first
+         */
+        let mainAdmin = {
+            uid: mainAdminUid,
+            name: "Main Admin",
+            username: "",
+            profilePic: ""
+        };
+
+        try{
+
+            const mainUser =
+                await db
+                .collection("users")
+                .doc(mainAdminUid)
+                .get();
+
+            if(mainUser.exists){
+
+                const data =
+                    mainUser.data() || {};
+
+                mainAdmin.name =
+                    data.name ||
+                    data.displayName ||
+                    "Main Admin";
+
+                mainAdmin.username =
+                    data.username || "";
+
+                mainAdmin.profilePic =
+                    data.profilePic ||
+                    data.photoURL ||
+                    "";
+
+            }
+
+        }catch(e){
+
+            console.warn(
+                "Main admin profile:",
+                e
+            );
+
+        }
+
+
+        /*
+         * Remove duplicate main admin
+         */
+        admins =
+            admins.filter(function(admin){
+
+                return admin.uid !== mainAdminUid;
+
+            });
+
+
+        /*
+         * Premium page
+         */
+        let html = `
+
+            <div class="rsenger-group-admin-page">
+
+                <!-- TOP -->
+                <div class="rsenger-group-admin-top">
+
+                    <div class="rsenger-group-admin-top-icon">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Group Administrators
+                        </h3>
+
+                        <span>
+                            Manage who can control this group
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MAIN ADMIN -->
+                <div class="rsenger-admin-role-title">
+                    <span>PRIMARY ADMIN</span>
+                </div>
+
+                <div class="rsenger-group-admin-card primary">
+
+                    ${
+                        mainAdmin.profilePic
+                        ?
+                        `
+                        <img
+                            src="${escapeGroupHTML(
+                                mainAdmin.profilePic
+                            )}"
+                            class="rsenger-group-admin-avatar"
+                            alt="Admin">
+                        `
+                        :
+                        `
+                        <div class="rsenger-group-admin-avatar fallback">
+                            ${escapeGroupHTML(
+                                mainAdmin.name
+                                .charAt(0)
+                                .toUpperCase()
+                            )}
+                        </div>
+                        `
+                    }
+
+                    <div class="rsenger-group-admin-info">
+
+                        <div class="rsenger-group-admin-name">
+
+                            ${escapeGroupHTML(
+                                mainAdmin.name
+                            )}
+
+                            <span class="rsenger-admin-verified">
+                                <i data-lucide="check"></i>
+                            </span>
+
+                        </div>
+
+                        ${
+                            mainAdmin.username
+                            ?
+                            `
+                            <span class="rsenger-group-admin-username">
+                                @${escapeGroupHTML(
+                                    mainAdmin.username
+                                )}
+                            </span>
+                            `
+                            :
+                            ""
+                        }
+
+                        <span class="rsenger-group-admin-role">
+                            Main Administrator
+                        </span>
+
+                    </div>
+
+                    <div class="rsenger-main-admin-badge">
+                        <i data-lucide="crown"></i>
+                        OWNER
+                    </div>
+
+                </div>
+
+
+                <!-- SECONDARY ADMINS -->
+                <div class="rsenger-admin-role-title">
+
+                    <span>
+                        ADMINISTRATORS
+                    </span>
+
+                    <b>
+                        ${admins.length}
+                    </b>
+
+                </div>
+
+        `;
+
+
+        if(!admins.length){
+
+            html += `
+
+                <div class="rsenger-group-admin-empty">
+
+                    <div class="rsenger-group-admin-empty-icon">
+                        <i data-lucide="users-round"></i>
+                    </div>
+
+                    <strong>
+                        No additional administrators
+                    </strong>
+
+                    <span>
+                        Search for a member and make them an administrator.
+                    </span>
+
+                </div>
+
+            `;
+
+        }else{
+
+            admins.forEach(function(admin){
+
+                html += `
+
+                    <div
+                        class="rsenger-group-admin-card"
+                        data-admin-uid="${escapeGroupHTML(
+                            admin.uid
+                        )}"
+                    >
+
+                        ${
+                            admin.profilePic
+                            ?
+                            `
+                            <img
+                                src="${escapeGroupHTML(
+                                    admin.profilePic
+                                )}"
+                                class="rsenger-group-admin-avatar"
+                                alt="Admin">
+                            `
+                            :
+                            `
+                            <div class="rsenger-group-admin-avatar fallback">
+                                ${escapeGroupHTML(
+                                    admin.name
+                                    .charAt(0)
+                                    .toUpperCase()
+                                )}
+                            </div>
+                            `
+                        }
+
+                        <div class="rsenger-group-admin-info">
+
+                            <div class="rsenger-group-admin-name">
+
+                                ${escapeGroupHTML(
+                                    admin.name
+                                )}
+
+                                <span class="rsenger-admin-verified">
+                                    <i data-lucide="check"></i>
+                                </span>
+
+                            </div>
+
+                            ${
+                                admin.username
+                                ?
+                                `
+                                <span class="rsenger-group-admin-username">
+                                    @${escapeGroupHTML(
+                                        admin.username
+                                    )}
+                                </span>
+                                `
+                                :
+                                ""
+                            }
+
+                            <span class="rsenger-group-admin-role">
+                                Group Administrator
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="rsenger-remove-admin-btn"
+                            onclick="
+                                removeRsengerGroupAdmin(
+                                    '${escapeGroupHTML(
+                                        admin.uid
+                                    )}'
+                                )
+                            "
+                        >
+
+                            <i data-lucide="user-minus"></i>
+
+                            <span>
+                                Remove
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            });
+
+        }
+
+
+        html += `
+
+                <div class="rsenger-group-admin-footer">
+
+                    <i data-lucide="info"></i>
+
+                    <span>
+                        You can add new administrators from
+                        <strong>Member Management</strong>.
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        premiumAlert(
+            html,
+            "Group Admins",
+            "info"
+        );
+
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Group Admins error:",
+            error
+        );
+
+        premiumAlert(
+            "Could not load group administrators.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
+
+    /* =========================================================
+   REMOVE GROUP ADMIN
+   ========================================================= */
+
+async function removeRsengerGroupAdmin(uid){
+
+    const me = auth.currentUser;
+
+    if(
+        !me ||
+        me.uid !== window.RSENGER_ADMIN_UID
+    ){
+        return;
+    }
+
+    if(!uid){
+        return;
+    }
+
+
+    /*
+     * Main admin protection
+     */
+    if(
+        uid === window.RSENGER_ADMIN_UID
+    ){
+
+        premiumAlert(
+            "The main administrator cannot be removed.",
+            "Action Not Allowed",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const confirmed = confirm(
+        "Remove this member from group administrators?"
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+
+    try{
+
+        const adminRef =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("admins")
+            .doc(uid);
+
+
+        const adminDoc =
+            await adminRef.get();
+
+
+        if(!adminDoc.exists){
+
+            premiumAlert(
+                "This member is not an administrator.",
+                "Not Found",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const member =
+            adminDoc.data() || {};
+
+
+        await adminRef.delete();
+
+
+        /*
+         * Activity log
+         */
+        await addRsengerAdminActivity(
+            "remove_admin",
+            {
+                uid: uid,
+                name:
+                    member.name ||
+                    "Rsenger User",
+                username:
+                    member.username ||
+                    "",
+                profilePic:
+                    member.profilePic ||
+                    ""
+            }
+        );
+
+
+        premiumAlert(
+            "Administrator access has been removed successfully.",
+            "Admin Removed",
+            "success"
+        );
+
+
+        /*
+         * Refresh page
+         */
+        setTimeout(function(){
+
+            openRsengerAdmins();
+
+        }, 350);
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Remove group admin:",
+            error
+        );
+
+        premiumAlert(
+            "Could not remove administrator access.",
+            "Error",
+            "error"
+        );
+
+    }
+
+}
 
 
 /* =========================================================
