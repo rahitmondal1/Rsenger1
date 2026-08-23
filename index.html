@@ -918,31 +918,28 @@ No chats yet
 
 
             <button
-                type="button"
-                class="rsenger-admin-card"
-                onclick="openRsengerMessageControl()"
+    type="button"
+    class="rsenger-admin-card"
+    onclick="openRsengerMessageControl()">
 
-                <div class="rsenger-admin-card-icon messages">
-                    <i data-lucide="message-square-off"></i>
-                </div>
+    <div class="rsenger-admin-card-icon messages">
+        <i data-lucide="message-square-off"></i>
+    </div>
 
-                <div class="rsenger-admin-card-text">
+    <div class="rsenger-admin-card-text">
+        <strong>Message Control</strong>
 
-                    <strong>Message Control</strong>
+        <span id="rsengerMessageControlStatus">
+            Manage group messaging
+        </span>
+    </div>
 
-                    <span id="rsengerMessageControlStatus">
-                        Manage group messaging
-                    </span>
-
-                </div>
-
-                <i
-                    data-lucide="chevron-right"
-                    class="rsenger-admin-arrow">
-                </i>
+    <i
+        data-lucide="chevron-right"
+        class="rsenger-admin-arrow">
+    </i>
 
             </button>
-
         </div>
 
     <div
@@ -26047,6 +26044,150 @@ body:not(.dark)
     color:
         rgba(255,255,255,.4);
 
+}
+
+
+    /* =========================================================
+   RSENGER ADMIN PANEL - FINAL LAYOUT FIX
+   ========================================================= */
+
+/* Main scrolling area */
+#rsengerAdminMain {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-bottom: calc(25px + env(safe-area-inset-bottom)) !important;
+
+    scrollbar-width: none !important;
+}
+
+#rsengerAdminMain::-webkit-scrollbar {
+    display: none !important;
+}
+
+
+/* Every admin section stays inside the same scroll area */
+#rsengerAdminMain .rsenger-admin-section {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    margin-top: 18px !important;
+
+    box-sizing: border-box !important;
+
+    position: relative !important;
+}
+
+
+/* Section title */
+#rsengerAdminMain .rsenger-admin-section-title {
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    padding: 0 4px 8px !important;
+}
+
+
+/* Every admin card stays inside screen */
+#rsengerAdminMain .rsenger-admin-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    position: relative !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+
+/* Prevent text from pushing cards outside */
+#rsengerAdminMain .rsenger-admin-card-text {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+}
+
+
+/* Icons must never shrink */
+#rsengerAdminMain .rsenger-admin-card-icon {
+    flex: 0 0 43px !important;
+}
+
+
+/* Arrow must stay inside card */
+#rsengerAdminMain .rsenger-admin-arrow {
+    flex: 0 0 17px !important;
+}
+
+
+/* =========================================================
+   MESSAGE CONTROL
+   ========================================================= */
+
+#rsengerMessageControlPage {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    overflow-x: hidden !important;
+}
+
+
+/* Message Control card */
+#rsengerMessageControlPage .rsenger-message-control-card {
+    width: auto !important;
+    max-width: calc(100% - 32px) !important;
+
+    box-sizing: border-box !important;
+
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+}
+
+
+/* Message control toggle stays inside card */
+#rsengerMessageControlPage .rsenger-message-control-toggle {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* Mobile safety */
+@media (max-width: 480px) {
+
+    #rsengerAdminMain {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    #rsengerAdminMain .rsenger-admin-card {
+        width: 100% !important;
+    }
+
+    #rsengerMessageControlPage .rsenger-message-control-card {
+        max-width: calc(100% - 32px) !important;
+        margin-left: 16px !important;
+        margin-right: 16px !important;
+    }
 }
 
 
