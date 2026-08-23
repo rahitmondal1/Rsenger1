@@ -598,6 +598,28 @@ No chats yet
 
     <div class="rsenger-group-input-area">
 
+        <div
+    class="rsenger-message-disabled-view"
+    id="rsengerMessageDisabledView">
+
+    <div class="rsenger-message-disabled-icon">
+        <i data-lucide="lock-keyhole"></i>
+    </div>
+
+    <div class="rsenger-message-disabled-content">
+
+        <strong>
+            Messaging is disabled
+        </strong>
+
+        <span>
+            Only the Main Admin can send messages right now.
+        </span>
+
+    </div>
+
+        </div>
+
         <!-- PHOTO -->
 
         <label
@@ -26489,6 +26511,237 @@ body:not(.dark)
 }
 
 
+    /* =========================================================
+   RSENGER - MESSAGE CONTROL DISABLED UI
+   PREMIUM
+   ========================================================= */
+
+.rsenger-group-input-area{
+    position: relative;
+}
+
+
+/* Disabled message */
+
+.rsenger-message-disabled-view{
+
+    display: none;
+
+    width: 100%;
+    min-height: 74px;
+
+    box-sizing: border-box;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 12px 16px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(35,31,55,.96),
+            rgba(18,18,30,.98)
+        );
+
+    border:
+        1px solid rgba(
+            150,
+            120,
+            255,
+            .20
+        );
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.06);
+
+}
+
+
+/* Show disabled state */
+
+.rsenger-group-input-area
+.rsenger-message-disabled-view{
+
+    display: none;
+}
+
+
+.rsenger-group-input-area
+.rsenger-message-disabled
+.rsenger-message-disabled-view{
+
+    display: flex;
+}
+
+
+/* Hide original composer */
+
+.rsenger-group-input-area
+.rsenger-message-disabled
+.group-photo-btn,
+
+.rsenger-group-input-area
+.rsenger-message-disabled
+.rsenger-group-message-input,
+
+.rsenger-group-input-area
+.rsenger-message-disabled
+.group-send-btn{
+
+    display: none !important;
+}
+
+
+/* Icon */
+
+.rsenger-message-disabled-icon{
+
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(130,91,255,.24),
+            rgba(91,57,180,.12)
+        );
+
+    border:
+        1px solid rgba(
+            155,
+            120,
+            255,
+            .22
+        );
+
+    color:
+        #a98aff;
+
+    box-shadow:
+        0 0 22px rgba(
+            118,
+            76,
+            255,
+            .14
+        );
+}
+
+
+.rsenger-message-disabled-icon svg{
+
+    width: 21px;
+    height: 21px;
+
+    stroke-width: 1.8;
+}
+
+
+/* Text */
+
+.rsenger-message-disabled-content{
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.rsenger-message-disabled-content strong{
+
+    color:
+        #f5f3ff;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.25;
+}
+
+
+.rsenger-message-disabled-content span{
+
+    color:
+        rgba(
+            220,
+            216,
+            238,
+            .55
+        );
+
+    font-size:
+        12px;
+
+    line-height:
+        1.4;
+}
+
+
+/* Mobile */
+
+@media(max-width:480px){
+
+    .rsenger-message-disabled-view{
+
+        min-height: 68px;
+
+        padding:
+            10px 13px;
+
+        border-radius:
+            18px;
+
+    }
+
+    .rsenger-message-disabled-icon{
+
+        width: 38px;
+        height: 38px;
+
+        flex-basis: 38px;
+
+        border-radius:
+            12px;
+
+    }
+
+    .rsenger-message-disabled-content strong{
+
+        font-size:
+            13px;
+
+    }
+
+    .rsenger-message-disabled-content span{
+
+        font-size:
+            11.5px;
+
+    }
+}
+
+
     
 </style>
 <script>
@@ -36965,6 +37218,24 @@ async function sendRsengerGroupPhoto(){
 
     }
 
+        /* =====================================================
+       MESSAGE CONTROL CHECK
+       ===================================================== */
+
+    const messagingLocked =
+        await isRsengerMessagingLockedForUser();
+
+    if(messagingLocked){
+
+        premiumAlert(
+            "Messaging is currently disabled by the Main Admin.",
+            "Messaging Disabled",
+            "error"
+        );
+
+        return;
+    }
+
 
     if(!selectedRsengerGroupPhoto){
 
@@ -37604,6 +37875,24 @@ async function sendRsengerGroupMessage(){
     const me = auth.currentUser;
 
 if(!me) return;
+
+        /* =====================================================
+       MESSAGE CONTROL CHECK
+       ===================================================== */
+
+    const messagingLocked =
+        await isRsengerMessagingLockedForUser();
+
+    if(messagingLocked){
+
+        premiumAlert(
+            "Messaging is currently disabled by the Main Admin.",
+            "Messaging Disabled",
+            "error"
+        );
+
+        return;
+        }
 
 
 /* =========================================
@@ -44182,14 +44471,61 @@ async function addRsengerAdminActivity(
 })();
 
     /* =========================================================
-   RSENGER ADMIN PERMISSION ENGINE
-   MAIN ADMIN + GROUP ADMIN
+   RSENGER MESSAGE CONTROL - ACCESS CHECK
+   ========================================================= */
+
+async function isRsengerMessagingLockedForUser(){
+
+    const me = auth.currentUser;
+
+    if(!me){
+        return true;
+    }
+
+    /* MAIN ADMIN IS ALWAYS ALLOWED */
+    if(
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+        return false;
+    }
+
+    try{
+
+        const groupDoc =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .get();
+
+        const data =
+            groupDoc.exists
+            ? groupDoc.data() || {}
+            : {};
+
+        return (
+            data.messagesDisabled === true
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Message control access error:",
+            error
+        );
+
+        /* নিরাপত্তার জন্য error হলে block */
+        return true;
+    }
+}
+
+/* =========================================================
+   RSENGER ADMIN PERMISSION
+   MESSAGE CONTROL LOCK AWARE
    ========================================================= */
 
 window.rsengerIsGroupAdmin = false;
-
-
-/* CHECK CURRENT USER */
 
 async function refreshRsengerAdminPermission(){
 
@@ -44203,7 +44539,10 @@ async function refreshRsengerAdminPermission(){
     }
 
 
-    /* MAIN ADMIN */
+    /* =====================================================
+       MAIN ADMIN
+       MAIN ADMIN IS NEVER LOCKED OUT
+       ===================================================== */
 
     if(
         me.uid ===
@@ -44218,6 +44557,44 @@ async function refreshRsengerAdminPermission(){
 
     try{
 
+        /* ================================================
+           CHECK MESSAGE CONTROL
+           ================================================ */
+
+        const groupDoc =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .get();
+
+        const groupData =
+            groupDoc.exists
+            ? groupDoc.data() || {}
+            : {};
+
+        const messagesDisabled =
+            groupData.messagesDisabled === true;
+
+
+        /* ================================================
+           MESSAGE CONTROL OFF
+           
+           Secondary admins lose Admin Panel access.
+           Main Admin already returned above.
+           ================================================ */
+
+        if(messagesDisabled){
+
+            window.rsengerIsGroupAdmin = false;
+
+            return false;
+        }
+
+
+        /* ================================================
+           NORMAL ADMIN CHECK
+           ================================================ */
+
         const adminDoc =
             await db
             .collection("groups")
@@ -44226,10 +44603,8 @@ async function refreshRsengerAdminPermission(){
             .doc(me.uid)
             .get();
 
-
         window.rsengerIsGroupAdmin =
             adminDoc.exists;
-
 
         return adminDoc.exists;
 
@@ -44241,14 +44616,10 @@ async function refreshRsengerAdminPermission(){
             error
         );
 
-
-        window.rsengerIsGroupAdmin =
-            false;
-
+        window.rsengerIsGroupAdmin = false;
 
         return false;
     }
-
 }
 
 
@@ -44465,33 +44836,38 @@ function isRsengerAdminUser(){
 
     const me = auth.currentUser;
 
-    if(
-        !me ||
-        !(await refreshRsengerAdminPermission())
-    ){
+if(
+    !me ||
+    me.uid !== window.RSENGER_ADMIN_UID
+){
 
-        return;
+    premiumAlert(
+        "Only the Main Admin can change Message Control.",
+        "Main Admin Only",
+        "error"
+    );
 
-    }
+    return;
+}
 
 
     const confirmed =
         await premiumConfirm({
 
-            title:
-                "Change Message Control?",
+title:
+    "Change Message Control?",
 
-            message:
-                "This will change who can send messages in the group.",
+message:
+    "When messaging is disabled, only the Main Admin will be able to send messages. Other admins will also lose Admin Panel access.",
 
-            type:
+type:
     "danger",
 
 icon:
     "message-square-off",
 
 confirmText:
-    "Change Setting",
+    "Update"
 
 popupClass:
     "message-control-premium"
@@ -44586,6 +44962,58 @@ popupClass:
     }
 
     }
+
+    /* =========================================================
+   RSENGER MESSAGE BAR UI
+   ========================================================= */
+
+async function updateRsengerGroupMessageAccess(){
+
+    const me = auth.currentUser;
+
+    const inputArea =
+        document.querySelector(
+            ".rsenger-group-input-area"
+        );
+
+    if(!inputArea || !me){
+        return;
+    }
+
+
+    /* MAIN ADMIN ALWAYS GETS NORMAL INPUT */
+
+    if(
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        inputArea.classList.remove(
+            "rsenger-message-disabled"
+        );
+
+        return;
+    }
+
+
+    const locked =
+        await isRsengerMessagingLockedForUser();
+
+
+    if(locked){
+
+        inputArea.classList.add(
+            "rsenger-message-disabled"
+        );
+
+    }
+    else{
+
+        inputArea.classList.remove(
+            "rsenger-message-disabled"
+        );
+    }
+}
                       
 
 </script>
