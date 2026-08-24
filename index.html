@@ -26998,6 +26998,243 @@ body:not(.dark)
 
     }
 
+    /* =========================================================
+   RSENGER RESTRICTED MEMBERS
+   PREMIUM SEARCH BAR
+   ========================================================= */
+
+.rsenger-restricted-page-search{
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 56px;
+
+    margin-top: 16px;
+
+    box-sizing: border-box;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35,31,52,.96),
+            rgba(18,18,30,.98)
+        );
+
+    border:
+        1px solid rgba(
+            145,
+            115,
+            220,
+            .18
+        );
+
+    box-shadow:
+        0 12px 32px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.055);
+
+    transition:
+        border-color .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
+
+    overflow: hidden;
+}
+
+
+/* Soft premium glow */
+
+.rsenger-restricted-page-search::before{
+
+    content: "";
+
+    position: absolute;
+
+    top: -45px;
+    left: 18%;
+
+    width: 180px;
+    height: 90px;
+
+    background:
+        rgba(126,86,255,.12);
+
+    filter:
+        blur(28px);
+
+    pointer-events: none;
+}
+
+
+/* Search icon */
+
+.rsenger-restricted-page-search > svg{
+
+    position: relative;
+
+    flex: 0 0 auto;
+
+    width: 19px;
+    height: 19px;
+
+    margin-left: 17px;
+    margin-right: 11px;
+
+    color:
+        #9d7cff;
+
+    stroke-width:
+        1.9;
+
+    transition:
+        color .22s ease,
+        transform .22s ease;
+}
+
+
+/* Input */
+
+.rsenger-restricted-page-search input{
+
+    position: relative;
+
+    flex: 1;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+
+    padding:
+        0 17px 0 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color:
+        #f5f3ff;
+
+    font-size:
+        14px;
+
+    font-weight:
+        500;
+
+    letter-spacing:
+        .05px;
+
+    caret-color:
+        #a27fff;
+}
+
+
+/* Placeholder */
+
+.rsenger-restricted-page-search
+input::placeholder{
+
+    color:
+        rgba(
+            210,
+            207,
+            226,
+            .42
+        );
+
+    font-weight:
+        450;
+}
+
+
+/* Focus */
+
+.rsenger-restricted-page-search:focus-within{
+
+    border-color:
+        rgba(
+            158,
+            124,
+            255,
+            .42
+        );
+
+    box-shadow:
+        0 14px 38px rgba(0,0,0,.26),
+        0 0 0 4px rgba(
+            126,
+            82,
+            255,
+            .08
+        ),
+        0 0 28px rgba(
+            111,
+            69,
+            235,
+            .10
+        );
+
+    transform:
+        translateY(-1px);
+}
+
+
+.rsenger-restricted-page-search:focus-within
+> svg{
+
+    color:
+        #b293ff;
+
+    transform:
+        scale(1.06);
+}
+
+
+/* Mobile */
+
+@media(max-width:480px){
+
+    .rsenger-restricted-page-search{
+
+        height:
+            53px;
+
+        border-radius:
+            17px;
+
+    }
+
+    .rsenger-restricted-page-search > svg{
+
+        margin-left:
+            15px;
+
+        margin-right:
+            10px;
+
+        width:
+            18px;
+
+        height:
+            18px;
+
+    }
+
+    .rsenger-restricted-page-search input{
+
+        font-size:
+            13.5px;
+
+    }
+
+}
+
 
     
 </style>
@@ -39782,25 +40019,35 @@ async function openRsengerRestrictedMembers(){
 
 
             const filtered =
-                members.filter(
-                    function(member){
+    members.filter(
+        function(member){
 
-                        return (
+            const name =
+                String(
+                    member.name || ""
+                )
+                .trim()
+                .toLowerCase();
 
-                            member.name
-                                .toLowerCase()
-                                .includes(query)
+            /* =========================================
+               PREMIUM NAME PREFIX SEARCH
 
-                            ||
+               R  → Rahul, Rakesh, Riya
+               Ra → Rahul, Rakesh
+               Rah → Rahul
 
-                            member.username
-                                .toLowerCase()
-                                .includes(query)
+               মাঝখানের character match করবে না
+               username দিয়ে search করবে না
+               ========================================= */
 
-                        );
+            if(!query){
+                return true;
+            }
 
-                    }
-                );
+            return name.startsWith(query);
+
+        }
+    );
 
 
             if(!filtered.length){
