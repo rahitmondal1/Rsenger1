@@ -27737,6 +27737,277 @@ input::placeholder{
 
 }
 
+    /* =========================================================
+   RSENGER — MESSAGE PERMISSION
+   PREMIUM POPUP
+   ========================================================= */
+
+#premiumPopup.message-permission-premium{
+
+    background:
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(139,92,246,.24),
+            transparent 45%
+        ),
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(37,99,235,.08),
+            transparent 40%
+        ),
+        linear-gradient(
+            145deg,
+            #1b192d,
+            #11121f 55%,
+            #090b13
+        ) !important;
+
+    border:
+        1px solid
+        rgba(157,125,255,.24) !important;
+
+    border-radius:
+        29px !important;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.80),
+        0 0 55px rgba(111,70,240,.16),
+        inset 0 1px 0
+        rgba(255,255,255,.075) !important;
+
+    overflow:
+        hidden !important;
+
+}
+
+
+/* ICON */
+
+#premiumPopup.message-permission-premium
+#premiumPopupIcon{
+
+    width:
+        72px !important;
+
+    height:
+        72px !important;
+
+    margin:
+        0 auto 18px !important;
+
+    border-radius:
+        22px !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(139,92,246,.22),
+            rgba(59,130,246,.08)
+        ) !important;
+
+    border:
+        1px solid
+        rgba(165,135,255,.27) !important;
+
+    color:
+        #ad91ff !important;
+
+    box-shadow:
+        0 0 35px
+        rgba(120,75,255,.18),
+        inset 0 1px 0
+        rgba(255,255,255,.07) !important;
+
+}
+
+
+#premiumPopup.message-permission-premium
+#premiumPopupIcon svg{
+
+    width:
+        32px !important;
+
+    height:
+        32px !important;
+
+    stroke-width:
+        1.8 !important;
+
+}
+
+
+/* TITLE */
+
+#premiumPopup.message-permission-premium
+#premiumPopupTitle{
+
+    color:
+        #ffffff !important;
+
+    font-size:
+        21px !important;
+
+    font-weight:
+        750 !important;
+
+}
+
+
+/* MESSAGE */
+
+#premiumPopup.message-permission-premium
+#premiumPopupMessage{
+
+    color:
+        rgba(225,222,238,.64) !important;
+
+    font-size:
+        13.5px !important;
+
+    line-height:
+        1.6 !important;
+
+    white-space:
+        pre-line !important;
+
+}
+
+
+/* ADMIN ONLY BUTTON */
+
+#premiumPopup.message-permission-premium
+#premiumPopupCancel{
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .055
+        ) !important;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .10
+        ) !important;
+
+    color:
+        #e8e4f5 !important;
+
+    border-radius:
+        16px !important;
+
+    font-weight:
+        700 !important;
+
+}
+
+
+/* EVERYONE BUTTON */
+
+#premiumPopup.message-permission-premium
+#premiumPopupConfirm{
+
+    background:
+        linear-gradient(
+            135deg,
+            #9368ff,
+            #7346e8,
+            #5833c5
+        ) !important;
+
+    border:
+        1px solid
+        rgba(
+            193,
+            167,
+            255,
+            .30
+        ) !important;
+
+    color:
+        #ffffff !important;
+
+    border-radius:
+        16px !important;
+
+    font-weight:
+        700 !important;
+
+    box-shadow:
+        0 12px 32px
+        rgba(102,61,220,.30),
+        inset 0 1px 0
+        rgba(255,255,255,.16) !important;
+
+}
+
+
+/* SUCCESS */
+
+#premiumPopup.message-permission-success
+#premiumPopupIcon{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(54,211,153,.17),
+            rgba(16,185,129,.06)
+        ) !important;
+
+    border-color:
+        rgba(82,220,170,.25) !important;
+
+    color:
+        #62e5ae !important;
+
+}
+
+
+/* ERROR */
+
+#premiumPopup.message-permission-error
+#premiumPopupIcon{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,70,95,.17),
+            rgba(190,35,65,.06)
+        ) !important;
+
+    border-color:
+        rgba(255,92,115,.25) !important;
+
+    color:
+        #ff788d !important;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:420px){
+
+    #premiumPopup.message-permission-premium{
+
+        width:
+            calc(100vw - 28px) !important;
+
+        border-radius:
+            26px !important;
+
+        padding:
+            25px 18px 20px !important;
+
+    }
+
+}
+
 
     
 </style>
@@ -35729,7 +36000,10 @@ function showPremiumPopup(options = {}) {
     "success",
     "error",
     "clear-messages-premium",
-    "message-control-premium"
+    "message-control-premium",
+    "message-permission-premium",
+    "message-permission-success",
+    "message-permission-error"
 );
 
 if(options.type){
@@ -43573,32 +43847,125 @@ async function toggleRsengerGroupMessages(){
 
 async function openRsengerMessagePermission(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
 
     if(
-    !me ||
-    !(await refreshRsengerAdminPermission())
-){
-    return;
-    }
-
-    const choice =
-        prompt(
-            "Message Permission\n\n" +
-            "Type:\n" +
-            "1 = Everyone\n" +
-            "2 = Admin only\n\n" +
-            "Enter 1 or 2:"
-        );
-
-    if(choice !== "1" && choice !== "2"){
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
         return;
     }
 
+
+    /* =========================================
+       LOAD CURRENT PERMISSION
+       ========================================= */
+
+    let currentPermission =
+        "everyone";
+
+    try{
+
+        const groupDoc =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .get();
+
+        if(groupDoc.exists){
+
+            const data =
+                groupDoc.data() || {};
+
+            currentPermission =
+                data.messagePermission ||
+                "everyone";
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Message permission load error:",
+            error
+        );
+
+    }
+
+
+    const currentLabel =
+        currentPermission === "admin"
+        ? "Admin Only"
+        : "Everyone";
+
+
+    /* =========================================
+       PREMIUM CHOICE POPUP
+       ========================================= */
+
+    const choicePromise =
+        premiumConfirm({
+
+            title:
+                "Message Permission",
+
+            message:
+                "Choose who can send messages in this group.\n\n" +
+                "Current setting: " +
+                currentLabel,
+
+            type:
+                "success",
+
+            icon:
+                "messages-square",
+
+            confirmText:
+                "Everyone",
+
+            popupClass:
+                "message-permission-premium"
+
+        });
+
+
+    /*
+     * Use the second button as
+     * "Admin Only"
+     */
+
+    setTimeout(function(){
+
+        const cancel =
+            document.getElementById(
+                "premiumPopupCancel"
+            );
+
+        if(cancel){
+
+            cancel.innerText =
+                "Admin Only";
+
+        }
+
+    }, 30);
+
+
+    const everyone =
+        await choicePromise;
+
+
     const permission =
-        choice === "1"
+        everyone
         ? "everyone"
         : "admin";
+
+
+    /* =========================================
+       SAVE
+       ========================================= */
 
     try{
 
@@ -43610,42 +43977,57 @@ async function openRsengerMessagePermission(){
                 messagePermission:
                     permission
 
-            }, {
+            },{
 
-                merge: true
+                merge:
+                    true
 
             });
 
 
+        /* =====================================
+           SUCCESS
+           ===================================== */
+
         premiumAlert(
 
             permission === "everyone"
-            ? "Everyone can send messages."
-            : "Only the admin can send messages.",
+            ? "Everyone can send messages in this group."
+            : "Only the admin can send messages in this group.",
 
-            "Message Permission",
+            "Permission Updated",
 
-            "success"
+            "success",
+
+            "message-permission-success"
 
         );
 
-    }catch(error){
+
+    }
+    catch(error){
 
         console.error(
             "Message permission error:",
             error
         );
 
+
         premiumAlert(
-            "Could not update message permission.",
-            "Error",
-            "error"
+
+            "Could not update message permission. Please try again.",
+
+            "Permission Update Failed",
+
+            "error",
+
+            "message-permission-error"
+
         );
 
     }
 
 }
-
 
 /* =========================================================
    5. MEDIA PERMISSION
