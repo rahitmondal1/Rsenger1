@@ -681,12 +681,36 @@ No chats yet
 
     <button
         type="button"
+        id="rsengerMessageBlockBtn"
         onclick="adminBlockSelectedMessage()">
 
         <i data-lucide="ban"></i>
         <span>Block</span>
 
     </button>
+
+
+    <button
+        type="button"
+        id="rsengerMessageRestrictBtn"
+        onclick="adminRestrictSelectedMessage()">
+
+        <i data-lucide="user-round-x"></i>
+        <span>Restrict</span>
+
+    </button>
+
+
+    <button
+        type="button"
+        id="rsengerMessagePinBtn"
+        onclick="adminToggleSelectedMessagePin()">
+
+        <i data-lucide="pin"></i>
+        <span>Pin message</span>
+
+    </button>
+
 
     <button
         type="button"
@@ -19067,36 +19091,159 @@ body:not(.dark)
     font-weight: 700 !important;
 }
 
+/* =========================================================
+   RSENGER PREMIUM GROUP MESSAGE ADMIN MENU
+   ========================================================= */
+
 #rsengerGroupMessageMenu {
 
-    position: fixed;
+    position: fixed !important;
 
-    left: 50%;
-    bottom: 92px;
+    width:
+        min(235px, calc(100vw - 28px));
 
-    transform: translateX(-50%);
+    padding:
+        7px;
 
-    width: min(280px, calc(100vw - 32px));
+    z-index:
+        999999;
 
-    padding: 8px;
-
-    z-index: 9999;
-
-    border-radius: 20px;
+    border-radius:
+        20px;
 
     background:
-        rgba(18,19,27,.96);
+        linear-gradient(
+            145deg,
+            rgba(24,22,40,.98),
+            rgba(11,13,24,.98)
+        );
 
     border:
         1px solid
-        rgba(255,255,255,.10);
+        rgba(150,125,255,.22);
 
     box-shadow:
-        0 22px 70px
-        rgba(0,0,0,.55);
+        0 24px 70px
+        rgba(0,0,0,.65),
+
+        0 0 35px
+        rgba(120,90,255,.12);
 
     backdrop-filter:
-        blur(24px);
+        blur(25px)
+        saturate(145%);
+
+    -webkit-backdrop-filter:
+        blur(25px)
+        saturate(145%);
+
+    transform:
+        none !important;
+
+    animation:
+        rsengerMessageMenuIn
+        .16s ease-out;
+
+}
+
+
+@keyframes rsengerMessageMenuIn {
+
+    from {
+        opacity: 0;
+        transform: scale(.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+
+#rsengerGroupMessageMenu button {
+
+    width:
+        100%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    padding:
+        12px 13px;
+
+    border:
+        0;
+
+    border-radius:
+        14px;
+
+    background:
+        transparent;
+
+    color:
+        #f4f1ff;
+
+    font-size:
+        13px;
+
+    font-weight:
+        650;
+
+    text-align:
+        left;
+
+    transition:
+        background .18s ease,
+        transform .18s ease;
+
+}
+
+
+#rsengerGroupMessageMenu button:active {
+
+    background:
+        rgba(139,92,246,.14);
+
+    transform:
+        scale(.98);
+
+}
+
+
+#rsengerGroupMessageMenu button svg {
+
+    width:
+        18px;
+
+    height:
+        18px;
+
+    color:
+        #a996ff;
+
+}
+
+
+#rsengerGroupMessageMenu button:last-child svg {
+
+    color:
+        #ff7185;
+
+}
+
+
+#rsengerGroupMessageMenu.hidden {
+
+    display:
+        none !important;
 
 }
 
@@ -28630,7 +28777,157 @@ input::placeholder{
 }
 
 
+/* =========================================================
+   PREMIUM PINNED MESSAGE TOP BAR
+   ========================================================= */
 
+#rsengerPinnedTopBar{
+
+    display:
+        none;
+
+    margin:
+        8px 12px;
+
+    padding:
+        10px 12px;
+
+    border-radius:
+        16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(111,82,255,.16),
+            rgba(35,190,220,.08)
+        );
+
+    border:
+        1px solid
+        rgba(139,92,246,.20);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,.18);
+
+}
+
+
+#rsengerPinnedTopBar.active{
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+}
+
+
+.rsenger-pinned-top-icon{
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    min-width:
+        34px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(139,92,246,.16);
+
+    color:
+        #a996ff;
+
+}
+
+
+.rsenger-pinned-top-content{
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+}
+
+
+.rsenger-pinned-top-title{
+
+    display:
+        block;
+
+    color:
+        #a996ff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .7px;
+
+}
+
+
+.rsenger-pinned-top-text{
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        rgba(240,238,250,.78);
+
+    font-size:
+        12px;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+
+.rsenger-pinned-top-count{
+
+    font-size:
+        10px;
+
+    color:
+        rgba(220,215,240,.55);
+
+}
 
     
 </style>
@@ -39260,6 +39557,8 @@ async function renderRsengerGroupMessages(snapshot){
 
     container.innerHTML = html;
 
+    refreshRsengerPinnedTop();
+
 
     /*
      * ==========================================
@@ -41603,23 +41902,33 @@ function closeRsengerGroupMessageMenu(){
 
 }
 
-
 function showRsengerGroupMessageMenu(
     messageId,
     senderUid
 ){
 
+    /* =========================================
+       ADMIN ONLY
+       ========================================= */
+
     if(!isRsengerGroupAdmin()){
         return;
     }
+
 
     if(!messageId || !senderUid){
         return;
     }
 
+
     rsengerSelectedGroupMessage = {
-        id: messageId,
-        senderUid: senderUid
+
+        id:
+            messageId,
+
+        senderUid:
+            senderUid
+
     };
 
 
@@ -41628,12 +41937,216 @@ function showRsengerGroupMessageMenu(
             "rsengerGroupMessageMenu"
         );
 
-    if(!menu){
+
+    const messageEl =
+        document.querySelector(
+            '.rsenger-group-message[data-message-id="' +
+            CSS.escape(messageId) +
+            '"]'
+        );
+
+
+    if(!menu || !messageEl){
         return;
     }
 
 
-    menu.classList.remove("hidden");
+    /* =========================================
+       CHECK PIN STATUS
+       ========================================= */
+
+    db
+    .collection("groups")
+    .doc(RSENGER_GROUP_ID)
+    .collection("messages")
+    .doc(messageId)
+    .get()
+    .then(function(doc){
+
+        if(!doc.exists){
+            return;
+        }
+
+
+        const data =
+            doc.data() || {};
+
+
+        const pinButton =
+            document.getElementById(
+                "rsengerMessagePinBtn"
+            );
+
+
+        if(pinButton){
+
+            if(data.pinned === true){
+
+                pinButton.innerHTML = `
+                    <i data-lucide="pin-off"></i>
+                    <span>Unpin message</span>
+                `;
+
+            }else{
+
+                pinButton.innerHTML = `
+                    <i data-lucide="pin"></i>
+                    <span>Pin message</span>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================
+           CHECK RESTRICTION
+           ===================================== */
+
+        const restrictButton =
+            document.getElementById(
+                "rsengerMessageRestrictBtn"
+            );
+
+
+        if(restrictButton){
+
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("restrictedMembers")
+            .doc(senderUid)
+            .get()
+            .then(function(restrictedDoc){
+
+                if(restrictedDoc.exists){
+
+                    restrictButton.innerHTML = `
+                        <i data-lucide="user-round-check"></i>
+                        <span>Unrestrict</span>
+                    `;
+
+                }else{
+
+                    restrictButton.innerHTML = `
+                        <i data-lucide="user-round-x"></i>
+                        <span>Restrict</span>
+                    `;
+
+                }
+
+
+                if(window.lucide){
+                    lucide.createIcons();
+                }
+
+            });
+
+        }
+
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+    });
+
+
+    /* =========================================
+       POSITION BESIDE MESSAGE
+       ========================================= */
+
+    menu.classList.remove(
+        "hidden"
+    );
+
+
+    menu.style.visibility =
+        "hidden";
+
+
+    const messageRect =
+        messageEl.getBoundingClientRect();
+
+
+    const menuWidth =
+        Math.min(
+            235,
+            window.innerWidth - 28
+        );
+
+
+    const menuHeight =
+        4 * 50 + 20;
+
+
+    let left =
+        messageRect.right + 10;
+
+
+    /*
+     * যদি ডানদিকে জায়গা না থাকে,
+     * message-এর বাঁদিকে যাবে।
+     */
+
+    if(
+        left + menuWidth >
+        window.innerWidth - 14
+    ){
+
+        left =
+            messageRect.left -
+            menuWidth -
+            10;
+
+    }
+
+
+    if(left < 14){
+
+        left = 14;
+
+    }
+
+
+    let top =
+        messageRect.top;
+
+
+    if(
+        top + menuHeight >
+        window.innerHeight - 14
+    ){
+
+        top =
+            window.innerHeight -
+            menuHeight -
+            14;
+
+    }
+
+
+    if(top < 14){
+
+        top = 14;
+
+    }
+
+
+    menu.style.left =
+        left + "px";
+
+
+    menu.style.top =
+        top + "px";
+
+
+    menu.style.bottom =
+        "auto";
+
+
+    menu.style.visibility =
+        "visible";
 
 
     if(window.lucide){
@@ -41742,6 +42255,576 @@ async function adminBlockSelectedMessage(){
     }
 
 }
+
+
+/* =========================================================
+   ADMIN RESTRICT / UNRESTRICT FROM MESSAGE
+   ========================================================= */
+
+async function adminRestrictSelectedMessage(){
+
+    if(!isRsengerGroupAdmin()){
+        return;
+    }
+
+
+    const selected =
+        rsengerSelectedGroupMessage;
+
+
+    if(!selected){
+        return;
+    }
+
+
+    if(
+        selected.senderUid ===
+        window.RSENGER_ADMIN_UID
+    ){
+
+        closeRsengerGroupMessageMenu();
+
+        return;
+    }
+
+
+    try{
+
+        const ref =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("restrictedMembers")
+            .doc(selected.senderUid);
+
+
+        const current =
+            await ref.get();
+
+
+        if(current.exists){
+
+            await ref.delete();
+
+
+            premiumAlert(
+                "This member can send messages again.",
+                "Member Unrestricted",
+                "success"
+            );
+
+        }else{
+
+            await ref.set({
+
+                uid:
+                    selected.senderUid,
+
+                restrictedBy:
+                    auth.currentUser.uid,
+
+                restrictedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+
+            premiumAlert(
+                "This member is now restricted from sending messages.",
+                "Member Restricted",
+                "success"
+            );
+
+        }
+
+
+        closeRsengerGroupMessageMenu();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Message restrict error:",
+            error
+        );
+
+
+        premiumAlert(
+            "Could not update member restriction.",
+            "Restriction Failed",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ADMIN PIN / UNPIN MESSAGE
+   MAXIMUM 10 PINNED MESSAGES
+   ========================================================= */
+
+async function adminToggleSelectedMessagePin(){
+
+    if(!isRsengerGroupAdmin()){
+        return;
+    }
+
+
+    const selected =
+        rsengerSelectedGroupMessage;
+
+
+    if(!selected){
+        return;
+    }
+
+
+    try{
+
+        const messagesRef =
+            db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("messages");
+
+
+        const selectedRef =
+            messagesRef.doc(
+                selected.id
+            );
+
+
+        const selectedDoc =
+            await selectedRef.get();
+
+
+        if(!selectedDoc.exists){
+
+            closeRsengerGroupMessageMenu();
+
+            return;
+        }
+
+
+        const selectedData =
+            selectedDoc.data() || {};
+
+
+        /* =====================================
+           ALREADY PINNED → UNPIN
+           ===================================== */
+
+        if(selectedData.pinned === true){
+
+            await selectedRef.update({
+
+                pinned:
+                    false,
+
+                pinnedAt:
+                    firebase.firestore
+                    .FieldValue
+                    .delete()
+
+            });
+
+
+            closeRsengerGroupMessageMenu();
+
+
+            premiumAlert(
+                "The message has been unpinned.",
+                "Message Unpinned",
+                "success"
+            );
+
+
+            refreshRsengerPinnedTop();
+
+
+            return;
+        }
+
+
+        /* =====================================
+           LOAD CURRENT PINNED MESSAGES
+           ===================================== */
+
+        const snapshot =
+            await messagesRef
+            .where(
+                "pinned",
+                "==",
+                true
+            )
+            .get();
+
+
+        let pinned =
+            [];
+
+
+        snapshot.forEach(
+            function(doc){
+
+                const data =
+                    doc.data() || {};
+
+
+                pinned.push({
+
+                    id:
+                        doc.id,
+
+                    pinnedAt:
+                        data.pinnedAt ||
+                        data.time ||
+                        null
+
+                });
+
+            }
+        );
+
+
+        /* =====================================
+           10 ALREADY PINNED
+           → REMOVE OLDEST PIN
+           ===================================== */
+
+        if(pinned.length >= 10){
+
+            pinned.sort(
+                function(a,b){
+
+                    const aTime =
+                        a.pinnedAt &&
+                        a.pinnedAt.toMillis
+                        ? a.pinnedAt.toMillis()
+                        : 0;
+
+
+                    const bTime =
+                        b.pinnedAt &&
+                        b.pinnedAt.toMillis
+                        ? b.pinnedAt.toMillis()
+                        : 0;
+
+
+                    return aTime - bTime;
+
+                }
+            );
+
+
+            const oldest =
+                pinned[0];
+
+
+            if(oldest){
+
+                await messagesRef
+                .doc(oldest.id)
+                .update({
+
+                    pinned:
+                        false,
+
+                    pinnedAt:
+                        firebase.firestore
+                        .FieldValue
+                        .delete()
+
+                });
+
+            }
+
+        }
+
+
+        /* =====================================
+           PIN NEW MESSAGE
+           ===================================== */
+
+        await selectedRef.update({
+
+            pinned:
+                true,
+
+            pinnedAt:
+                firebase.firestore
+                .FieldValue
+                .serverTimestamp(),
+
+            pinnedBy:
+                auth.currentUser.uid
+
+        });
+
+
+        closeRsengerGroupMessageMenu();
+
+
+        premiumAlert(
+            "Message pinned successfully.",
+            "Message Pinned",
+            "success"
+        );
+
+
+        refreshRsengerPinnedTop();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Pin message error:",
+            error
+        );
+
+
+        premiumAlert(
+            "Could not update message pin.",
+            "Pin Failed",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   REFRESH PINNED MESSAGE TOP BAR
+   ========================================================= */
+
+async function refreshRsengerPinnedTop(){
+
+    const messagesBox =
+        document.getElementById(
+            "rsengerGroupMessages"
+        );
+
+
+    if(!messagesBox){
+        return;
+    }
+
+
+    let bar =
+        document.getElementById(
+            "rsengerPinnedTopBar"
+        );
+
+
+    if(!bar){
+
+        bar =
+            document.createElement(
+                "div"
+            );
+
+        bar.id =
+            "rsengerPinnedTopBar";
+
+
+        messagesBox.parentElement.insertBefore(
+            bar,
+            messagesBox
+        );
+
+    }
+
+
+    try{
+
+        const snapshot =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .collection("messages")
+            .where(
+                "pinned",
+                "==",
+                true
+            )
+            .get();
+
+
+        if(snapshot.empty){
+
+            bar.classList.remove(
+                "active"
+            );
+
+            bar.innerHTML =
+                "";
+
+            return;
+
+        }
+
+
+        let items =
+            [];
+
+
+        snapshot.forEach(
+            function(doc){
+
+                const data =
+                    doc.data() || {};
+
+
+                items.push({
+
+                    id:
+                        doc.id,
+
+                    text:
+                        data.message ||
+                        (
+                            data.photo
+                            ? "Photo message"
+                            : "Pinned message"
+                        ),
+
+                    time:
+                        data.pinnedAt ||
+                        data.time ||
+                        null
+
+                });
+
+            }
+        );
+
+
+        items.sort(
+            function(a,b){
+
+                const aTime =
+                    a.time &&
+                    a.time.toMillis
+                    ? a.time.toMillis()
+                    : 0;
+
+
+                const bTime =
+                    b.time &&
+                    b.time.toMillis
+                    ? b.time.toMillis()
+                    : 0;
+
+
+                return bTime - aTime;
+
+            }
+        );
+
+
+        const latest =
+            items[0];
+
+
+        bar.innerHTML = `
+
+            <div class="rsenger-pinned-top-icon">
+
+                <i data-lucide="pin"></i>
+
+            </div>
+
+
+            <div
+                class="rsenger-pinned-top-content">
+
+                <span
+                    class="rsenger-pinned-top-title">
+
+                    Pinned message
+
+                </span>
+
+
+                <span
+                    class="rsenger-pinned-top-text">
+
+                    ${escapeGroupHTML(
+                        latest.text
+                    )}
+
+                </span>
+
+            </div>
+
+
+            <span
+                class="rsenger-pinned-top-count">
+
+                ${items.length}/10
+
+            </span>
+
+        `;
+
+
+        bar.classList.add(
+            "active"
+        );
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
+
+        /* Tap করলে latest pinned message-এ scroll */
+
+        bar.onclick =
+            function(){
+
+                const target =
+                    document.querySelector(
+                        '.rsenger-group-message[data-message-id="' +
+                        CSS.escape(latest.id) +
+                        '"]'
+                    );
+
+
+                if(target){
+
+                    target.scrollIntoView({
+                        behavior:
+                            "smooth",
+                        block:
+                            "center"
+                    });
+
+                }
+
+            };
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Pinned top bar error:",
+            error
+        );
+
+    }
+
+    }
 
 /* =====================================================
    RSENGER - PREMIUM RESTRICTED MEMBERS PANEL
