@@ -29586,32 +29586,546 @@ function googleLogin(){
 }
 
 // =========================================
-// PREMIUM LIVE FRIEND SEARCH
+// PREMIUM SEARCH OVERLAY CONTROLLER
 // =========================================
 
 let friendSearchTimer = null;
+let searchLayoutTimer = null;
 
-function searchUser(){
 
-    const input = document.getElementById("searchUser");
-    const resultBox = document.getElementById("searchResults");
+function setupSearchOverlay(){
 
-    if(!input || !resultBox) return;
+    const resultBox =
+        document.getElementById("searchResults");
 
-    const value = input.value.trim().toLowerCase();
+    const searchBar =
+        document.querySelector(".premium-search");
 
-    clearTimeout(friendSearchTimer);
+    const bottomNav =
+        document.getElementById("globalBottomNav");
 
-    // Empty search
-    if(value === ""){
-        resultBox.innerHTML = "";
+    if(!resultBox || !searchBar) return;
+
+
+    /* ===============================
+       EMPTY RESULT
+       =============================== */
+
+    if(
+        !resultBox.innerHTML.trim()
+    ){
+
+        resultBox.style.setProperty(
+            "display",
+            "none",
+            "important"
+        );
+
         return;
     }
 
-    friendSearchTimer = setTimeout(() => {
-        performFriendSearch(value);
-    }, 150);
+
+    const searchRect =
+        searchBar.getBoundingClientRect();
+
+
+    /* ===============================
+       BOTTOM NAV POSITION
+       =============================== */
+
+    let bottomSpace = 125;
+
+
+    if(bottomNav){
+
+        const navRect =
+            bottomNav.getBoundingClientRect();
+
+
+        /*
+         * Search result bottom হবে
+         * bottom navigation-এর ঠিক উপরে।
+         */
+
+        bottomSpace =
+            Math.max(
+                90,
+                window.innerHeight -
+                navRect.top +
+                10
+            );
+
+    }
+
+
+    /* ===============================
+       SEARCH RESULT POSITION
+       =============================== */
+
+    resultBox.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "position",
+        "fixed",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "top",
+        (searchRect.bottom + 8) + "px",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "left",
+        searchRect.left + "px",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "right",
+        (window.innerWidth - searchRect.right) + "px",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "bottom",
+        bottomSpace + "px",
+        "important"
+    );
+
+
+    /* ===============================
+       ONLY RESULT SCROLLS
+       =============================== */
+
+    resultBox.style.setProperty(
+        "height",
+        "auto",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "max-height",
+        "none",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "overflow-y",
+        "auto",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "overflow-x",
+        "hidden",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "-webkit-overflow-scrolling",
+        "touch",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "overscroll-behavior",
+        "contain",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "touch-action",
+        "pan-y",
+        "important"
+    );
+
+
+    /* ===============================
+       PREMIUM GLASS BACKGROUND
+       =============================== */
+
+    resultBox.style.setProperty(
+        "background",
+        "linear-gradient(145deg, rgba(9,12,25,.97), rgba(14,17,34,.96))",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "backdrop-filter",
+        "blur(26px) saturate(145%)",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "-webkit-backdrop-filter",
+        "blur(26px) saturate(145%)",
+        "important"
+    );
+
+
+    resultBox.style.setProperty(
+        "border",
+        "1px solid rgba(139,92,246,.20)",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "border-radius",
+        "22px",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "box-shadow",
+        "0 20px 60px rgba(0,0,0,.65), 0 0 35px rgba(139,92,246,.10)",
+        "important"
+    );
+
+
+    resultBox.style.setProperty(
+        "padding",
+        "6px 5px 18px",
+        "important"
+    );
+
+    resultBox.style.setProperty(
+        "box-sizing",
+        "border-box",
+        "important"
+    );
+
+
+    resultBox.style.setProperty(
+        "z-index",
+        "999999",
+        "important"
+    );
+
+
+    resultBox.style.setProperty(
+        "scrollbar-width",
+        "none",
+        "important"
+    );
+
+
+    /* ===============================
+       ACCOUNT CARDS
+       =============================== */
+
+    resultBox
+        .querySelectorAll(".premium-search-card")
+        .forEach(function(card){
+
+            card.style.setProperty(
+                "width",
+                "100%",
+                "important"
+            );
+
+            card.style.setProperty(
+                "box-sizing",
+                "border-box",
+                "important"
+            );
+
+            card.style.setProperty(
+                "flex-shrink",
+                "0",
+                "important"
+            );
+
+        });
+
+
+    /* ===============================
+       BACKDROP / BLUR LAYER
+       =============================== */
+
+    let backdrop =
+        document.getElementById(
+            "rsengerSearchBackdrop"
+        );
+
+
+    if(!backdrop){
+
+        backdrop =
+            document.createElement("div");
+
+        backdrop.id =
+            "rsengerSearchBackdrop";
+
+
+        document.body.appendChild(
+            backdrop
+        );
+
+    }
+
+
+    backdrop.style.setProperty(
+        "position",
+        "fixed",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "left",
+        "0",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "right",
+        "0",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "top",
+        searchRect.bottom + "px",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "bottom",
+        "0",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "background",
+        "rgba(3,5,12,.48)",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "backdrop-filter",
+        "blur(12px)",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "-webkit-backdrop-filter",
+        "blur(12px)",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "pointer-events",
+        "none",
+        "important"
+    );
+
+    backdrop.style.setProperty(
+        "z-index",
+        "999998",
+        "important"
+    );
+
+
+    /* Result-এর ওপর backdrop যাবে না */
+
+    resultBox.style.setProperty(
+        "z-index",
+        "999999",
+        "important"
+    );
+
 }
+
+
+function closeSearchOverlay(){
+
+    const resultBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+    const backdrop =
+        document.getElementById(
+            "rsengerSearchBackdrop"
+        );
+
+
+    if(resultBox){
+
+        resultBox.style.removeProperty(
+            "display"
+        );
+
+        resultBox.style.removeProperty(
+            "position"
+        );
+
+        resultBox.style.removeProperty(
+            "top"
+        );
+
+        resultBox.style.removeProperty(
+            "left"
+        );
+
+        resultBox.style.removeProperty(
+            "right"
+        );
+
+        resultBox.style.removeProperty(
+            "bottom"
+        );
+
+        resultBox.style.removeProperty(
+            "height"
+        );
+
+        resultBox.style.removeProperty(
+            "max-height"
+        );
+
+        resultBox.style.removeProperty(
+            "overflow-y"
+        );
+
+        resultBox.style.removeProperty(
+            "overflow-x"
+        );
+
+        resultBox.style.removeProperty(
+            "background"
+        );
+
+        resultBox.style.removeProperty(
+            "backdrop-filter"
+        );
+
+        resultBox.style.removeProperty(
+            "-webkit-backdrop-filter"
+        );
+
+        resultBox.style.removeProperty(
+            "border"
+        );
+
+        resultBox.style.removeProperty(
+            "border-radius"
+        );
+
+        resultBox.style.removeProperty(
+            "box-shadow"
+        );
+
+        resultBox.style.removeProperty(
+            "z-index"
+        );
+
+        resultBox.style.removeProperty(
+            "padding"
+        );
+
+    }
+
+
+    if(backdrop){
+
+        backdrop.remove();
+
+    }
+
+}
+
+
+/* =========================================
+   SEARCH USER
+   ========================================= */
+
+function searchUser(){
+
+    const input =
+        document.getElementById(
+            "searchUser"
+        );
+
+    const resultBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if(!input || !resultBox) return;
+
+
+    const value =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    clearTimeout(
+        friendSearchTimer
+    );
+
+
+    clearTimeout(
+        searchLayoutTimer
+    );
+
+
+    /* ===============================
+       EMPTY SEARCH
+       =============================== */
+
+    if(value === ""){
+
+        resultBox.innerHTML = "";
+
+        closeSearchOverlay();
+
+        return;
+
+    }
+
+
+    /* ===============================
+       OPEN OVERLAY IMMEDIATELY
+       =============================== */
+
+    resultBox.innerHTML = `
+        <div class="premium-search-loading">
+
+            <div class="premium-search-spinner"></div>
+
+            <span>
+                Finding people...
+            </span>
+
+        </div>
+    `;
+
+
+    setupSearchOverlay();
+
+
+    /* ===============================
+       SEARCH
+       =============================== */
+
+    friendSearchTimer =
+        setTimeout(function(){
+
+            performFriendSearch(
+                value
+            );
+
+        },150);
+
+    }
 
 
 // =========================================
@@ -30114,6 +30628,8 @@ async function performFriendSearch(searchText){
 
         resultBox.innerHTML = html;
 
+        setupSearchOverlay();
+
 
         if(window.lucide){
             lucide.createIcons();
@@ -30143,6 +30659,8 @@ async function performFriendSearch(searchText){
 
             </div>
         `;
+
+        setupSearchOverlay();
 
         if(window.lucide){
             lucide.createIcons();
