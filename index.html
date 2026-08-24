@@ -28630,6 +28630,182 @@ input::placeholder{
 }
 
 
+/* =========================================================
+   RSENGER — ACCOUNT SEARCH RESULTS
+   ONLY RESULTS SCROLL
+   PAGE ITSELF NEVER SCROLLS
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   HOME ACCOUNT SEARCH
+   --------------------------------------------------------- */
+
+#homePage{
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+
+    overflow: hidden !important;
+
+    overscroll-behavior: none !important;
+}
+
+
+#searchResults{
+
+    /* Search result-এর জন্য নির্দিষ্ট জায়গা */
+    max-height: calc(100dvh - 230px) !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior-y: contain !important;
+    overscroll-behavior-x: none !important;
+
+    touch-action: pan-y !important;
+
+    scrollbar-width: none;
+
+    position: relative;
+
+    box-sizing: border-box;
+
+}
+
+
+/* Chrome / Android scrollbar hide */
+
+#searchResults::-webkit-scrollbar{
+
+    width: 0 !important;
+    height: 0 !important;
+
+    display: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   ADMIN MEMBER SEARCH
+   --------------------------------------------------------- */
+
+#rsengerAdminSearchResults{
+
+    max-height: 45dvh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior-y: contain !important;
+
+    touch-action: pan-y !important;
+
+    scrollbar-width: none;
+
+}
+
+
+#rsengerAdminSearchResults::-webkit-scrollbar{
+
+    display: none !important;
+
+}
+
+
+/* ---------------------------------------------------------
+   GROUP ADMIN / MEMBER SEARCH
+   --------------------------------------------------------- */
+
+#rsengerGroupAdminSearchResults{
+
+    max-height: 45dvh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior-y: contain !important;
+
+    touch-action: pan-y !important;
+
+    scrollbar-width: none;
+
+}
+
+
+#rsengerGroupAdminSearchResults::-webkit-scrollbar{
+
+    display: none !important;
+
+}
+
+
+/* ---------------------------------------------------------
+   SEARCH ACCOUNT CARDS
+   --------------------------------------------------------- */
+
+#searchResults .premium-search-card,
+#rsengerAdminSearchResults .rsenger-admin-search-item,
+#rsengerGroupAdminSearchResults .rsenger-admin-search-item{
+
+    flex-shrink: 0;
+
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE — HOME SEARCH
+   --------------------------------------------------------- */
+
+@media(max-width:600px){
+
+    #searchResults{
+
+        /*
+         * Header + search bar + bottom navigation বাদ দিয়ে
+         * বাকি জায়গার মধ্যে শুধু result scroll করবে।
+         */
+
+        max-height:
+            calc(100dvh - 245px) !important;
+
+        padding-bottom:
+            90px;
+
+    }
+
+
+    #rsengerAdminSearchResults,
+    #rsengerGroupAdminSearchResults{
+
+        max-height:
+            48dvh !important;
+
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   VERY SMALL SCREEN
+   --------------------------------------------------------- */
+
+@media(max-height:650px){
+
+    #searchResults{
+
+        max-height:
+            calc(100dvh - 210px) !important;
+
+    }
+
+}
+
+
     
 </style>
 <script>
