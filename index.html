@@ -28009,6 +28009,276 @@ input::placeholder{
 }
 
 
+/* =========================================================
+   RSENGER — MEDIA PERMISSION
+   PREMIUM POPUP
+   ========================================================= */
+
+#premiumPopup.media-permission-premium{
+
+    background:
+
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(139,92,246,.25),
+            transparent 45%
+        ),
+
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(37,99,235,.10),
+            transparent 40%
+        ),
+
+        linear-gradient(
+            145deg,
+            #1b192d,
+            #11121f 55%,
+            #090b13
+        ) !important;
+
+    border:
+        1px solid
+        rgba(157,125,255,.25) !important;
+
+    border-radius:
+        29px !important;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.80),
+        0 0 55px rgba(111,70,240,.18),
+        inset 0 1px 0
+        rgba(255,255,255,.075) !important;
+
+    overflow:
+        hidden !important;
+
+    color:
+        #ffffff !important;
+}
+
+
+/* ================= ICON ================= */
+
+#premiumPopup.media-permission-premium
+#premiumPopupIcon{
+
+    width:
+        72px !important;
+
+    height:
+        72px !important;
+
+    margin:
+        0 auto 18px !important;
+
+    border-radius:
+        22px !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        center !important;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(139,92,246,.22),
+            rgba(59,130,246,.08)
+        ) !important;
+
+    border:
+        1px solid
+        rgba(165,135,255,.28) !important;
+
+    color:
+        #ad91ff !important;
+
+    box-shadow:
+
+        0 0 35px
+        rgba(120,75,255,.20),
+
+        inset 0 1px 0
+        rgba(255,255,255,.07) !important;
+}
+
+
+#premiumPopup.media-permission-premium
+#premiumPopupIcon svg{
+
+    width:
+        32px !important;
+
+    height:
+        32px !important;
+
+    stroke-width:
+        1.8 !important;
+}
+
+
+/* ================= TITLE ================= */
+
+#premiumPopup.media-permission-premium
+#premiumPopupTitle{
+
+    color:
+        #ffffff !important;
+
+    font-size:
+        21px !important;
+
+    font-weight:
+        750 !important;
+}
+
+
+/* ================= MESSAGE ================= */
+
+#premiumPopup.media-permission-premium
+#premiumPopupMessage{
+
+    color:
+        rgba(225,222,238,.66) !important;
+
+    font-size:
+        13.5px !important;
+
+    line-height:
+        1.6 !important;
+
+    white-space:
+        pre-line !important;
+}
+
+
+/* ================= ADMIN ONLY ================= */
+
+#premiumPopup.media-permission-premium
+#premiumPopupCancel{
+
+    background:
+        rgba(255,255,255,.055) !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.10) !important;
+
+    color:
+        #e8e4f5 !important;
+
+    border-radius:
+        16px !important;
+
+    font-weight:
+        700 !important;
+}
+
+
+/* ================= EVERYONE ================= */
+
+#premiumPopup.media-permission-premium
+#premiumPopupConfirm{
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #9368ff,
+            #7346e8,
+            #5833c5
+        ) !important;
+
+    border:
+        1px solid
+        rgba(193,167,255,.30) !important;
+
+    color:
+        #ffffff !important;
+
+    border-radius:
+        16px !important;
+
+    font-weight:
+        700 !important;
+
+    box-shadow:
+
+        0 12px 32px
+        rgba(102,61,220,.30),
+
+        inset 0 1px 0
+        rgba(255,255,255,.16) !important;
+}
+
+
+/* ================= SUCCESS ================= */
+
+#premiumPopup.media-permission-success
+#premiumPopupIcon{
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(54,211,153,.17),
+            rgba(16,185,129,.06)
+        ) !important;
+
+    border-color:
+        rgba(82,220,170,.25) !important;
+
+    color:
+        #62e5ae !important;
+}
+
+
+/* ================= ERROR ================= */
+
+#premiumPopup.media-permission-error
+#premiumPopupIcon{
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(255,70,95,.17),
+            rgba(190,35,65,.06)
+        ) !important;
+
+    border-color:
+        rgba(255,92,115,.25) !important;
+
+    color:
+        #ff788d !important;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:420px){
+
+    #premiumPopup.media-permission-premium{
+
+        width:
+            calc(100vw - 28px) !important;
+
+        border-radius:
+            26px !important;
+
+        padding:
+            25px 18px 20px !important;
+    }
+
+}
+
+
     
 </style>
 <script>
@@ -38504,6 +38774,25 @@ async function sendRsengerGroupPhoto(){
     const messagingLocked =
         await isRsengerMessagingLockedForUser();
 
+    /* =====================================================
+   MEDIA PERMISSION CHECK
+   ===================================================== */
+
+const mediaAllowed =
+    await isRsengerMediaAllowedForUser();
+
+if(!mediaAllowed){
+
+    premiumAlert(
+        "Only the admin can send photos, videos and files in this group.",
+        "Media Restricted",
+        "error",
+        "media-permission-error"
+    );
+
+    return;
+}
+
     if(messagingLocked){
 
         premiumAlert(
@@ -38734,6 +39023,99 @@ async function sendRsengerGroupPhoto(){
 
         }
 
+    }
+
+}
+
+
+/* =========================================================
+   RSENGER MEDIA PERMISSION CHECK
+   ========================================================= */
+
+async function isRsengerMediaAllowedForUser(){
+
+    const me =
+        auth.currentUser;
+
+    if(!me){
+        return false;
+    }
+
+
+    /* MAIN ADMIN ALWAYS ALLOWED */
+
+    if(
+        me.uid ===
+        window.RSENGER_ADMIN_UID
+    ){
+        return true;
+    }
+
+
+    try{
+
+        const groupDoc =
+            await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .get();
+
+
+        if(!groupDoc.exists){
+            return true;
+        }
+
+
+        const data =
+            groupDoc.data() || {};
+
+
+        const permission =
+            data.mediaPermission ||
+            "everyone";
+
+
+        /* EVERYONE */
+
+        if(
+            permission ===
+            "everyone"
+        ){
+            return true;
+        }
+
+
+        /* ADMIN ONLY */
+
+        if(
+            permission ===
+            "admin"
+        ){
+
+            return (
+                await refreshRsengerAdminPermission()
+            );
+
+        }
+
+
+        return true;
+
+    }
+    catch(error){
+
+        console.error(
+            "Media permission check error:",
+            error
+        );
+
+        /*
+         * Fail closed:
+         * permission check fail হলে
+         * media send বন্ধ থাকবে।
+         */
+
+        return false;
     }
 
 }
@@ -39239,6 +39621,30 @@ if(restrictedDoc.exists){
         return;
 
     }
+
+
+/* =====================================================
+   MEDIA PERMISSION CHECK
+   Only when media is attached
+   ===================================================== */
+
+if(selectedRsengerGroupPhoto){
+
+    const mediaAllowed =
+        await isRsengerMediaAllowedForUser();
+
+    if(!mediaAllowed){
+
+        premiumAlert(
+            "Only the admin can send photos, videos and files in this group.",
+            "Media Restricted",
+            "error",
+            "media-permission-error"
+        );
+
+        return;
+    }
+}
 
 
     try{
@@ -44034,7 +44440,7 @@ async function openRsengerMessagePermission(){
 }
 
 /* =========================================================
-   5. MEDIA PERMISSION
+   5. MEDIA PERMISSION — PREMIUM
    ========================================================= */
 
 async function openRsengerMediaPermission(){
@@ -44042,29 +44448,116 @@ async function openRsengerMediaPermission(){
     const me = auth.currentUser;
 
     if(
-    !me ||
-    !(await refreshRsengerAdminPermission())
-){
-    return;
-    }
-
-    const choice =
-        prompt(
-            "Media Permission\n\n" +
-            "Type:\n" +
-            "1 = Everyone\n" +
-            "2 = Admin only\n\n" +
-            "Enter 1 or 2:"
-        );
-
-    if(choice !== "1" && choice !== "2"){
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
         return;
     }
 
+    /* =========================================
+       LOAD CURRENT PERMISSION
+       ========================================= */
+
+    let currentPermission = "everyone";
+
+    try{
+
+        const groupDoc =
+            await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .get();
+
+        if(groupDoc.exists){
+
+            const data =
+                groupDoc.data() || {};
+
+            currentPermission =
+                data.mediaPermission ||
+                "everyone";
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Media permission load error:",
+            error
+        );
+
+    }
+
+
+    const currentLabel =
+        currentPermission === "admin"
+        ? "Admin Only"
+        : "Everyone";
+
+
+    /* =========================================
+       PREMIUM CHOICE POPUP
+       ========================================= */
+
+    const choicePromise =
+        premiumConfirm({
+
+            title:
+                "Media Permission",
+
+            message:
+                "Choose who can send photos, videos and files in this group.\n\n" +
+                "Current setting: " +
+                currentLabel,
+
+            type:
+                "success",
+
+            icon:
+                "images",
+
+            confirmText:
+                "Everyone",
+
+            popupClass:
+                "media-permission-premium"
+
+        });
+
+
+    /* =========================================
+       SECOND BUTTON = ADMIN ONLY
+       ========================================= */
+
+    setTimeout(function(){
+
+        const cancel =
+            document.getElementById(
+                "premiumPopupCancel"
+            );
+
+        if(cancel){
+
+            cancel.innerText =
+                "Admin Only";
+        }
+
+    }, 30);
+
+
+    const everyone =
+        await choicePromise;
+
+
     const permission =
-        choice === "1"
+        everyone
         ? "everyone"
         : "admin";
+
+
+    /* =========================================
+       SAVE FIREBASE
+       ========================================= */
 
     try{
 
@@ -44076,41 +44569,54 @@ async function openRsengerMediaPermission(){
                 mediaPermission:
                     permission
 
-            }, {
-
-                merge: true
-
+            },{
+                merge:
+                    true
             });
 
+
+        /* =====================================
+           SUCCESS
+           ===================================== */
 
         premiumAlert(
 
             permission === "everyone"
-            ? "Everyone can send media."
-            : "Only the admin can send media.",
+            ? "Everyone can send photos, videos and files."
+            : "Only the admin can send photos, videos and files.",
 
-            "Media Permission",
+            "Media Permission Updated",
 
-            "success"
+            "success",
+
+            "media-permission-success"
 
         );
 
-    }catch(error){
+    }
+    catch(error){
 
         console.error(
             "Media permission error:",
             error
         );
 
+
         premiumAlert(
-            "Could not update media permission.",
-            "Error",
-            "error"
+
+            "Could not update media permission. Please try again.",
+
+            "Permission Update Failed",
+
+            "error",
+
+            "media-permission-error"
+
         );
 
     }
 
-}
+                }
 
 
 /* =========================================================
