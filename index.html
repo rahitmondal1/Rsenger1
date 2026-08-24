@@ -29844,102 +29844,7 @@ function setupSearchOverlay(){
         });
 
 
-    /* ===============================
-       BACKDROP / BLUR LAYER
-       =============================== */
-
-    let backdrop =
-        document.getElementById(
-            "rsengerSearchBackdrop"
-        );
-
-
-    if(!backdrop){
-
-        backdrop =
-            document.createElement("div");
-
-        backdrop.id =
-            "rsengerSearchBackdrop";
-
-
-        document.body.appendChild(
-            backdrop
-        );
-
     }
-
-
-    backdrop.style.setProperty(
-        "position",
-        "fixed",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "left",
-        "0",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "right",
-        "0",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "top",
-        searchRect.bottom + "px",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "bottom",
-        "0",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "background",
-        "rgba(3,5,12,.48)",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "backdrop-filter",
-        "blur(12px)",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "-webkit-backdrop-filter",
-        "blur(12px)",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "pointer-events",
-        "none",
-        "important"
-    );
-
-    backdrop.style.setProperty(
-        "z-index",
-        "999998",
-        "important"
-    );
-
-
-    /* Result-এর ওপর backdrop যাবে না */
-
-    resultBox.style.setProperty(
-        "z-index",
-        "999999",
-        "important"
-    );
-
-}
 
 
 function closeSearchOverlay(){
@@ -29949,10 +29854,7 @@ function closeSearchOverlay(){
             "searchResults"
         );
 
-    const backdrop =
-        document.getElementById(
-            "rsengerSearchBackdrop"
-        );
+
 
 
     if(resultBox){
@@ -30032,11 +29934,6 @@ function closeSearchOverlay(){
     }
 
 
-    if(backdrop){
-
-        backdrop.remove();
-
-    }
 
 }
 
