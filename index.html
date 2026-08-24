@@ -39128,6 +39128,8 @@ async function unblockRsengerMember(uid){
 
 function updateRsengerGroupSendButton(){
 
+    await updateRsengerGroupMessageAccess();
+
     const input =
         document.getElementById(
             "rsengerGroupMessageInput"
@@ -43984,6 +43986,8 @@ async function openRsengerMessagePermission(){
 
             });
 
+        await updateRsengerGroupMessageAccess();
+
 
         /* =====================================
            SUCCESS
@@ -45879,13 +45883,19 @@ async function isRsengerMessagingLockedForUser(){
         return true;
     }
 
-    /* MAIN ADMIN IS ALWAYS ALLOWED */
+
+    /* =========================================
+       MAIN ADMIN
+       Always allowed
+       ========================================= */
+
     if(
         me.uid ===
         window.RSENGER_ADMIN_UID
     ){
         return false;
     }
+
 
     try{
 
@@ -45900,21 +45910,72 @@ async function isRsengerMessagingLockedForUser(){
             ? groupDoc.data() || {}
             : {};
 
-        return (
+
+        /* =========================================
+           MESSAGE CONTROL OFF
+           
+           Main Admin already returned above.
+           Secondary admins are also blocked.
+           ========================================= */
+
+        if(
             data.messagesDisabled === true
-        );
+        ){
+
+            return true;
+
+        }
+
+
+        /* =========================================
+           MESSAGE PERMISSION — ADMIN ONLY
+           
+           Main Admin:
+           already allowed above.
+
+           Secondary Admin:
+           check /admins/{uid}
+
+           Normal Member:
+           blocked.
+           ========================================= */
+
+        if(
+            data.messagePermission === "admin"
+        ){
+
+            const adminDoc =
+                await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .collection("admins")
+                .doc(me.uid)
+                .get();
+
+            return !adminDoc.exists;
+
+        }
+
+
+        /* =========================================
+           EVERYONE
+           ========================================= */
+
+        return false;
 
     }
     catch(error){
 
         console.error(
-            "Message control access error:",
+            "Message permission access error:",
             error
         );
 
-        /* নিরাপত্তার জন্য error হলে block */
+        /* Security first */
         return true;
+
     }
+
 }
 
 /* =========================================================
@@ -46366,19 +46427,30 @@ if(
 
 async function updateRsengerGroupMessageAccess(){
 
-    const me = auth.currentUser;
+    const me =
+        auth.currentUser;
 
     const inputArea =
         document.querySelector(
             ".rsenger-group-input-area"
         );
 
-    if(!inputArea || !me){
+    const disabledView =
+        document.getElementById(
+            "rsengerMessageDisabledView"
+        );
+
+    if(
+        !inputArea ||
+        !me
+    ){
         return;
     }
 
 
-    /* MAIN ADMIN ALWAYS GETS NORMAL INPUT */
+    /* =========================================
+       MAIN ADMIN
+       ========================================= */
 
     if(
         me.uid ===
@@ -46390,26 +46462,153 @@ async function updateRsengerGroupMessageAccess(){
         );
 
         return;
+
     }
 
 
-    const locked =
-        await isRsengerMessagingLockedForUser();
+    try{
+
+        const groupDoc =
+            await db
+            .collection("groups")
+            .doc(RSENGER_GROUP_ID)
+            .get();
+
+        const data =
+            groupDoc.exists
+            ? groupDoc.data() || {}
+            : {};
 
 
-    if(locked){
+        /* =========================================
+           MESSAGE CONTROL OFF
+           ========================================= */
+
+        if(
+            data.messagesDisabled === true
+        ){
+
+            inputArea.classList.add(
+                "rsenger-message-disabled"
+            );
+
+            if(disabledView){
+
+                disabledView
+                    .querySelector("strong")
+                    .textContent =
+                    "Messaging is disabled";
+
+                disabledView
+                    .querySelector("span")
+                    .textContent =
+                    "Only the Main Admin can send messages right now.";
+
+            }
+
+            return;
+
+        }
+
+
+        /* =========================================
+           ADMIN ONLY
+           ========================================= */
+
+        if(
+            data.messagePermission === "admin"
+        ){
+
+            const adminDoc =
+                await db
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .collection("admins")
+                .doc(me.uid)
+                .get();
+
+
+            /* Secondary Admin */
+
+            if(adminDoc.exists){
+
+                inputArea.classList.remove(
+                    "rsenger-message-disabled"
+                );
+
+                return;
+
+            }
+
+
+            /* Normal Member */
+
+            inputArea.classList.add(
+                "rsenger-message-disabled"
+            );
+
+
+            if(disabledView){
+
+                disabledView
+                    .querySelector("strong")
+                    .textContent =
+                    "Admin Only";
+
+                disabledView
+                    .querySelector("span")
+                    .textContent =
+                    "Only admins can send messages.";
+
+            }
+
+            if(window.lucide){
+
+                lucide.createIcons();
+
+            }
+
+            return;
+
+        }
+
+
+        /* =========================================
+           EVERYONE
+           ========================================= */
+
+        inputArea.classList.remove(
+            "rsenger-message-disabled"
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Message access UI error:",
+            error
+        );
 
         inputArea.classList.add(
             "rsenger-message-disabled"
         );
 
-    }
-    else{
+        if(disabledView){
 
-        inputArea.classList.remove(
-            "rsenger-message-disabled"
-        );
+            disabledView
+                .querySelector("strong")
+                .textContent =
+                "Messaging unavailable";
+
+            disabledView
+                .querySelector("span")
+                .textContent =
+                "Please try again later.";
+
+        }
+
     }
+
 }
                       
 
