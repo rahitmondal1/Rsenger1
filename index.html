@@ -28279,6 +28279,357 @@ input::placeholder{
 }
 
 
+
+/* =========================================================
+   RSENGER — ADMIN ACTIVITY PREMIUM
+   ========================================================= */
+
+#premiumPopup.admin-activity-premium{
+
+    width:
+        min(620px, calc(100vw - 28px)) !important;
+
+    max-height:
+        82vh !important;
+
+    background:
+
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(139,92,246,.22),
+            transparent 45%
+        ),
+
+        linear-gradient(
+            145deg,
+            #1b192d,
+            #11121f 55%,
+            #090b13
+        ) !important;
+
+    border:
+        1px solid
+        rgba(157,125,255,.22) !important;
+
+    border-radius:
+        28px !important;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.78),
+        0 0 50px rgba(111,70,240,.15) !important;
+
+}
+
+
+#premiumPopup.admin-activity-premium
+#premiumPopupIcon{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(139,92,246,.20),
+            rgba(59,130,246,.07)
+        ) !important;
+
+    border-color:
+        rgba(165,135,255,.25) !important;
+
+    color:
+        #aa8cff !important;
+
+}
+
+
+#premiumPopup.admin-activity-premium
+#premiumPopupMessage{
+
+    max-height:
+        58vh !important;
+
+    overflow-y:
+        auto !important;
+
+    padding-right:
+        4px !important;
+
+}
+
+
+/* ACTIVITY LIST */
+
+.rsenger-activity-list{
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        10px;
+
+    text-align:
+        left;
+
+}
+
+
+/* CARD */
+
+.rsenger-activity-card{
+
+    display:
+        flex;
+
+    gap:
+        13px;
+
+    padding:
+        14px;
+
+    border-radius:
+        18px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,.075);
+
+    transition:
+        .2s ease;
+
+}
+
+
+.rsenger-activity-card:hover{
+
+    background:
+        rgba(139,92,246,.08);
+
+    border-color:
+        rgba(139,92,246,.18);
+
+}
+
+
+/* ICON */
+
+.rsenger-activity-icon{
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    min-width:
+        42px;
+
+    border-radius:
+        14px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(139,92,246,.18),
+            rgba(59,130,246,.06)
+        );
+
+    border:
+        1px solid
+        rgba(165,135,255,.18);
+
+    color:
+        #a98cff;
+
+}
+
+
+.rsenger-activity-icon svg{
+
+    width:
+        20px;
+
+    height:
+        20px;
+
+}
+
+
+/* CONTENT */
+
+.rsenger-activity-content{
+
+    min-width:
+        0;
+
+    flex:
+        1;
+
+}
+
+
+.rsenger-activity-top{
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+}
+
+
+.rsenger-activity-top strong{
+
+    color:
+        #f4f1ff;
+
+    font-size:
+        14px;
+
+    font-weight:
+        750;
+
+}
+
+
+.rsenger-activity-time{
+
+    color:
+        #777d91;
+
+    font-size:
+        10px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.rsenger-activity-description{
+
+    margin-top:
+        5px;
+
+    color:
+        rgba(225,222,238,.65);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.45;
+
+}
+
+
+.rsenger-activity-meta{
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+    margin-top:
+        9px;
+
+    color:
+        #8f96aa;
+
+    font-size:
+        10px;
+
+}
+
+
+.rsenger-activity-meta span{
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        4px;
+
+}
+
+
+.rsenger-activity-meta svg{
+
+    width:
+        12px;
+
+    height:
+        12px;
+
+}
+
+
+.rsenger-activity-extra{
+
+    color:
+        #a98cff;
+
+}
+
+
+@media(max-width:420px){
+
+    #premiumPopup.admin-activity-premium{
+
+        width:
+            calc(100vw - 20px) !important;
+
+        border-radius:
+            24px !important;
+
+    }
+
+    .rsenger-activity-card{
+
+        padding:
+            12px;
+
+    }
+
+    .rsenger-activity-time{
+
+        font-size:
+            9px;
+
+    }
+
+}
+
+
     
 </style>
 <script>
@@ -44620,7 +44971,7 @@ async function openRsengerMediaPermission(){
 
 
 /* =========================================================
-   6. ADMIN ACTIVITY
+   RSENGER — PREMIUM ADMIN ACTIVITY
    ========================================================= */
 
 async function openRsengerAdminActivity(){
@@ -44628,31 +44979,28 @@ async function openRsengerAdminActivity(){
     const me = auth.currentUser;
 
     if(
-    !me ||
-    !(await refreshRsengerAdminPermission())
-){
-    return;
+        !me ||
+        !(await refreshRsengerAdminPermission())
+    ){
+        return;
     }
 
     try{
 
         const snapshot =
             await db
-            .collection("groups")
-            .doc(RSENGER_GROUP_ID)
-            .collection("adminActivity")
-            .orderBy(
-                "time",
-                "desc"
-            )
-            .limit(50)
-            .get();
+                .collection("groups")
+                .doc(RSENGER_GROUP_ID)
+                .collection("adminActivity")
+                .orderBy("time", "desc")
+                .limit(100)
+                .get();
 
 
         if(snapshot.empty){
 
             premiumAlert(
-                "No admin activity yet.",
+                "No administrator activity has been recorded yet.",
                 "Admin Activity",
                 "info"
             );
@@ -44661,7 +45009,7 @@ async function openRsengerAdminActivity(){
         }
 
 
-        let text = "";
+        let html = "";
 
 
         snapshot.forEach(function(doc){
@@ -44670,37 +45018,465 @@ async function openRsengerAdminActivity(){
                 doc.data() || {};
 
             let action =
-                data.action ||
-                "Unknown action";
+                data.action || "unknown";
 
-            action =
-                action
-                .replaceAll("_", " ");
 
-            text +=
-                "• " +
-                action +
-                "\n";
+            const targetName =
+                data.targetName ||
+                data.targetUsername ||
+                "Unknown Member";
+
+
+            const targetUsername =
+                data.targetUsername
+                ? "@" + data.targetUsername
+                : "";
+
+
+            /* ================= ACTION TEXT ================= */
+
+            let title =
+                "Administrator Activity";
+
+            let description =
+                "";
+
+
+            switch(action){
+
+                case "make_admin":
+
+                    title =
+                        "Administrator Added";
+
+                    description =
+                        targetName +
+                        " was promoted to administrator.";
+
+                    break;
+
+
+                case "remove_admin":
+
+                    title =
+                        "Administrator Removed";
+
+                    description =
+                        targetName +
+                        " was removed from administrator access.";
+
+                    break;
+
+
+                case "restrict_member":
+
+                    title =
+                        "Member Restricted";
+
+                    description =
+                        targetName +
+                        " was restricted from group activity.";
+
+                    break;
+
+
+                case "unrestrict_member":
+
+                    title =
+                        "Member Unrestricted";
+
+                    description =
+                        targetName +
+                        " was unrestricted.";
+
+                    break;
+
+
+                case "remove_member":
+
+                    title =
+                        "Member Removed";
+
+                    description =
+                        targetName +
+                        " was removed from the group.";
+
+                    break;
+
+
+                case "block_member":
+
+                    title =
+                        "Member Blocked";
+
+                    description =
+                        targetName +
+                        " was blocked.";
+
+                    break;
+
+
+                case "unblock_member":
+
+                    title =
+                        "Member Unblocked";
+
+                    description =
+                        targetName +
+                        " was unblocked.";
+
+                    break;
+
+
+                case "clear_all_messages":
+
+                    title =
+                        "Messages Cleared";
+
+                    description =
+                        "All group messages were cleared.";
+
+                    break;
+
+
+                default:
+
+                    title =
+                        action
+                        .replaceAll("_"," ")
+                        .replace(
+                            /\b\w/g,
+                            function(c){
+                                return c.toUpperCase();
+                            }
+                        );
+
+                    description =
+                        "An administrator action was performed.";
+
+            }
+
+
+            /* ================= TIME ================= */
+
+            let timeText =
+                "Time unavailable";
+
+
+            if(data.time){
+
+                try{
+
+                    const date =
+                        data.time.toDate();
+
+                    timeText =
+                        date.toLocaleString(
+                            "en-IN",
+                            {
+                                day:
+                                    "2-digit",
+
+                                month:
+                                    "short",
+
+                                year:
+                                    "numeric",
+
+                                hour:
+                                    "2-digit",
+
+                                minute:
+                                    "2-digit",
+
+                                hour12:
+                                    true
+                            }
+                        );
+
+                }
+                catch(error){
+
+                    console.log(
+                        "Activity time error:",
+                        error
+                    );
+
+                }
+            }
+
+
+            /* ================= ADMIN ================= */
+
+            const adminUid =
+                data.adminUid ||
+                "";
+
+
+            const performedBy =
+                adminUid ===
+                window.RSENGER_ADMIN_UID
+                ? "Main Admin"
+                : "Administrator";
+
+
+            /* ================= COUNT ================= */
+
+            let extraInfo = "";
+
+            if(
+                action ===
+                "clear_all_messages" &&
+                data.deletedCount !== undefined
+            ){
+
+                extraInfo =
+                    `<span class="rsenger-activity-extra">
+                        ${data.deletedCount} messages removed
+                    </span>`;
+            }
+
+
+            /* ================= CARD ================= */
+
+            html += `
+
+                <div class="rsenger-activity-card">
+
+                    <div class="rsenger-activity-icon">
+
+                        <i data-lucide="${
+                            action === "make_admin"
+                            ? "shield-plus"
+                            :
+                            action === "remove_admin"
+                            ? "shield-minus"
+                            :
+                            action === "clear_all_messages"
+                            ? "trash-2"
+                            :
+                            action.includes("restrict")
+                            ? "user-round-x"
+                            :
+                            action.includes("block")
+                            ? "ban"
+                            :
+                            "shield-check"
+                        }"></i>
+
+                    </div>
+
+
+                    <div class="rsenger-activity-content">
+
+                        <div class="rsenger-activity-top">
+
+                            <strong>
+                                ${escapeGroupHTML(title)}
+                            </strong>
+
+                            <span class="rsenger-activity-time">
+                                ${escapeGroupHTML(timeText)}
+                            </span>
+
+                        </div>
+
+
+                        <div class="rsenger-activity-description">
+
+                            ${escapeGroupHTML(description)}
+
+                        </div>
+
+
+                        <div class="rsenger-activity-meta">
+
+                            <span>
+                                <i data-lucide="user"></i>
+                                ${escapeGroupHTML(performedBy)}
+                            </span>
+
+                            ${
+                                targetUsername
+                                ? `
+                                <span>
+                                    ${escapeGroupHTML(targetUsername)}
+                                </span>
+                                `
+                                : ""
+                            }
+
+                            ${extraInfo}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
 
         });
 
 
-        premiumAlert(
-            text,
-            "Admin Activity",
-            "info"
+        /* =================================================
+           PREMIUM POPUP CONTENT
+           ================================================= */
+
+        const overlay =
+            document.getElementById(
+                "premiumPopupOverlay"
+            );
+
+        const popup =
+            document.getElementById(
+                "premiumPopup"
+            );
+
+        const icon =
+            document.getElementById(
+                "premiumPopupIcon"
+            );
+
+        const title =
+            document.getElementById(
+                "premiumPopupTitle"
+            );
+
+        const message =
+            document.getElementById(
+                "premiumPopupMessage"
+            );
+
+        const cancel =
+            document.getElementById(
+                "premiumPopupCancel"
+            );
+
+        const confirm =
+            document.getElementById(
+                "premiumPopupConfirm"
+            );
+
+
+        if(
+            !overlay ||
+            !popup ||
+            !message
+        ){
+            return;
+        }
+
+
+        popup.classList.remove(
+            "danger",
+            "success",
+            "error",
+            "clear-messages-premium",
+            "message-control-premium",
+            "message-permission-premium",
+            "message-permission-success",
+            "message-permission-error",
+            "media-permission-premium"
         );
 
-    }catch(error){
+
+        popup.classList.add(
+            "admin-activity-premium"
+        );
+
+
+        if(icon){
+
+            icon.innerHTML =
+                `<i data-lucide="shield-check"></i>`;
+
+        }
+
+
+        if(title){
+
+            title.innerText =
+                "Admin Activity";
+
+        }
+
+
+        message.innerHTML = `
+
+            <div class="rsenger-activity-list">
+
+                ${html}
+
+            </div>
+
+        `;
+
+
+        if(cancel){
+
+            cancel.innerText =
+                "Close";
+
+        }
+
+
+        if(confirm){
+
+            confirm.style.display =
+                "none";
+
+        }
+
+
+        overlay.classList.remove(
+            "hidden"
+        );
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
+
+        if(cancel){
+
+            cancel.onclick =
+                function(){
+
+                    overlay.classList.add(
+                        "hidden"
+                    );
+
+                    if(confirm){
+
+                        confirm.style.display =
+                            "";
+
+                    }
+
+                    cancel.innerText =
+                        "Cancel";
+
+                };
+
+        }
+
+
+    }
+    catch(error){
 
         console.error(
             "Admin activity error:",
             error
         );
 
+
         premiumAlert(
-            "Could not load admin activity.",
-            "Error",
+            "Could not load administrator activity. Please try again.",
+            "Admin Activity Error",
             "error"
         );
 
