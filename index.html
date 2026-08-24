@@ -28630,115 +28630,178 @@ input::placeholder{
 }
 
 /* =========================================================
-   RSENGER SEARCH RESULTS — REAL INNER SCROLL
+   RSENGER HOME SEARCH — OVERLAY RESULT LIST
+   HOME PAGE WILL NOT MOVE
+   ONLY ACCOUNT RESULTS WILL SCROLL
    ========================================================= */
 
-#searchResults {
-    display: block !important;
-
-    width: 100% !important;
-    box-sizing: border-box !important;
-
-    /*
-       Search bar-এর নিচে যতটুকু জায়গা আছে
-       তার মধ্যেই result থাকবে।
-    */
-    height: calc(100vh - 300px) !important;
-    max-height: calc(100vh - 300px) !important;
-
-    overflow-y: scroll !important;
-    overflow-x: hidden !important;
-
-    -webkit-overflow-scrolling: touch !important;
-
-    overscroll-behavior: contain !important;
-    touch-action: pan-y !important;
-
-    scrollbar-width: none !important;
-
-    /*
-       খুব গুরুত্বপূর্ণ:
-       result-এর scroll parent নিজেই হবে।
-    */
+#homePage {
     position: relative !important;
-
-    z-index: 20 !important;
+    overflow: hidden !important;
 }
 
-#searchResults::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
+
+/* -----------------------------------------
+   SEARCH RESULT DEFAULT
+   Empty হলে একদম জায়গা নেবে না
+   ----------------------------------------- */
+
+#searchResults:empty {
     display: none !important;
 }
 
 
-/* Search result-এর card যেন container-এর
-   ভিতরেই থাকে */
+/* -----------------------------------------
+   SEARCH RESULT OVER HOME PAGE
+   ----------------------------------------- */
+
+#searchResults:not(:empty) {
+
+    display: block !important;
+
+    position: absolute !important;
+
+    /*
+      Search bar-এর ঠিক নিচে।
+      তোমার বর্তমান Home layout অনুযায়ী।
+    */
+    top: 305px !important;
+
+    left: 20px !important;
+    right: 20px !important;
+
+    /*
+      Bottom navigation-এর আগে পর্যন্ত
+      result area থাকবে।
+    */
+    bottom: 125px !important;
+
+    height: auto !important;
+    max-height: none !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    overscroll-behavior:
+        contain !important;
+
+    touch-action:
+        pan-y !important;
+
+    scrollbar-width:
+        none !important;
+
+    z-index:
+        1000 !important;
+
+    /*
+      Background-এর ওপর premium glass layer
+    */
+    padding:
+        4px 2px 20px !important;
+
+    box-sizing:
+        border-box !important;
+}
+
+
+#searchResults:not(:empty)::-webkit-scrollbar {
+
+    display: none !important;
+
+    width: 0 !important;
+    height: 0 !important;
+}
+
+
+/* -----------------------------------------
+   ACCOUNT CARDS
+   ----------------------------------------- */
 
 #searchResults .premium-search-card {
-    flex-shrink: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+
+    width:
+        100% !important;
+
+    flex-shrink:
+        0 !important;
+
+    box-sizing:
+        border-box !important;
+
 }
 
 
-/* Loading / No result-ও container-এর
-   ভিতরে থাকবে */
+/* Loading */
 
-#searchResults .premium-search-loading,
+#searchResults .premium-search-loading {
+
+    width:
+        100% !important;
+
+    box-sizing:
+        border-box !important;
+
+}
+
+
+/* No result */
+
 #searchResults .premium-search-empty {
-    width: 100% !important;
-    box-sizing: border-box !important;
+
+    width:
+        100% !important;
+
+    box-sizing:
+        border-box !important;
+
 }
 
 
-/* =========================================================
-   HOME PAGE — PAGE ITSELF MUST NOT SCROLL
-   ========================================================= */
-
-#homePage {
-    height: 100vh !important;
-    max-height: 100vh !important;
-
-    overflow: hidden !important;
-
-    overscroll-behavior: none !important;
-    touch-action: pan-x !important;
-}
-
-
-/* Home-এর search result ছাড়া অন্য কোনো
-   accidental vertical scroll বন্ধ */
-
-#homePage > * {
-    overscroll-behavior-y: none;
-}
-
-
-/* =========================================================
+/* -----------------------------------------
    MOBILE
-   ========================================================= */
+   ----------------------------------------- */
 
-@media (max-width: 600px) {
+@media(max-width:600px){
 
-    #searchResults {
+    #searchResults:not(:empty){
 
-        height:
-            calc(100vh - 285px) !important;
+        top:
+            305px !important;
 
-        max-height:
-            calc(100vh - 285px) !important;
+        left:
+            20px !important;
 
-        overflow-y:
-            scroll !important;
+        right:
+            20px !important;
 
-        -webkit-overflow-scrolling:
-            touch !important;
+        bottom:
+            125px !important;
 
-        touch-action:
-            pan-y !important;
     }
+
+}
+
+
+/* -----------------------------------------
+   SMALL HEIGHT PHONE
+   ----------------------------------------- */
+
+@media(max-height:700px){
+
+    #searchResults:not(:empty){
+
+        top:
+            290px !important;
+
+        bottom:
+            115px !important;
+
     }
+
+}
 
 
     
