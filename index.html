@@ -28929,6 +28929,272 @@ input::placeholder{
 
 }
 
+
+/* =========================================================
+   PREMIUM EDIT PROFILE
+   ========================================================= */
+
+#rsengerEditProfileModal{
+    position:fixed;
+    inset:0;
+    z-index:999999;
+    display:none;
+}
+
+#rsengerEditProfileModal.active{
+    display:block;
+}
+
+.rsenger-edit-profile-backdrop{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+
+    background:rgba(3,5,12,.68);
+
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+}
+
+.rsenger-edit-profile-card{
+    width:min(440px,100%);
+
+    border-radius:26px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25,22,45,.98),
+            rgba(10,13,25,.98)
+        );
+
+    border:
+        1px solid
+        rgba(150,125,255,.22);
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.65),
+        0 0 40px rgba(120,90,255,.12);
+
+    overflow:hidden;
+
+    animation:
+        rsengerEditProfileIn
+        .18s ease-out;
+}
+
+@keyframes rsengerEditProfileIn{
+
+    from{
+        opacity:0;
+        transform:translateY(12px) scale(.97);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+.rsenger-edit-profile-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:20px 20px 15px;
+}
+
+.rsenger-edit-profile-header span{
+    display:block;
+
+    color:#fff;
+
+    font-size:19px;
+    font-weight:800;
+}
+
+.rsenger-edit-profile-header small{
+    display:block;
+
+    margin-top:4px;
+
+    color:rgba(230,225,245,.52);
+
+    font-size:11px;
+}
+
+.rsenger-edit-profile-header button{
+    width:38px;
+    height:38px;
+
+    border:0;
+    border-radius:13px;
+
+    background:rgba(255,255,255,.06);
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.rsenger-edit-profile-body{
+    padding:5px 20px 20px;
+}
+
+.rsenger-edit-profile-body label{
+    display:block;
+    margin-top:15px;
+}
+
+.rsenger-edit-profile-body label > span{
+    display:block;
+
+    margin-bottom:7px;
+
+    color:rgba(240,238,250,.72);
+
+    font-size:12px;
+    font-weight:700;
+}
+
+.rsenger-edit-profile-body input,
+.rsenger-edit-profile-body textarea{
+    width:100%;
+
+    box-sizing:border-box;
+
+    border:1px solid
+        rgba(150,125,255,.15);
+
+    border-radius:15px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    color:#fff;
+
+    outline:none;
+
+    padding:13px 14px;
+
+    font-size:14px;
+
+    transition:
+        border .18s ease,
+        background .18s ease;
+}
+
+.rsenger-edit-profile-body input:focus,
+.rsenger-edit-profile-body textarea:focus{
+
+    border-color:
+        rgba(150,125,255,.55);
+
+    background:
+        rgba(139,92,246,.08);
+
+}
+
+.rsenger-edit-profile-body textarea{
+    resize:none;
+}
+
+.rsenger-username-input{
+    display:flex;
+    align-items:center;
+
+    border:1px solid
+        rgba(150,125,255,.15);
+
+    border-radius:15px;
+
+    background:
+        rgba(255,255,255,.055);
+
+    overflow:hidden;
+}
+
+.rsenger-username-input b{
+    padding-left:14px;
+
+    color:#a996ff;
+
+    font-size:15px;
+}
+
+.rsenger-username-input input{
+    border:0 !important;
+    background:transparent !important;
+    border-radius:0 !important;
+}
+
+.rsenger-edit-profile-counter{
+    display:flex;
+    justify-content:space-between;
+
+    margin-top:6px;
+
+    color:rgba(230,225,245,.42);
+
+    font-size:10px;
+}
+
+.rsenger-edit-profile-footer{
+    display:flex;
+    gap:10px;
+
+    padding:15px 20px 20px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.06);
+}
+
+.rsenger-edit-profile-footer button{
+    flex:1;
+
+    border:0;
+    border-radius:15px;
+
+    padding:13px;
+
+    font-weight:750;
+}
+
+#rsengerEditCancel{
+
+    background:
+        rgba(255,255,255,.06);
+
+    color:#fff;
+}
+
+#rsengerEditSave{
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c5cff,
+            #9b7cff
+        );
+
+    color:#fff;
+
+    box-shadow:
+        0 8px 25px
+        rgba(124,92,255,.22);
+}
+
+#rsengerEditSave:disabled{
+    opacity:.6;
+}
+
     
 </style>
 <script>
@@ -34876,19 +35142,21 @@ document.getElementById("profilePic")
 
 // ================= EDIT PROFILE =================
 
-function editProfile(){
+async function editProfile(){
 
-    const user =
-        auth.currentUser;
+    const user = auth.currentUser;
 
     if(!user) return;
 
 
-    db.collection("users")
-    .doc(user.uid)
-    .get()
+    try{
 
-    .then(doc => {
+        const doc =
+            await db
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
 
         if(!doc.exists){
 
@@ -34903,71 +35171,492 @@ function editProfile(){
         }
 
 
-        const data =
-            doc.data();
+        const data = doc.data() || {};
 
 
-        return premiumPrompt({
+        /* =====================================
+           PREMIUM EDIT PROFILE MODAL
+           ===================================== */
 
-            title: "Edit Name",
-
-            message:
-                "Enter the name you want to display.",
-
-            value:
-                data.name || "",
-
-            confirmText:
-                "Save"
-
-        }).then(newName => {
-
-            if(!newName) return;
+        let modal =
+            document.getElementById(
+                "rsengerEditProfileModal"
+            );
 
 
-            return db.collection("users")
-            .doc(user.uid)
-            .update({
+        if(!modal){
 
-                name: newName
+            modal =
+                document.createElement("div");
 
-            });
+            modal.id =
+                "rsengerEditProfileModal";
 
-        });
+            modal.innerHTML = `
 
-    })
+                <div
+                    class="rsenger-edit-profile-backdrop">
 
-    .then(() => {
+                    <div
+                        class="rsenger-edit-profile-card">
 
-        loadProfile();
+                        <div
+                            class="rsenger-edit-profile-header">
 
-        loadChats();
+                            <div>
 
-        loadFriends();
+                                <span>
+                                    Edit Profile
+                                </span>
+
+                                <small>
+                                    Update your Rsenger profile
+                                </small>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                id="rsengerEditProfileClose">
+
+                                <i data-lucide="x"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="rsenger-edit-profile-body">
+
+
+                            <label>
+
+                                <span>Name</span>
+
+                                <input
+                                    id="rsengerEditName"
+                                    type="text"
+                                    maxlength="50"
+                                    value=""
+                                    placeholder="Your name">
+
+                            </label>
+
+
+                            <label>
+
+                                <span>Username</span>
+
+                                <div
+                                    class="rsenger-username-input">
+
+                                    <b>@</b>
+
+                                    <input
+                                        id="rsengerEditUsername"
+                                        type="text"
+                                        maxlength="30"
+                                        value=""
+                                        placeholder="username">
+
+                                </div>
+
+                            </label>
+
+
+                            <label>
+
+                                <span>Bio</span>
+
+                                <textarea
+                                    id="rsengerEditBio"
+                                    maxlength="160"
+                                    rows="4"
+                                    placeholder="Tell people something about you..."
+                                ></textarea>
+
+                            </label>
+
+
+                            <div
+                                class="rsenger-edit-profile-counter">
+
+                                <span>
+                                    Bio
+                                </span>
+
+                                <span id="rsengerBioCounter">
+                                    0/160
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div
+                            class="rsenger-edit-profile-footer">
+
+                            <button
+                                type="button"
+                                id="rsengerEditCancel">
+
+                                Cancel
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="rsengerEditSave">
+
+                                <i data-lucide="check"></i>
+
+                                Save Changes
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            document.body.appendChild(
+                modal
+            );
+
+
+            if(window.lucide){
+
+                lucide.createIcons();
+
+            }
+
+        }
+
+
+        /* =====================================
+           FILL CURRENT DATA
+           ===================================== */
+
+        const nameInput =
+            document.getElementById(
+                "rsengerEditName"
+            );
+
+        const usernameInput =
+            document.getElementById(
+                "rsengerEditUsername"
+            );
+
+        const bioInput =
+            document.getElementById(
+                "rsengerEditBio"
+            );
+
+
+        nameInput.value =
+            data.name || "";
+
+
+        usernameInput.value =
+            (data.username || "")
+            .replace(/^@/, "");
+
+
+        bioInput.value =
+            data.bio || "";
+
+
+        updateRsengerBioCounter();
+
+
+        modal.classList.add(
+            "active"
+        );
+
+
+        /* =====================================
+           CLOSE
+           ===================================== */
+
+        document.getElementById(
+            "rsengerEditProfileClose"
+        ).onclick =
+            closeRsengerEditProfile;
+
+
+        document.getElementById(
+            "rsengerEditCancel"
+        ).onclick =
+            closeRsengerEditProfile;
+
+
+        /* Outside click */
+
+        modal
+        .querySelector(
+            ".rsenger-edit-profile-backdrop"
+        )
+        .onclick =
+            function(event){
+
+                if(
+                    event.target ===
+                    this
+                ){
+
+                    closeRsengerEditProfile();
+
+                }
+
+            };
+
+
+        /* =====================================
+           SAVE
+           ===================================== */
+
+        document.getElementById(
+            "rsengerEditSave"
+        ).onclick =
+            saveRsengerFullProfile;
+
+
+        bioInput.oninput =
+            updateRsengerBioCounter;
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Edit profile error:",
+            error
+        );
 
 
         premiumAlert(
-            "Your profile name has been updated.",
+            error.message ||
+            "Could not open edit profile.",
+            "Edit Profile Error",
+            "error"
+        );
+
+    }
+
+}
+
+
+    function updateRsengerBioCounter(){
+
+    const bio =
+        document.getElementById(
+            "rsengerEditBio"
+        );
+
+    const counter =
+        document.getElementById(
+            "rsengerBioCounter"
+        );
+
+    if(!bio || !counter) return;
+
+    counter.innerText =
+        bio.value.length + "/160";
+
+}
+
+
+function closeRsengerEditProfile(){
+
+    const modal =
+        document.getElementById(
+            "rsengerEditProfileModal"
+        );
+
+    if(modal){
+
+        modal.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+async function saveRsengerFullProfile(){
+
+    const user =
+        auth.currentUser;
+
+    if(!user) return;
+
+
+    const name =
+        document.getElementById(
+            "rsengerEditName"
+        ).value.trim();
+
+
+    const username =
+        document.getElementById(
+            "rsengerEditUsername"
+        ).value
+        .trim()
+        .replace(/^@/, "")
+        .toLowerCase();
+
+
+    const bio =
+        document.getElementById(
+            "rsengerEditBio"
+        ).value.trim();
+
+
+    if(!name){
+
+        premiumAlert(
+            "Please enter your name.",
+            "Name Required",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!username){
+
+        premiumAlert(
+            "Please enter a username.",
+            "Username Required",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!/^[a-z0-9._]{3,30}$/.test(username)){
+
+        premiumAlert(
+            "Username can contain only letters, numbers, dots and underscores.",
+            "Invalid Username",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "rsengerEditSave"
+        );
+
+
+    saveButton.disabled =
+        true;
+
+
+    saveButton.innerHTML =
+        `<span>Saving...</span>`;
+
+
+    try{
+
+        await db
+        .collection("users")
+        .doc(user.uid)
+        .update({
+
+            name:
+                name,
+
+            username:
+                username,
+
+            bio:
+                bio
+
+        });
+
+
+        closeRsengerEditProfile();
+
+
+        await loadProfile();
+
+
+        if(typeof loadChats === "function"){
+
+            loadChats();
+
+        }
+
+
+        if(typeof loadFriends === "function"){
+
+            loadFriends();
+
+        }
+
+
+        premiumAlert(
+            "Your name, username and bio have been updated.",
             "Profile Updated",
             "success"
         );
 
-    })
 
-    .catch(error => {
+    }
+    catch(error){
 
         console.error(
-            "Profile update error:",
+            "Profile save error:",
             error
         );
 
+
         premiumAlert(
-            error.message,
+            error.message ||
+            "Could not update profile.",
             "Update Failed",
             "error"
         );
 
-    });
+
+        saveButton.disabled =
+            false;
+
+
+        saveButton.innerHTML = `
+
+            <i data-lucide="check"></i>
+
+            Save Changes
+
+        `;
+
+
+        if(window.lucide){
+
+            lucide.createIcons();
+
+        }
+
+    }
 
 }
 
