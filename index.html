@@ -1628,6 +1628,31 @@ No chats yet
         </div>
 
 
+    <!-- Username -->
+
+<div class="edit-field">
+
+    <label>
+        <i data-lucide="at-sign"></i>
+        Username
+    </label>
+
+    <div class="edit-input username-edit-input">
+
+        <span class="username-at">@</span>
+
+        <input
+            id="editProfileUsername"
+            type="text"
+            placeholder="username"
+            maxlength="30"
+            autocomplete="off">
+
+    </div>
+
+</div>
+
+
         <div class="premium-info-divider"></div>
 
 
@@ -29195,6 +29220,145 @@ input::placeholder{
     opacity:.6;
 }
 
+
+/* =========================================
+   PREMIUM USERNAME
+   ========================================= */
+
+.username-edit-input{
+    display:flex;
+    align-items:center;
+    gap:2px;
+}
+
+.username-at{
+    color:#9b7cff;
+    font-size:16px;
+    font-weight:800;
+    padding-left:4px;
+}
+
+.username-edit-input input{
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    padding-left:4px !important;
+}
+
+
+/* =========================================
+   PREMIUM SAVE BUTTON
+   ========================================= */
+
+.save-profile-btn{
+
+    width:100%;
+
+    min-height:52px;
+
+    margin-top:18px;
+
+    border:1px solid
+        rgba(167,139,250,.35);
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c5cff,
+            #9b7cff
+        );
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:9px;
+
+    font-size:14px;
+    font-weight:800;
+
+    letter-spacing:.1px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(124,92,255,.25),
+
+        inset 0 1px 0
+        rgba(255,255,255,.18);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        opacity .18s ease;
+}
+
+.save-profile-btn:active{
+    transform:scale(.98);
+}
+
+.save-profile-btn:hover{
+    box-shadow:
+        0 14px 35px
+        rgba(124,92,255,.35),
+
+        inset 0 1px 0
+        rgba(255,255,255,.2);
+}
+
+.save-profile-btn:disabled{
+    opacity:.65;
+    transform:none;
+}
+
+
+/* =========================================
+   PREMIUM CANCEL BUTTON
+   ========================================= */
+
+.cancel-profile-btn{
+
+    width:100%;
+
+    min-height:48px;
+
+    margin-top:10px;
+
+    border:1px solid
+        rgba(255,255,255,.09);
+
+    border-radius:16px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    color:
+        rgba(255,255,255,.82);
+
+    font-size:13px;
+    font-weight:700;
+
+    transition:
+        background .18s ease,
+        border .18s ease,
+        transform .18s ease;
+}
+
+.cancel-profile-btn:active{
+    transform:scale(.98);
+}
+
+.cancel-profile-btn:hover{
+    background:
+        rgba(255,255,255,.075);
+
+    border-color:
+        rgba(255,255,255,.16);
+}
+
     
 </style>
 <script>
@@ -35713,7 +35877,15 @@ function saveEditProfile(){
     .then(() => {
 
         saveButton.disabled = false;
-        saveButton.innerText = "Save Changes";
+
+saveButton.innerHTML = `
+    <i data-lucide="check"></i>
+    <span>Save Changes</span>
+`;
+
+if(window.lucide){
+    lucide.createIcons();
+}
 
         closeEditProfile();
 
@@ -35724,8 +35896,16 @@ function saveEditProfile(){
     })
     .catch(error => {
 
-        saveButton.disabled = false;
-        saveButton.innerText = "Save Changes";
+saveButton.disabled = false;
+
+saveButton.innerHTML = `
+    <i data-lucide="check"></i>
+    <span>Save Changes</span>
+`;
+
+if(window.lucide){
+    lucide.createIcons();
+}
 
         console.error(error);
 
