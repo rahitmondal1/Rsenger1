@@ -40355,6 +40355,8 @@ function closeRsengerBlockedMembers(){
 
 function closeRsengerGroup(){
 
+    closeRsengerGroupMessageMenu();
+
     if(rsengerGroupListener){
         rsengerGroupListener();
         rsengerGroupListener = null;
@@ -41901,6 +41903,54 @@ function closeRsengerGroupMessageMenu(){
     rsengerSelectedGroupMessage = null;
 
 }
+
+
+/* =========================================================
+   CLOSE GROUP MESSAGE MENU WHEN TAPPING OUTSIDE
+   ========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    function(event){
+
+        const menu =
+            document.getElementById(
+                "rsengerGroupMessageMenu"
+            );
+
+
+        if(!menu){
+            return;
+        }
+
+
+        if(
+            menu.classList.contains(
+                "hidden"
+            )
+        ){
+            return;
+        }
+
+
+        /* Popup-এর ভিতরে tap করলে কিছু হবে না */
+
+        if(
+            menu.contains(
+                event.target
+            )
+        ){
+            return;
+        }
+
+
+        /* Popup-এর বাইরে tap */
+
+        closeRsengerGroupMessageMenu();
+
+    },
+    true
+);
 
 function showRsengerGroupMessageMenu(
     messageId,
