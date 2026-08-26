@@ -3018,28 +3018,119 @@ document.addEventListener("DOMContentLoaded", function () {
     will-change:transform;
 }
 
+/* =====================================================
+   RSENGER PREMIUM CHAT AVATAR — FIXED
+   ===================================================== */
+
 #homePage #chatList .premium-chat-avatar-wrap{
-    width:54px !important;
-    min-width:54px !important;
-    max-width:54px !important;
-    height:54px !important;
-    min-height:54px !important;
-    flex:0 0 54px !important;
     position:relative !important;
+
+    width:56px !important;
+    height:56px !important;
+
+    min-width:56px !important;
+    max-width:56px !important;
+
+    min-height:56px !important;
+    max-height:56px !important;
+
+    flex:0 0 56px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    overflow:visible !important;
 }
 
+/* Real profile photo + letter avatar */
 #homePage #chatList .premium-chat-avatar{
-    width:54px !important;
-    height:54px !important;
-    min-width:54px !important;
-    max-width:54px !important;
-    min-height:54px !important;
-    max-height:54px !important;
-    flex:0 0 54px !important;
-    display:block !important;
+    position:relative !important;
+
+    width:56px !important;
+    height:56px !important;
+
+    min-width:56px !important;
+    max-width:56px !important;
+
+    min-height:56px !important;
+    max-height:56px !important;
+
+    flex:0 0 56px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
     box-sizing:border-box !important;
+
     border-radius:50% !important;
+
+    overflow:hidden !important;
+
     object-fit:cover !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    vertical-align:middle !important;
+
+    border:2px solid rgba(255,255,255,.16) !important;
+
+    box-shadow:
+        0 0 0 3px rgba(80,170,255,.06),
+        0 6px 18px rgba(0,0,0,.25) !important;
+}
+
+/* Actual <img> */
+#homePage #chatList img.premium-chat-avatar{
+    object-fit:cover !important;
+    object-position:center center !important;
+
+    width:56px !important;
+    height:56px !important;
+
+    display:block !important;
+}
+
+/* Initial letter */
+#homePage #chatList .premium-chat-letter{
+    font-size:21px !important;
+    font-weight:700 !important;
+    line-height:1 !important;
+
+    text-align:center !important;
+
+    color:#fff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff 0%,
+            #27c8ff 100%
+        ) !important;
+}
+
+/* Online dot */
+#homePage #chatList .premium-chat-online-dot{
+    position:absolute !important;
+
+    right:0 !important;
+    bottom:1px !important;
+
+    width:12px !important;
+    height:12px !important;
+
+    min-width:12px !important;
+    min-height:12px !important;
+
+    border-radius:50% !important;
+
+    border:2px solid #0b1020 !important;
+
+    box-sizing:border-box !important;
+
+    z-index:5 !important;
 }
 
 #homePage #chatList .premium-chat-content{
