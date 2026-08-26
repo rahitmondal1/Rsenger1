@@ -29954,7 +29954,98 @@ function setupSearchOverlay(){
 
     }
 
+/* =========================================
+   FLOAT SEARCH RESULTS ABOVE CHAT LIST
+   ========================================= */
 
+resultBox.style.setProperty(
+    "display",
+    "block",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "position",
+    "fixed",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "top",
+    (searchRect.bottom + 8) + "px",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "left",
+    searchRect.left + "px",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "right",
+    (window.innerWidth - searchRect.right) + "px",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "bottom",
+    bottomSpace + "px",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "z-index",
+    "999999",
+    "important"
+);
+
+
+/* =========================================
+   NO OUTER RESULT BOX
+   ========================================= */
+
+resultBox.style.setProperty(
+    "background",
+    "transparent",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "border",
+    "0",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "border-radius",
+    "0",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "box-shadow",
+    "none",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "padding",
+    "0",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "backdrop-filter",
+    "none",
+    "important"
+);
+
+resultBox.style.setProperty(
+    "-webkit-backdrop-filter",
+    "none",
+    "important"
+);
     
 
     /* ===============================
@@ -30004,53 +30095,7 @@ function setupSearchOverlay(){
     );
 
 
-    /* ===============================
-       PREMIUM GLASS BACKGROUND
-       =============================== */
-
-    resultBox.style.setProperty(
-        "background",
-        "linear-gradient(145deg, rgba(9,12,25,.97), rgba(14,17,34,.96))",
-        "important"
-    );
-
-    resultBox.style.setProperty(
-        "backdrop-filter",
-        "blur(26px) saturate(145%)",
-        "important"
-    );
-
-    resultBox.style.setProperty(
-        "-webkit-backdrop-filter",
-        "blur(26px) saturate(145%)",
-        "important"
-    );
-
-
-    resultBox.style.setProperty(
-        "border",
-        "1px solid rgba(139,92,246,.20)",
-        "important"
-    );
-
-    resultBox.style.setProperty(
-        "border-radius",
-        "22px",
-        "important"
-    );
-
-    resultBox.style.setProperty(
-        "box-shadow",
-        "0 20px 60px rgba(0,0,0,.65), 0 0 35px rgba(139,92,246,.10)",
-        "important"
-    );
-
-
-    resultBox.style.setProperty(
-        "padding",
-        "6px 5px 18px",
-        "important"
-    );
+    
 
     resultBox.style.setProperty(
         "box-sizing",
