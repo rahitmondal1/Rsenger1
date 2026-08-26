@@ -29973,6 +29973,33 @@ const rtdb = firebase.database();
 // ================= ADMIN =================
 window.RSENGER_ADMIN_UID = "Yt04RIF00dUn5Y6ySy9BfjTgVcy1";
 
+    // =====================================================
+// GOOGLE REDIRECT RESULT HANDLER
+// =====================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        setTimeout(
+            function(){
+
+                if(
+                    typeof handleGoogleRedirect ===
+                    "function"
+                ){
+
+                    handleGoogleRedirect();
+
+                }
+
+            },
+            300
+        );
+
+    }
+);
+
 
 
 
@@ -31328,87 +31355,667 @@ function registerUser(){
 }
 
 
-// ================= GOOGLE LOGIN =================
+// =====================================================
+// RSENGER - PREMIUM GOOGLE LOGIN
+// Login + Register
+// Popup + Mobile Redirect + Firebase
+// =====================================================
 
-function googleLogin(){
+let googleLoginInProgress = false;
 
-    const provider = new firebase.auth.GoogleAuthProvider();
 
-    provider.setCustomParameters({
-        prompt: "select_account"
+/* =====================================================
+   GOOGLE LOGIN / REGISTER
+   ===================================================== */
+
+async function googleLogin(){
+
+    if(googleLoginInProgress){
+        return;
+    }
+
+    googleLoginInProgress = true;
+
+    const buttons =
+        document.querySelectorAll(
+            '#loginPage button[onclick="googleLogin()"],' +
+            '#registerPage button[onclick="googleLogin()"]'
+        );
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+        button.dataset.originalText =
+            button.innerText;
+
+        button.innerText =
+            "Connecting to Google...";
+
+        button.style.opacity = "0.7";
+        button.style.pointerEvents = "none";
+
     });
 
-    auth.signInWithPopup(provider)
-        .then((result) => {
 
-            const user = result.user;
+    try{
 
-            // User Firestore-এ আছে কিনা check
-            return db.collection("users")
-                .doc(user.uid)
-                .get()
-                .then((doc) => {
+        /*
+         * Keep Firebase login session permanently available
+         */
+        await auth.setPersistence(
+            firebase.auth.Auth.Persistence.LOCAL
+        );
 
-                    if(!doc.exists){
 
-                        return db.collection("users")
-                            .doc(user.uid)
-                            .set({
+        const provider =
+            new firebase.auth.GoogleAuthProvider();
 
-                                name: user.displayName || "",
-                                username: "",
-                                phone: user.phoneNumber || "",
-                                email: user.email || "",
-                                bio: "",
-                                profilePic: user.photoURL || "",
-                                online: true,
 
-                                createdAt:
-                                firebase.firestore.FieldValue.serverTimestamp()
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
 
-                            });
 
-                    }
+        /*
+         * Android / mobile browser
+         *
+         * Redirect is more reliable than popup
+         */
+        const isMobile =
+            /Android|iPhone|iPad|iPod/i.test(
+                navigator.userAgent
+            );
 
+
+        if(isMobile){
+
+            await auth.signInWithRedirect(
+                provider
+            );
+
+            return;
+        }
+
+
+        /*
+         * Desktop
+         */
+        const result =
+            await auth.signInWithPopup(
+                provider
+            );
+
+
+        await completeGoogleLogin(
+            result.user
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Google Login Error:",
+            error
+        );
+
+
+        /*
+         * Popup blocked → redirect fallback
+         */
+        if(
+            error.code ===
+            "auth/popup-blocked" ||
+
+            error.code ===
+            "auth/operation-not-supported-in-this-environment"
+        ){
+
+            try{
+
+                const provider =
+                    new firebase.auth.GoogleAuthProvider();
+
+                provider.setCustomParameters({
+                    prompt: "select_account"
                 });
 
-        })
-        .then(() => {
 
-            // Login/Register hide
-            document.getElementById("loginPage")
-                .classList.add("hidden");
+                await auth.signInWithRedirect(
+                    provider
+                );
 
-            document.getElementById("registerPage")
-                .classList.add("hidden");
+                return;
 
-            // Home show
-            document.getElementById("homePage")
-                .classList.remove("hidden");
+            }
+            catch(redirectError){
 
-            // Presence
-            setupPresence();
-            
-            saveFCMToken();
+                console.error(
+                    "Google Redirect Error:",
+                    redirectError
+                );
 
-            // Chats
-            loadChats();
+                showGoogleError(
+                    redirectError
+                );
+            }
 
-        })
-        .catch((error) => {
+        }
+        else{
 
-            console.error("Google Login Error:", error);
-
-            premiumAlert(
-                "Google Login failed:\n" +
-                error.code +
-                "\n\n" +
-                error.message
+            showGoogleError(
+                error
             );
+
+        }
+
+    }
+    finally{
+
+        /*
+         * Redirect হলে page unload হবে,
+         * তাই তখন button reset করার দরকার নেই
+         */
+        if(
+            !window.location.href.includes(
+                "google"
+            )
+        ){
+
+            resetGoogleButtons();
+
+        }
+
+    }
+
+}
+
+
+
+/* =====================================================
+   COMPLETE GOOGLE LOGIN
+   ===================================================== */
+
+async function completeGoogleLogin(user){
+
+    if(!user){
+        throw new Error(
+            "Google account information পাওয়া যায়নি।"
+        );
+    }
+
+
+    const userRef =
+        db.collection("users")
+          .doc(user.uid);
+
+
+    const userDoc =
+        await userRef.get();
+
+
+    /*
+     * Existing user
+     */
+    if(userDoc.exists){
+
+        const oldData =
+            userDoc.data() || {};
+
+
+        const updateData = {};
+
+
+        /*
+         * Google profile photo থাকলে
+         * আর existing profile photo না থাকলে
+         */
+        if(
+            !oldData.profilePic &&
+            user.photoURL
+        ){
+
+            updateData.profilePic =
+                user.photoURL;
+
+        }
+
+
+        if(
+            !oldData.name &&
+            user.displayName
+        ){
+
+            updateData.name =
+                user.displayName;
+
+        }
+
+
+        if(
+            !oldData.email &&
+            user.email
+        ){
+
+            updateData.email =
+                user.email;
+
+        }
+
+
+        updateData.online = true;
+
+
+        await userRef.update(
+            updateData
+        );
+
+    }
+
+
+    /*
+     * New Google user
+     */
+    else{
+
+        await userRef.set({
+
+            name:
+                user.displayName || "Rsenger User",
+
+            username:
+                "",
+
+            phone:
+                user.phoneNumber || "",
+
+            email:
+                user.email || "",
+
+            bio:
+                "",
+
+            profilePic:
+                user.photoURL || "",
+
+            online:
+                true,
+
+            createdAt:
+                firebase.firestore.FieldValue
+                .serverTimestamp()
 
         });
 
+    }
+
+
+    /*
+     * Make Firebase user available
+     */
+    await new Promise(resolve => {
+
+        if(auth.currentUser){
+
+            resolve();
+
+            return;
+        }
+
+
+        const unsubscribe =
+            auth.onAuthStateChanged(
+                currentUser => {
+
+                    if(currentUser){
+
+                        unsubscribe();
+
+                        resolve();
+
+                    }
+
+                }
+            );
+
+    });
+
+
+    /*
+     * Hide Login
+     */
+    const loginPage =
+        document.getElementById(
+            "loginPage"
+        );
+
+    if(loginPage){
+
+        loginPage.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * Hide Register
+     */
+    const registerPage =
+        document.getElementById(
+            "registerPage"
+        );
+
+    if(registerPage){
+
+        registerPage.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * Show Home
+     */
+    const homePage =
+        document.getElementById(
+            "homePage"
+        );
+
+    if(homePage){
+
+        homePage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * Start Rsenger systems
+     */
+
+    try{
+
+        if(
+            typeof setupPresence ===
+            "function"
+        ){
+
+            setupPresence();
+
+        }
+
+    }
+    catch(e){
+
+        console.error(
+            "Google presence error:",
+            e
+        );
+
+    }
+
+
+    try{
+
+        if(
+            typeof saveFCMToken ===
+            "function"
+        ){
+
+            saveFCMToken();
+
+        }
+
+    }
+    catch(e){
+
+        console.error(
+            "Google FCM error:",
+            e
+        );
+
+    }
+
+
+    try{
+
+        if(
+            typeof loadChats ===
+            "function"
+        ){
+
+            loadChats();
+
+        }
+
+    }
+    catch(e){
+
+        console.error(
+            "Google chats error:",
+            e
+        );
+
+    }
+
+
+    /*
+     * Refresh Lucide icons
+     */
+
+    if(
+        window.lucide
+    ){
+
+        lucide.createIcons();
+
+    }
+
+
+    googleLoginInProgress =
+        false;
+
+
+    resetGoogleButtons();
+
 }
+
+
+
+/* =====================================================
+   REDIRECT RESULT
+   IMPORTANT:
+   This handles Android/mobile Google login
+   ===================================================== */
+
+async function handleGoogleRedirect(){
+
+    try{
+
+        const result =
+            await auth.getRedirectResult();
+
+
+        if(
+            result &&
+            result.user
+        ){
+
+            googleLoginInProgress =
+                true;
+
+
+            await completeGoogleLogin(
+                result.user
+            );
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Google Redirect Error:",
+            error
+        );
+
+
+        googleLoginInProgress =
+            false;
+
+
+        resetGoogleButtons();
+
+
+        showGoogleError(
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   GOOGLE ERROR
+   ===================================================== */
+
+function showGoogleError(error){
+
+    let message =
+        "Google Login failed.";
+
+
+    if(error){
+
+        switch(error.code){
+
+            case "auth/popup-closed-by-user":
+
+                message =
+                    "Google Login window বন্ধ করা হয়েছে। আবার চেষ্টা করুন.";
+
+                break;
+
+
+            case "auth/popup-blocked":
+
+                message =
+                    "Browser Google Login popup block করেছে। আবার চেষ্টা করুন.";
+
+                break;
+
+
+            case "auth/unauthorized-domain":
+
+                message =
+                    "এই website domain Firebase Google Login-এর জন্য authorized নয়.";
+
+                break;
+
+
+            case "auth/operation-not-allowed":
+
+                message =
+                    "Firebase Console-এ Google Sign-in enable করা নেই.";
+
+                break;
+
+
+            case "auth/network-request-failed":
+
+                message =
+                    "Internet connection check করে আবার চেষ্টা করুন.";
+
+                break;
+
+
+            case "auth/account-exists-with-different-credential":
+
+                message =
+                    "এই email অন্য একটি login method-এর সঙ্গে already connected.";
+
+                break;
+
+
+            default:
+
+                if(
+                    error.message
+                ){
+
+                    message =
+                        error.message;
+
+                }
+
+        }
+
+    }
+
+
+    if(
+        typeof premiumAlert ===
+        "function"
+    ){
+
+        premiumAlert(
+            message,
+            "Google Login",
+            "error"
+        );
+
+    }
+    else{
+
+        alert(
+            message
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   RESET GOOGLE BUTTONS
+   ===================================================== */
+
+function resetGoogleButtons(){
+
+    const buttons =
+        document.querySelectorAll(
+            '#loginPage button[onclick="googleLogin()"],' +
+            '#registerPage button[onclick="googleLogin()"]'
+        );
+
+
+    buttons.forEach(button => {
+
+        button.disabled = false;
+
+        button.innerText =
+            button.dataset.originalText ||
+            "Continue with Google";
+
+        button.style.opacity =
+            "";
+
+        button.style.pointerEvents =
+            "";
+
+    });
+
+
+    googleLoginInProgress =
+        false;
+
+    }
 
 // =========================================
 // PREMIUM SEARCH OVERLAY CONTROLLER
