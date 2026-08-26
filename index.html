@@ -36,6 +36,63 @@ body{
 .setting-item-text{display:flex;flex-direction:column;gap:3px;}
 .setting-item-text strong{font-size:15px;}
 .setting-item-text small{font-size:12px;opacity:.68;}
+
+
+/* =====================================================
+   GOOGLE SIGN-IN BUTTON - STABLE ICON + TEXT
+   ===================================================== */
+#loginPage button[onclick="googleLogin()"],
+#registerPage button[onclick="googleLogin()"]{
+    position:relative !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:12px !important;
+}
+
+#loginPage button[onclick="googleLogin()"] .google-icon,
+#registerPage button[onclick="googleLogin()"] .google-icon{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+    max-width:30px !important;
+    max-height:30px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex:0 0 30px !important;
+    padding:0 !important;
+    margin:0 !important;
+    background:#fff !important;
+    border-radius:9px !important;
+    overflow:hidden !important;
+}
+
+#loginPage button[onclick="googleLogin()"] .google-icon svg,
+#registerPage button[onclick="googleLogin()"] .google-icon svg{
+    width:20px !important;
+    height:20px !important;
+    display:block !important;
+    flex:0 0 20px !important;
+}
+
+#loginPage button[onclick="googleLogin()"] .google-button-text,
+#registerPage button[onclick="googleLogin()"] .google-button-text{
+    display:inline-block !important;
+    color:#e9edf5 !important;
+    background:transparent !important;
+    -webkit-text-fill-color:#e9edf5 !important;
+    font-weight:600 !important;
+    line-height:1.2 !important;
+}
+
+#loginPage button[onclick="googleLogin()"]:disabled,
+#registerPage button[onclick="googleLogin()"]:disabled{
+    cursor:wait !important;
+    transform:none !important;
+}
+
 </style>
 
 <link rel="stylesheet" href="style.css">
@@ -304,7 +361,7 @@ Login to continue to Rsenger
         </svg>
     </span>
 
-    <span>Continue with Google</span>
+    <span class="google-button-text">Continue with Google</span>
 
 </button>
 
@@ -474,7 +531,7 @@ Create Account
         </svg>
     </span>
 
-    <span>Continue with Google</span>
+    <span class="google-button-text">Continue with Google</span>
 
 </button>
 
@@ -31356,17 +31413,49 @@ function registerUser(){
 
 
 // =====================================================
-// RSENGER - PREMIUM GOOGLE LOGIN
-// Login + Register
-// Popup + Mobile Redirect + Firebase
+// RSENGER - PREMIUM GOOGLE SIGN-IN
+// Login + Register | Popup first | Redirect fallback
 // =====================================================
 
 let googleLoginInProgress = false;
 
+function getGoogleButtons(){
+    return document.querySelectorAll(
+        '#loginPage button[onclick="googleLogin()"], ' +
+        '#registerPage button[onclick="googleLogin()"]'
+    );
+}
 
-/* =====================================================
-   GOOGLE LOGIN / REGISTER
-   ===================================================== */
+function setGoogleButtonsLoading(loading){
+    getGoogleButtons().forEach(function(button){
+        const text = button.querySelector('.google-button-text');
+
+        if(loading){
+            button.disabled = true;
+            button.setAttribute('aria-busy','true');
+            button.style.opacity = '0.72';
+            button.style.pointerEvents = 'none';
+
+            if(text){
+                if(!text.dataset.originalText){
+                    text.dataset.originalText = text.textContent;
+                }
+                text.textContent = 'Connecting to Google...';
+            }
+        }else{
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+            button.style.opacity = '';
+            button.style.pointerEvents = '';
+
+            if(text){
+                text.textContent =
+                    text.dataset.originalText ||
+                    'Continue with Google';
+            }
+        }
+    });
+}
 
 async function googleLogin(){
 
@@ -31375,650 +31464,298 @@ async function googleLogin(){
     }
 
     googleLoginInProgress = true;
-
-    const buttons =
-        document.querySelectorAll(
-            '#loginPage button[onclick="googleLogin()"],' +
-            '#registerPage button[onclick="googleLogin()"]'
-        );
-
-    buttons.forEach(button => {
-
-        button.disabled = true;
-
-        button.dataset.originalText =
-            button.innerText;
-
-        button.innerText =
-            "Connecting to Google...";
-
-        button.style.opacity = "0.7";
-        button.style.pointerEvents = "none";
-
-    });
-
+    setGoogleButtonsLoading(true);
 
     try{
-
-        /*
-         * Keep Firebase login session permanently available
-         */
         await auth.setPersistence(
             firebase.auth.Auth.Persistence.LOCAL
         );
 
-
         const provider =
             new firebase.auth.GoogleAuthProvider();
 
-
         provider.setCustomParameters({
-            prompt: "select_account"
+            prompt: 'select_account'
         });
 
+        // Popup is preferred because it keeps the current page intact.
+        // Redirect is used only when the browser blocks popup authentication.
+        const result =
+            await auth.signInWithPopup(provider);
 
-        /*
-         * Android / mobile browser
-         *
-         * Redirect is more reliable than popup
-         */
-        const isMobile =
-            /Android|iPhone|iPad|iPod/i.test(
-                navigator.userAgent
-            );
-
-
-        if(isMobile){
-
-            await auth.signInWithRedirect(
-                provider
-            );
-
-            return;
+        if(!result || !result.user){
+            throw new Error('Google account information was not received.');
         }
 
+        await completeGoogleLogin(result.user);
 
-        /*
-         * Desktop
-         */
-        const result =
-            await auth.signInWithPopup(
-                provider
-            );
+    }catch(error){
 
+        console.error('Google Sign-In Error:', error);
 
-        await completeGoogleLogin(
-            result.user
-        );
+        const fallbackCodes = [
+            'auth/popup-blocked',
+            'auth/operation-not-supported-in-this-environment'
+        ];
 
-    }
-    catch(error){
-
-        console.error(
-            "Google Login Error:",
-            error
-        );
-
-
-        /*
-         * Popup blocked → redirect fallback
-         */
-        if(
-            error.code ===
-            "auth/popup-blocked" ||
-
-            error.code ===
-            "auth/operation-not-supported-in-this-environment"
-        ){
-
+        if(fallbackCodes.includes(error.code)){
             try{
-
                 const provider =
                     new firebase.auth.GoogleAuthProvider();
 
                 provider.setCustomParameters({
-                    prompt: "select_account"
+                    prompt: 'select_account'
                 });
 
-
-                await auth.signInWithRedirect(
-                    provider
-                );
-
+                await auth.signInWithRedirect(provider);
                 return;
 
-            }
-            catch(redirectError){
-
+            }catch(redirectError){
                 console.error(
-                    "Google Redirect Error:",
+                    'Google Redirect Error:',
                     redirectError
                 );
-
-                showGoogleError(
-                    redirectError
-                );
+                showGoogleError(redirectError);
             }
-
-        }
-        else{
-
-            showGoogleError(
-                error
-            );
-
+        }else{
+            showGoogleError(error);
         }
 
+    }finally{
+        // Redirect navigates away, so the current page does not need a reset.
+        if(!window.__rsengerGoogleRedirecting){
+            googleLoginInProgress = false;
+            setGoogleButtonsLoading(false);
+        }
     }
-    finally{
-
-        /*
-         * Redirect হলে page unload হবে,
-         * তাই তখন button reset করার দরকার নেই
-         */
-        if(
-            !window.location.href.includes(
-                "google"
-            )
-        ){
-
-            resetGoogleButtons();
-
-        }
-
-    }
-
 }
 
-
-
 /* =====================================================
-   COMPLETE GOOGLE LOGIN
+   COMPLETE GOOGLE LOGIN / REGISTER
    ===================================================== */
 
 async function completeGoogleLogin(user){
 
     if(!user){
-        throw new Error(
-            "Google account information পাওয়া যায়নি।"
-        );
+        throw new Error('Google account information was not received.');
     }
 
+    const userRef = db.collection('users').doc(user.uid);
+    const userDoc = await userRef.get();
 
-    const userRef =
-        db.collection("users")
-          .doc(user.uid);
-
-
-    const userDoc =
-        await userRef.get();
-
-
-    /*
-     * Existing user
-     */
     if(userDoc.exists){
 
-        const oldData =
-            userDoc.data() || {};
+        const oldData = userDoc.data() || {};
+        const updateData = {
+            online: true,
+            email: oldData.email || user.email || ''
+        };
 
-
-        const updateData = {};
-
-
-        /*
-         * Google profile photo থাকলে
-         * আর existing profile photo না থাকলে
-         */
-        if(
-            !oldData.profilePic &&
-            user.photoURL
-        ){
-
-            updateData.profilePic =
-                user.photoURL;
-
+        if(!oldData.name && user.displayName){
+            updateData.name = user.displayName;
         }
 
-
-        if(
-            !oldData.name &&
-            user.displayName
-        ){
-
-            updateData.name =
-                user.displayName;
-
+        if(!oldData.profilePic && user.photoURL){
+            updateData.profilePic = user.photoURL;
         }
 
+        await userRef.update(updateData);
 
-        if(
-            !oldData.email &&
-            user.email
-        ){
-
-            updateData.email =
-                user.email;
-
-        }
-
-
-        updateData.online = true;
-
-
-        await userRef.update(
-            updateData
-        );
-
-    }
-
-
-    /*
-     * New Google user
-     */
-    else{
+    }else{
 
         await userRef.set({
-
-            name:
-                user.displayName || "Rsenger User",
-
-            username:
-                "",
-
-            phone:
-                user.phoneNumber || "",
-
-            email:
-                user.email || "",
-
-            bio:
-                "",
-
-            profilePic:
-                user.photoURL || "",
-
-            online:
-                true,
-
+            name: user.displayName || 'Rsenger User',
+            username: '',
+            phone: user.phoneNumber || '',
+            email: user.email || '',
+            bio: '',
+            profilePic: user.photoURL || '',
+            online: true,
             createdAt:
-                firebase.firestore.FieldValue
-                .serverTimestamp()
-
+                firebase.firestore.FieldValue.serverTimestamp()
         });
-
     }
 
+    // Make sure Firebase has the signed-in user before starting app systems.
+    if(!auth.currentUser){
+        await new Promise(function(resolve, reject){
+            let finished = false;
 
-    /*
-     * Make Firebase user available
-     */
-    await new Promise(resolve => {
+            const timeout = setTimeout(function(){
+                if(finished) return;
+                finished = true;
+                unsubscribe();
+                reject(new Error('Firebase session could not be restored.'));
+            }, 10000);
 
-        if(auth.currentUser){
-
-            resolve();
-
-            return;
-        }
-
-
-        const unsubscribe =
-            auth.onAuthStateChanged(
-                currentUser => {
-
-                    if(currentUser){
-
-                        unsubscribe();
-
-                        resolve();
-
-                    }
-
+            const unsubscribe = auth.onAuthStateChanged(function(currentUser){
+                if(currentUser && !finished){
+                    finished = true;
+                    clearTimeout(timeout);
+                    unsubscribe();
+                    resolve();
                 }
-            );
+            });
+        });
+    }
 
-    });
-
-
-    /*
-     * Hide Login
-     */
-    const loginPage =
-        document.getElementById(
-            "loginPage"
-        );
+    const loginPage = document.getElementById('loginPage');
+    const registerPage = document.getElementById('registerPage');
+    const homePage = document.getElementById('homePage');
+    const splash = document.getElementById('splashPage');
 
     if(loginPage){
-
-        loginPage.classList.add(
-            "hidden"
-        );
-
+        loginPage.classList.add('hidden');
+        loginPage.style.setProperty('display','none','important');
     }
-
-
-    /*
-     * Hide Register
-     */
-    const registerPage =
-        document.getElementById(
-            "registerPage"
-        );
 
     if(registerPage){
-
-        registerPage.classList.add(
-            "hidden"
-        );
-
+        registerPage.classList.add('hidden');
+        registerPage.style.setProperty('display','none','important');
     }
 
-
-    /*
-     * Show Home
-     */
-    const homePage =
-        document.getElementById(
-            "homePage"
-        );
+    if(splash){
+        splash.classList.add('hidden');
+        splash.style.setProperty('display','none','important');
+    }
 
     if(homePage){
-
-        homePage.classList.remove(
-            "hidden"
-        );
-
+        homePage.classList.remove('hidden');
+        homePage.style.setProperty('display','block','important');
+        homePage.style.setProperty('visibility','visible','important');
+        homePage.style.setProperty('opacity','1','important');
+        homePage.style.setProperty('pointer-events','auto','important');
     }
 
-
-    /*
-     * Start Rsenger systems
-     */
+    try{
+        if(typeof showBottomNav === 'function'){
+            showBottomNav();
+        }
+    }catch(e){
+        console.error('Google bottom navigation error:',e);
+    }
 
     try{
+        if(typeof showGroupIcon === 'function'){
+            showGroupIcon();
+        }
+    }catch(e){
+        console.error('Google group icon error:',e);
+    }
 
-        if(
-            typeof setupPresence ===
-            "function"
-        ){
-
+    try{
+        if(typeof setupPresence === 'function'){
             setupPresence();
-
         }
-
+    }catch(e){
+        console.error('Google presence error:',e);
     }
-    catch(e){
-
-        console.error(
-            "Google presence error:",
-            e
-        );
-
-    }
-
 
     try{
-
-        if(
-            typeof saveFCMToken ===
-            "function"
-        ){
-
+        if(typeof saveFCMToken === 'function'){
             saveFCMToken();
-
         }
-
+    }catch(e){
+        console.error('Google FCM error:',e);
     }
-    catch(e){
-
-        console.error(
-            "Google FCM error:",
-            e
-        );
-
-    }
-
 
     try{
-
-        if(
-            typeof loadChats ===
-            "function"
-        ){
-
+        if(typeof loadChats === 'function'){
             loadChats();
-
         }
-
-    }
-    catch(e){
-
-        console.error(
-            "Google chats error:",
-            e
-        );
-
+    }catch(e){
+        console.error('Google chats error:',e);
     }
 
-
-    /*
-     * Refresh Lucide icons
-     */
-
-    if(
-        window.lucide
-    ){
-
+    if(window.lucide){
         lucide.createIcons();
-
     }
 
-
-    googleLoginInProgress =
-        false;
-
-
-    resetGoogleButtons();
-
+    googleLoginInProgress = false;
+    setGoogleButtonsLoading(false);
 }
 
-
-
 /* =====================================================
-   REDIRECT RESULT
-   IMPORTANT:
-   This handles Android/mobile Google login
+   MOBILE / REDIRECT RESULT
    ===================================================== */
 
 async function handleGoogleRedirect(){
 
     try{
+        const result = await auth.getRedirectResult();
 
-        const result =
-            await auth.getRedirectResult();
-
-
-        if(
-            result &&
-            result.user
-        ){
-
-            googleLoginInProgress =
-                true;
-
-
-            await completeGoogleLogin(
-                result.user
-            );
-
+        if(result && result.user){
+            googleLoginInProgress = true;
+            await completeGoogleLogin(result.user);
         }
 
+    }catch(error){
+        console.error('Google Redirect Error:',error);
+        showGoogleError(error);
+    }finally{
+        googleLoginInProgress = false;
+        setGoogleButtonsLoading(false);
     }
-    catch(error){
-
-        console.error(
-            "Google Redirect Error:",
-            error
-        );
-
-
-        googleLoginInProgress =
-            false;
-
-
-        resetGoogleButtons();
-
-
-        showGoogleError(
-            error
-        );
-
-    }
-
 }
 
-
-
 /* =====================================================
-   GOOGLE ERROR
+   ENGLISH GOOGLE ERROR MESSAGES
    ===================================================== */
 
 function showGoogleError(error){
 
-    let message =
-        "Google Login failed.";
+    let message = 'Google Sign-In failed. Please try again.';
 
-
-    if(error){
-
+    if(error && error.code){
         switch(error.code){
 
-            case "auth/popup-closed-by-user":
-
-                message =
-                    "Google Login window বন্ধ করা হয়েছে। আবার চেষ্টা করুন.";
-
+            case 'auth/popup-closed-by-user':
+                message = 'Google Sign-In was cancelled. Please try again.';
                 break;
 
-
-            case "auth/popup-blocked":
-
-                message =
-                    "Browser Google Login popup block করেছে। আবার চেষ্টা করুন.";
-
+            case 'auth/popup-blocked':
+                message = 'Google Sign-In popup was blocked by your browser.';
                 break;
 
-
-            case "auth/unauthorized-domain":
-
-                message =
-                    "এই website domain Firebase Google Login-এর জন্য authorized নয়.";
-
+            case 'auth/unauthorized-domain':
+                message = 'This website domain is not authorized for Google Sign-In. Add the current website domain to Firebase Authentication > Settings > Authorized domains.';
                 break;
 
-
-            case "auth/operation-not-allowed":
-
-                message =
-                    "Firebase Console-এ Google Sign-in enable করা নেই.";
-
+            case 'auth/operation-not-allowed':
+                message = 'Google Sign-In is not enabled in Firebase Authentication.';
                 break;
 
-
-            case "auth/network-request-failed":
-
-                message =
-                    "Internet connection check করে আবার চেষ্টা করুন.";
-
+            case 'auth/network-request-failed':
+                message = 'Network error. Please check your internet connection and try again.';
                 break;
 
-
-            case "auth/account-exists-with-different-credential":
-
-                message =
-                    "এই email অন্য একটি login method-এর সঙ্গে already connected.";
-
+            case 'auth/account-exists-with-different-credential':
+                message = 'This email is already registered with a different sign-in method.';
                 break;
 
+            case 'auth/invalid-continue-uri':
+                message = 'The Google Sign-In redirect URL is invalid.';
+                break;
 
             default:
-
-                if(
-                    error.message
-                ){
-
-                    message =
-                        error.message;
-
+                if(error.message){
+                    message = error.message;
                 }
-
         }
-
+    }else if(error && error.message){
+        message = error.message;
     }
 
-
-    if(
-        typeof premiumAlert ===
-        "function"
-    ){
-
-        premiumAlert(
-            message,
-            "Google Login",
-            "error"
-        );
-
+    if(typeof premiumAlert === 'function'){
+        premiumAlert(message,'Google Sign-In','error');
+    }else{
+        alert(message);
     }
-    else{
-
-        alert(
-            message
-        );
-
-    }
-
 }
-
-
-
-/* =====================================================
-   RESET GOOGLE BUTTONS
-   ===================================================== */
-
-function resetGoogleButtons(){
-
-    const buttons =
-        document.querySelectorAll(
-            '#loginPage button[onclick="googleLogin()"],' +
-            '#registerPage button[onclick="googleLogin()"]'
-        );
-
-
-    buttons.forEach(button => {
-
-        button.disabled = false;
-
-        button.innerText =
-            button.dataset.originalText ||
-            "Continue with Google";
-
-        button.style.opacity =
-            "";
-
-        button.style.pointerEvents =
-            "";
-
-    });
-
-
-    googleLoginInProgress =
-        false;
-
-    }
 
 // =========================================
 // PREMIUM SEARCH OVERLAY CONTROLLER
+
 // =========================================
 
 let friendSearchTimer = null;
