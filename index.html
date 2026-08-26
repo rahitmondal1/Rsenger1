@@ -29373,104 +29373,237 @@ const rtdb = firebase.database();
 window.RSENGER_ADMIN_UID = "Yt04RIF00dUn5Y6ySy9BfjTgVcy1";
 
 
-// ================= SAVE FCM TOKEN =================
 
-function saveFCMToken() {
 
-    const user = auth.currentUser;
+// =====================================================
+// RSENGER FCM TOKEN SYSTEM
+// =====================================================
 
-    if (!user) {
-        console.log("FCM: User not logged in");
-        return;
-    }
+async function saveFCMToken(){
 
-    if (!window.WTN || !window.WTN.registerNotification) {
+    try{
 
-        console.log("WebToNative notification API not ready");
-        return;
-    }
+        const user = auth.currentUser;
 
-    console.log("Requesting notification permission...");
-
-    window.WTN.registerNotification({
-
-        callback: function(data) {
-
-            console.log("Notification response:", data);
-
-            if (!data) {
-                console.log("No notification response received");
-                return;
-            }
-
-            console.log("Permission:", data.permissionStatus);
-            console.log("Firebase Token:", data.firebaseToken);
-
-            if (
-                data.permissionStatus !== "ALLOWED" ||
-                !data.firebaseToken
-            ) {
-
-                console.log(
-                    "FCM token not available"
-                );
-
-                return;
-            }
-
-            const token = data.firebaseToken;
-            const uid = auth.currentUser.uid;
-
-            console.log("Saving FCM token to Firestore...");
-
-            db.collection("users")
-                .doc(uid)
-                .set({
-
-                    fcmTokens:
-                        firebase.firestore.FieldValue
-                        .arrayUnion(token)
-
-                }, {
-
-                    merge: true
-
-                })
-                .then(function() {
-
-                    console.log(
-                        "✅ FCM token saved to Firestore"
-                    );
-
-                })
-                .catch(function(error) {
-
-                    console.error(
-                        "❌ FCM token Firestore error:",
-                        error
-                    );
-
-                });
-
+        if(!user){
+            console.log("❌ FCM: User not logged in");
+            return;
         }
 
-    });
+        console.log(
+            "🔔 FCM: Starting notification registration..."
+        );
+
+        // -----------------------------------------
+        // CHECK WTN
+        // -----------------------------------------
+
+        if(
+            !window.WTN ||
+            typeof window.WTN.registerNotification !== "function"
+        ){
+
+            console.error(
+                "❌ FCM: WTN notification API not available"
+            );
+
+            return;
+        }
+
+
+        // -----------------------------------------
+        // REQUEST / REGISTER NOTIFICATION
+        // -----------------------------------------
+
+        window.WTN.registerNotification({
+
+            callback: async function(data){
+
+                console.log(
+                    "📲 FCM notification response:",
+                    data
+                );
+
+
+                // -----------------------------------------
+                // CHECK RESPONSE
+                // -----------------------------------------
+
+                if(!data){
+
+                    console.error(
+                        "❌ FCM: No response received"
+                    );
+
+                    return;
+                }
+
+
+                console.log(
+                    "Permission Status:",
+                    data.permissionStatus
+                );
+
+                console.log(
+                    "Firebase Token:",
+                    data.firebaseToken
+                );
+
+
+                // -----------------------------------------
+                // TOKEN CHECK
+                // -----------------------------------------
+
+                if(
+                    !data.firebaseToken
+                ){
+
+                    console.error(
+                        "❌ FCM: Firebase token missing"
+                    );
+
+                    return;
+                }
+
+
+                const token =
+                    String(
+                        data.firebaseToken
+                    ).trim();
+
+
+                if(!token){
+
+                    console.error(
+                        "❌ FCM: Empty token"
+                    );
+
+                    return;
+                }
+
+
+                // -----------------------------------------
+                // GET CURRENT USER
+                // -----------------------------------------
+
+                const currentUser =
+                    auth.currentUser;
+
+                if(!currentUser){
+
+                    console.error(
+                        "❌ FCM: Current user disappeared"
+                    );
+
+                    return;
+                }
+
+
+                const uid =
+                    currentUser.uid;
+
+
+                // -----------------------------------------
+                // SAVE TOKEN
+                // -----------------------------------------
+
+                console.log(
+                    "💾 Saving FCM token..."
+                );
+
+                await db
+                    .collection("users")
+                    .doc(uid)
+                    .set({
+
+                        fcmTokens:
+                            firebase.firestore
+                            .FieldValue
+                            .arrayUnion(token),
+
+                        fcmUpdatedAt:
+                            firebase.firestore
+                            .FieldValue
+                            .serverTimestamp()
+
+                    },{
+
+                        merge:true
+
+                    });
+
+
+                console.log(
+                    "✅ FCM TOKEN SAVED SUCCESSFULLY"
+                );
+
+                console.log(
+                    "UID:",
+                    uid
+                );
+
+                console.log(
+                    "TOKEN:",
+                    token
+                );
+
+
+                // -----------------------------------------
+                // VERIFY FIRESTORE
+                // -----------------------------------------
+
+                const verify =
+                    await db
+                    .collection("users")
+                    .doc(uid)
+                    .get();
+
+
+                const savedData =
+                    verify.data() || {};
+
+
+                console.log(
+                    "🔎 Firestore FCM data:",
+                    savedData.fcmTokens
+                );
+
+
+                if(
+                    Array.isArray(
+                        savedData.fcmTokens
+                    ) &&
+                    savedData.fcmTokens.includes(token)
+                ){
+
+                    console.log(
+                        "🎉 FCM TOKEN VERIFIED IN FIRESTORE"
+                    );
+
+                }
+                else{
+
+                    console.error(
+                        "❌ FCM TOKEN WAS NOT FOUND AFTER SAVE"
+                    );
+
+                }
+
+            }
+
+        });
+
+    }
+    catch(error){
+
+        console.error(
+            "❌ FCM SYSTEM ERROR:",
+            error
+        );
+
+    }
 
 }
-
-// =====================================================
-// RSENGER NOTIFICATION HELPERS
-// Allowed in-app events only:
-// friend request, friend accepted, main-admin group message.
-// Chat messages are phone-only.
-// =====================================================
-
-const RSENGER_APP_NOTIFICATION_TYPES = new Set([
-    "friend_request",
-    "friend_accepted",
-    "request_accepted",
-    "group_admin_message"
-]);
 
 async function getRsengerUserByEmail(email){
     if(!email) return null;
