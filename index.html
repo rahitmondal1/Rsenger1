@@ -25,6 +25,17 @@ body{
 #splashPage{
     visibility:visible;
 }
+
+/* =========================================================
+   RSENGER ACCOUNT DELETION UI
+   ========================================================= */
+.account-delete-setting{color:#dc2626;}
+.account-delete-setting i{color:#dc2626;}
+.account-cancel-delete{color:#16a34a;}
+.account-cancel-delete i{color:#16a34a;}
+.setting-item-text{display:flex;flex-direction:column;gap:3px;}
+.setting-item-text strong{font-size:15px;}
+.setting-item-text small{font-size:12px;opacity:.68;}
 </style>
 
 <link rel="stylesheet" href="style.css">
@@ -1943,6 +1954,22 @@ Settings
 <div class="setting-item" onclick="toggleDark()">
     <i data-lucide="moon"></i>
     <span>Dark Mode</span>
+</div>
+
+<div id="accountDeletionSetting" class="setting-item account-delete-setting" onclick="requestAccountDeletion()">
+    <i data-lucide="user-round-x"></i>
+    <div class="setting-item-text">
+        <strong>Delete Account</strong>
+        <small id="accountDeletionStatus">Schedule permanent deletion</small>
+    </div>
+</div>
+
+<div id="cancelAccountDeletionSetting" class="setting-item account-cancel-delete hidden" onclick="cancelAccountDeletion()">
+    <i data-lucide="rotate-ccw"></i>
+    <div class="setting-item-text">
+        <strong>Cancel Account Deletion</strong>
+        <small id="accountDeletionCountdown">You can cancel within 24 hours</small>
+    </div>
 </div>
 
 <div class="setting-item" onclick="logout()">
@@ -30695,7 +30722,6 @@ function registerUser(){
         },150);
 
 
-        alert("Account Created");
 
     })
 
@@ -31803,173 +31829,86 @@ async function performFriendSearch(searchText){
 
 async function sendFriendRequest(email){
 
-    const currentUser =
-        auth.currentUser;
-
-    if(!currentUser) return;
-
+    const currentUser = auth.currentUser;
+    if(!currentUser || !email) return;
 
     try{
-
-        // =====================================
-        // CHECK ALREADY FRIEND
-        // =====================================
-
-        const friend1 =
-            await db.collection("friends")
+        const friend1 = await db.collection("friends")
             .where("user1","==",currentUser.email)
-            .where("user2","==",email)
-            .limit(1)
-            .get();
+            .where("user2","==",email).limit(1).get();
 
-
-        const friend2 =
-            await db.collection("friends")
+        const friend2 = await db.collection("friends")
             .where("user1","==",email)
-            .where("user2","==",currentUser.email)
-            .limit(1)
-            .get();
+            .where("user2","==",currentUser.email).limit(1).get();
 
-
-        if(
-            !friend1.empty ||
-            !friend2.empty
-        ){
-
-            // Already friend
-            performFriendSearch(
-                document
-                .getElementById("searchUser")
-                .value
-                .trim()
-                .toLowerCase()
-            );
-
+        if(!friend1.empty || !friend2.empty){
+            try{
+                performFriendSearch(
+                    document.getElementById("searchUser").value.trim().toLowerCase()
+                );
+            }catch(refreshError){
+                console.warn("Friend search refresh failed:", refreshError);
+            }
             return;
-
         }
 
+        const existingRequest = await db.collection("friendRequests")
+            .where("sender","==",currentUser.email)
+            .where("receiver","==",email)
+            .where("status","==","pending").limit(1).get();
 
-        // =====================================
-        // CHECK EXISTING REQUEST
-        // =====================================
+        if(!existingRequest.empty) return;
 
-        const existingRequest =
-            await db.collection("friendRequests")
-            .where(
-                "sender",
-                "==",
-                currentUser.email
-            )
-            .where(
-                "receiver",
-                "==",
-                email
-            )
-            .where(
-                "status",
-                "==",
-                "pending"
-            )
-            .limit(1)
-            .get();
-
-
-        if(!existingRequest.empty){
-
-            return;
-
-        }
-
-
-        // =====================================
-        // GET MY DATA
-        // =====================================
-
-        const meSnapshot =
-            await db.collection("users")
-            .doc(currentUser.uid)
-            .get();
-
+        const meSnapshot = await db.collection("users")
+            .doc(currentUser.uid).get();
 
         if(!meSnapshot.exists){
-
             alert("Your profile was not found.");
-
             return;
-
         }
 
+        const me = meSnapshot.data() || {};
 
-        const me =
-            meSnapshot.data();
-
-
-        // =====================================
-        // CREATE REQUEST
-        // =====================================
-
-        await db.collection("friendRequests")
-        .add({
-
-            sender:
-                currentUser.email,
-
-            senderUsername:
-                me.username || "",
-
-            senderName:
-                me.name || "",
-
-            receiver:
-                email,
-
-            status:
-                "pending",
-
-            time:
-                firebase.firestore.FieldValue
-                .serverTimestamp()
-
-        });
-
-
-        
-        await notifyRsengerFriendRequest({
-            receiverEmail: email,
-            senderEmail: currentUser.email,
+        // Only this Firestore write determines whether the request succeeded.
+        await db.collection("friendRequests").add({
+            sender: currentUser.email,
+            senderUsername: me.username || "",
             senderName: me.name || "",
-            senderUsername: me.username || ""
+            receiver: email,
+            status: "pending",
+            time: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-// Instant refresh
-        performFriendSearch(
-            document
-            .getElementById("searchUser")
-            .value
-            .trim()
-            .toLowerCase()
-        );
+        // Notification delivery can fail without making the request fail.
+        Promise.resolve()
+            .then(() => notifyRsengerFriendRequest({
+                receiverEmail: email,
+                senderEmail: currentUser.email,
+                senderName: me.name || "",
+                senderUsername: me.username || ""
+            }))
+            .catch(error => console.warn(
+                "Friend request notification failed; request was saved:",
+                error
+            ));
 
+        try{
+            performFriendSearch(
+                document.getElementById("searchUser").value.trim().toLowerCase()
+            );
+        }catch(refreshError){
+            console.warn("Friend search refresh failed:", refreshError);
+        }
 
-    }
-
-    catch(error){
-
-        console.error(
-            "Send friend request error:",
-            error
-        );
-
+    }catch(error){
+        console.error("Send friend request error:", error);
         alert(
-            "Could not send request."
+            error && error.message
+                ? "Could not send request: " + error.message
+                : "Could not send request."
         );
-
     }
-
 }
-
-
 
 // =========================================
 // CANCEL FRIEND REQUEST
@@ -32124,52 +32063,83 @@ function loadRequests(){
 // ================= ACCEPT REQUEST =================
 
 async function acceptRequest(id){
-    try{
-        const requestDoc = await db.collection("friendRequests")
-            .doc(id).get();
 
-        if(!requestDoc.exists) return;
+    const me = auth.currentUser;
+    if(!me || !id) return;
+
+    try{
+        const requestRef = db.collection("friendRequests").doc(id);
+        const requestDoc = await requestRef.get();
+
+        if(!requestDoc.exists){
+            alert("This friend request is no longer available.");
+            return;
+        }
 
         const data = requestDoc.data() || {};
-        const me = auth.currentUser;
-        if(!me) return;
+
+        if(data.status && data.status !== "pending") return;
+
+        if(data.receiver !== me.email){
+            alert("This friend request belongs to another account.");
+            return;
+        }
 
         const receiverDoc = await db.collection("users")
             .doc(me.uid).get();
 
-        if(!receiverDoc.exists) return;
+        if(!receiverDoc.exists){
+            throw new Error("Your profile was not found.");
+        }
 
         const receiverData = receiverDoc.data() || {};
 
+        // Friendship is the primary operation.
         await db.collection("friends").add({
-            user1:data.sender,
-            user2:data.receiver,
-            user1Username:data.senderUsername,
-            user2Username:receiverData.username,
-            user1Name:data.senderName,
-            user2Name:receiverData.name,
-            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            user1: data.sender,
+            user2: data.receiver,
+            user1Username: data.senderUsername || "",
+            user2Username: receiverData.username || "",
+            user1Name: data.senderName || "",
+            user2Name: receiverData.name || "",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Notify the original sender only.
-        await notifyRsengerFriendAccepted({
-            receiverEmail:data.sender,
-            senderEmail:data.receiver,
-            senderName:
-                receiverData.name ||
-                receiverData.username ||
-                "Your friend"
-        });
+        // Do not let notification failure make a successful accept look failed.
+        try{
+            await requestRef.update({
+                status: "accepted",
+                acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }catch(updateError){
+            console.warn("Friend request status update failed:", updateError);
+        }
 
-        await db.collection("friendRequests").doc(id).delete();
+        Promise.resolve()
+            .then(() => notifyRsengerFriendAccepted({
+                receiverEmail: data.sender,
+                senderEmail: data.receiver,
+                senderName:
+                    receiverData.name ||
+                    receiverData.username ||
+                    "Your friend"
+            }))
+            .catch(error => console.warn(
+                "Friend accepted notification failed; friendship was created:",
+                error
+            ));
 
         alert("Friend Added");
+
     }catch(error){
         console.error("Accept request error:", error);
-        alert("Could not accept friend request.");
+        alert(
+            error && error.message
+                ? "Could not accept friend request: " + error.message
+                : "Could not accept friend request."
+        );
     }
 }
-
 
 // ================= REJECT REQUEST =================
 
@@ -37079,6 +37049,200 @@ function showNotifications(){
 
 }
 
+// =========================================================
+// RSENGER 24-HOUR ACCOUNT DELETION
+// =========================================================
+
+let rsengerDeletionTimer = null;
+let rsengerDeletionInterval = null;
+const RSENGER_DELETION_MS = 24 * 60 * 60 * 1000;
+
+function getDeletionSettingElements(){
+    return {
+        deleteBtn: document.getElementById("accountDeletionSetting"),
+        cancelBtn: document.getElementById("cancelAccountDeletionSetting"),
+        status: document.getElementById("accountDeletionStatus"),
+        countdown: document.getElementById("accountDeletionCountdown")
+    };
+}
+
+function formatDeletionCountdown(ms){
+    if(ms <= 0) return "Deletion is due";
+    const total = Math.ceil(ms / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+
+function clearAccountDeletionTimers(){
+    if(rsengerDeletionTimer) clearTimeout(rsengerDeletionTimer);
+    if(rsengerDeletionInterval) clearInterval(rsengerDeletionInterval);
+    rsengerDeletionTimer = null;
+    rsengerDeletionInterval = null;
+}
+
+function updateAccountDeletionUI(deletionAt){
+    const els = getDeletionSettingElements();
+    if(!els.deleteBtn || !els.cancelBtn) return;
+
+    if(!deletionAt){
+        els.deleteBtn.classList.remove("hidden");
+        els.cancelBtn.classList.add("hidden");
+        if(els.status) els.status.textContent = "Schedule permanent deletion";
+        return;
+    }
+
+    els.deleteBtn.classList.add("hidden");
+    els.cancelBtn.classList.remove("hidden");
+
+    const update = () => {
+        const remaining = deletionAt - Date.now();
+        if(els.countdown){
+            els.countdown.textContent = remaining > 0
+                ? "Auto-delete in " + formatDeletionCountdown(remaining)
+                : "Finalizing account deletion…";
+        }
+    };
+
+    clearAccountDeletionTimers();
+    update();
+    rsengerDeletionInterval = setInterval(update,1000);
+    rsengerDeletionTimer = setTimeout(
+        checkAndFinalizeAccountDeletion,
+        Math.min(Math.max(deletionAt-Date.now(),1000),2147483647)
+    );
+}
+
+async function loadAccountDeletionState(){
+    const user = auth.currentUser;
+    if(!user) return;
+
+    try{
+        const snap = await db.collection("users").doc(user.uid).get();
+        if(!snap.exists) return;
+
+        const data = snap.data() || {};
+
+        if(data.deletionStatus === "pending" && data.deletionAt){
+            const at = typeof data.deletionAt.toMillis === "function"
+                ? data.deletionAt.toMillis()
+                : Number(data.deletionAt);
+
+            if(at && at <= Date.now()){
+                await checkAndFinalizeAccountDeletion();
+            }else if(at){
+                updateAccountDeletionUI(at);
+            }
+        }else{
+            clearAccountDeletionTimers();
+            updateAccountDeletionUI(null);
+        }
+    }catch(error){
+        console.error("Account deletion state error:",error);
+    }
+}
+
+async function requestAccountDeletion(){
+    const user = auth.currentUser;
+    if(!user) return;
+
+    const confirmed = window.confirm(
+        "Delete your Rsenger account?\n\n" +
+        "Your account will be scheduled for permanent deletion after 24 hours. " +
+        "You can cancel it anytime during those 24 hours.\n\nContinue?"
+    );
+
+    if(!confirmed) return;
+
+    try{
+        const deletionAt = new Date(Date.now()+RSENGER_DELETION_MS);
+
+        await db.collection("users").doc(user.uid).set({
+            deletionStatus:"pending",
+            deletionRequestedAt:firebase.firestore.FieldValue.serverTimestamp(),
+            deletionAt:firebase.firestore.Timestamp.fromDate(deletionAt)
+        },{merge:true});
+
+        updateAccountDeletionUI(deletionAt.getTime());
+
+        alert("Account deletion scheduled. You have 24 hours to cancel it.");
+    }catch(error){
+        console.error("Schedule account deletion error:",error);
+        alert("Could not schedule account deletion.\n"+(error.message||""));
+    }
+}
+
+async function cancelAccountDeletion(){
+    const user = auth.currentUser;
+    if(!user) return;
+
+    if(!window.confirm("Cancel your scheduled account deletion?")) return;
+
+    try{
+        await db.collection("users").doc(user.uid).set({
+            deletionStatus:firebase.firestore.FieldValue.delete(),
+            deletionRequestedAt:firebase.firestore.FieldValue.delete(),
+            deletionAt:firebase.firestore.FieldValue.delete()
+        },{merge:true});
+
+        clearAccountDeletionTimers();
+        updateAccountDeletionUI(null);
+        alert("Account deletion cancelled successfully.");
+    }catch(error){
+        console.error("Cancel account deletion error:",error);
+        alert("Could not cancel account deletion.\n"+(error.message||""));
+    }
+}
+
+async function checkAndFinalizeAccountDeletion(){
+    const user = auth.currentUser;
+    if(!user) return;
+
+    try{
+        const snap = await db.collection("users").doc(user.uid).get();
+        if(!snap.exists) return;
+
+        const data = snap.data() || {};
+        if(data.deletionStatus !== "pending" || !data.deletionAt) return;
+
+        const at = typeof data.deletionAt.toMillis === "function"
+            ? data.deletionAt.toMillis()
+            : Number(data.deletionAt);
+
+        if(!at || Date.now() < at){
+            if(at) updateAccountDeletionUI(at);
+            return;
+        }
+
+        // Firebase may require recent authentication for Auth deletion.
+        await user.delete();
+
+        clearAccountDeletionTimers();
+        console.log("Rsenger account permanently deleted.");
+        // Firebase auth state handling sends the user to the login page.
+
+    }catch(error){
+        console.error("Permanent account deletion error:",error);
+
+        if(error && error.code === "auth/requires-recent-login"){
+            alert(
+                "The 24-hour deletion period has ended, but Firebase requires " +
+                "a fresh login before this account can be permanently deleted. " +
+                "Please log in again; deletion will be retried automatically."
+            );
+        }
+    }
+}
+
+auth.onAuthStateChanged(function(user){
+    if(user){
+        setTimeout(loadAccountDeletionState,800);
+    }else{
+        clearAccountDeletionTimers();
+    }
+});
+
 // ================= SETTINGS =================
 
 function openSettings(){
@@ -37089,8 +37253,13 @@ function openSettings(){
         .classList.remove("hidden");
 
     showBottomNav();
-    
     hideGroupIcon();
+
+    loadAccountDeletionState();
+
+    if(window.lucide){
+        lucide.createIcons();
+    }
 }
 
 
