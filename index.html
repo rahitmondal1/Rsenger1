@@ -29381,6 +29381,15 @@ window.RSENGER_ADMIN_UID = "Yt04RIF00dUn5Y6ySy9BfjTgVcy1";
 
 async function saveFCMToken(){
 
+    console.log("🔥 saveFCMToken() STARTED");
+console.log("🔥 Current User:", auth.currentUser);
+console.log("🔥 WTN:", window.WTN);
+console.log(
+    "🔥 registerNotification:",
+    window.WTN &&
+    window.WTN.registerNotification
+);
+
     try{
 
         const user = auth.currentUser;
