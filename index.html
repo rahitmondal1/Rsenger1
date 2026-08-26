@@ -42,6 +42,94 @@ body{
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
+
+<style id="rsenger-premium-fixes">
+#chatPage .message-box{
+    position:relative;
+    isolation:isolate;
+}
+
+#chatPage .message-box .send-btn{
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+}
+
+.premium-chat-list-item{
+    position:relative;
+    overflow:hidden;
+    touch-action:pan-y;
+    -webkit-user-select:none;
+    user-select:none;
+}
+
+.chat-delete-action{
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%) translateX(18px);
+    opacity:0;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-height:40px;
+    padding:0 13px;
+    border:1px solid rgba(248,113,113,.28);
+    border-radius:13px;
+    color:#fff;
+    background:linear-gradient(135deg,rgba(127,29,29,.96),rgba(220,38,38,.92));
+    box-shadow:0 10px 28px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.14);
+    font:600 12px/1 Inter,sans-serif;
+    z-index:8;
+    transition:opacity .22s ease,transform .22s ease;
+}
+
+.chat-delete-action svg{
+    width:16px;
+    height:16px;
+}
+
+.premium-chat-list-item.chat-item-actions-visible .chat-delete-action{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(-50%) translateX(0);
+}
+
+.premium-chat-list-item.chat-item-actions-visible .premium-chat-content,
+.premium-chat-list-item.chat-item-actions-visible .premium-chat-arrow{
+    opacity:.18;
+}
+
+.premium-chat-list-item:focus-visible{
+    outline:2px solid rgba(34,211,238,.55);
+    outline-offset:-2px;
+}
+
+.premium-popup-overlay,
+.premium-alert-overlay{
+    backdrop-filter:blur(18px) saturate(1.2);
+    -webkit-backdrop-filter:blur(18px) saturate(1.2);
+}
+
+.premium-popup,
+.premium-alert-box{
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 28px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.premium-popup-btn,
+.premium-alert-ok{
+    transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+
+.premium-popup-btn:active,
+.premium-alert-ok:active{
+    transform:scale(.97);
+    filter:brightness(1.08);
+}
+</style>
+
 </head>
 
 <body>
@@ -1479,7 +1567,7 @@ No chats yet
         type="text"
         placeholder="Type a message..."
         oninput="startTyping()"
-        onblur="stopTyping()"
+        onfocus="keepMessageComposerActive()"
     >
 
 
@@ -1487,6 +1575,9 @@ No chats yet
 
     <button
         class="send-btn"
+        type="button"
+        onpointerdown="event.preventDefault()"
+        onmousedown="event.preventDefault()"
         onclick="sendMessage()"
         aria-label="Send">
 
@@ -30253,7 +30344,7 @@ function login(){
 
     if(!email || !password){
 
-        alert("Enter Email and Password");
+        premiumAlert("Enter Email and Password");
 
         return;
 
@@ -30420,7 +30511,7 @@ function login(){
             error
         );
 
-        alert(error.message);
+        premiumAlert(error.message);
 
     });
 
@@ -30459,7 +30550,7 @@ function registerUser(){
         !password ||
         !confirmPassword
     ){
-        alert("Please fill all fields");
+        premiumAlert("Please fill all fields");
         return;
     }
 
@@ -30467,7 +30558,7 @@ function registerUser(){
     // ================= PASSWORD CHECK =================
 
     if(password !== confirmPassword){
-        alert("Password not matched");
+        premiumAlert("Password not matched");
         return;
     }
 
@@ -30732,7 +30823,7 @@ function registerUser(){
             error
         );
 
-        alert(
+        premiumAlert(
             error && error.message
                 ? error.message
                 : "Could not create account."
@@ -30825,7 +30916,7 @@ function googleLogin(){
 
             console.error("Google Login Error:", error);
 
-            alert(
+            premiumAlert(
                 "Google Login failed:\n" +
                 error.code +
                 "\n\n" +
@@ -31863,7 +31954,7 @@ async function sendFriendRequest(email){
             .doc(currentUser.uid).get();
 
         if(!meSnapshot.exists){
-            alert("Your profile was not found.");
+            premiumAlert("Your profile was not found.");
             return;
         }
 
@@ -31902,7 +31993,7 @@ async function sendFriendRequest(email){
 
     }catch(error){
         console.error("Send friend request error:", error);
-        alert(
+        premiumAlert(
             error && error.message
                 ? "Could not send request: " + error.message
                 : "Could not send request."
@@ -31945,7 +32036,7 @@ async function cancelFriendRequest(requestId){
             error
         );
 
-        alert("Could not cancel request.");
+        premiumAlert("Could not cancel request.");
 
     }
 }
@@ -32072,7 +32163,7 @@ async function acceptRequest(id){
         const requestDoc = await requestRef.get();
 
         if(!requestDoc.exists){
-            alert("This friend request is no longer available.");
+            premiumAlert("This friend request is no longer available.");
             return;
         }
 
@@ -32081,7 +32172,7 @@ async function acceptRequest(id){
         if(data.status && data.status !== "pending") return;
 
         if(data.receiver !== me.email){
-            alert("This friend request belongs to another account.");
+            premiumAlert("This friend request belongs to another account.");
             return;
         }
 
@@ -32129,11 +32220,11 @@ async function acceptRequest(id){
                 error
             ));
 
-        alert("Friend Added");
+        premiumAlert("Friend Added");
 
     }catch(error){
         console.error("Accept request error:", error);
-        alert(
+        premiumAlert(
             error && error.message
                 ? "Could not accept friend request: " + error.message
                 : "Could not accept friend request."
@@ -33446,6 +33537,16 @@ catch(clearError){
 
                 stopTyping();
 
+            // Keep the mobile keyboard open after sending.
+            requestAnimationFrame(function(){
+                try{
+                    input.focus({preventScroll:true});
+                }
+                catch(e){
+                    input.focus();
+                }
+            });
+
             }
 
 
@@ -33570,6 +33671,16 @@ catch(clearError){
         ){
 
             stopTyping();
+
+        // Keep the mobile keyboard open after sending.
+        requestAnimationFrame(function(){
+            try{
+                input.focus({preventScroll:true});
+            }
+            catch(e){
+                input.focus();
+            }
+        });
 
         }
 
@@ -35324,6 +35435,30 @@ async function loadChats(){
         const messagesSnapshot =
             await db.collection("messages").get();
 
+        // ================= HIDDEN CHAT LIST =================
+        // Hiding a chat only removes it from this account's list.
+        // Friendship and messages remain untouched.
+        const hiddenChatsSnapshot =
+            await db.collection("users")
+            .doc(currentUser.uid)
+            .collection("hiddenChats")
+            .get();
+
+        const hiddenChats = {};
+
+        hiddenChatsSnapshot.forEach(function(doc){
+            const data = doc.data() || {};
+            const email = data.email || doc.id;
+
+            if(email){
+                hiddenChats[email] =
+                    data.hiddenAt &&
+                    typeof data.hiddenAt.toMillis === "function"
+                    ? data.hiddenAt.toMillis()
+                    : Number(data.hiddenAt) || 0;
+            }
+        });
+
 
         // ================= PREPARE LAST MESSAGE MAP =================
 
@@ -35440,6 +35575,30 @@ async function loadChats(){
 
             if(!friendEmail) continue;
 
+            // Hidden chat reappears automatically when a newer
+            // message arrives after it was removed from the list.
+            if(
+                Object.prototype.hasOwnProperty.call(
+                    hiddenChats,
+                    friendEmail
+                )
+            ){
+                const hiddenAt =
+                    hiddenChats[friendEmail] || 0;
+
+                const latestForHidden =
+                    latestMessages[friendEmail];
+
+                const latestTime =
+                    latestForHidden
+                    ? (latestForHidden.time || 0)
+                    : 0;
+
+                if(latestTime <= hiddenAt){
+                    continue;
+                }
+            }
+
 
             // ================= USER =================
 
@@ -35551,7 +35710,9 @@ async function loadChats(){
 
             <div
                 class="premium-chat-list-item"
-                onclick="openChat('${chat.email}')"
+                data-chat-email="${encodeURIComponent(chat.email)}"
+                tabindex="0"
+                role="button"
             >
 
                 <!-- PROFILE PHOTO -->
@@ -35600,6 +35761,16 @@ async function loadChats(){
                     class="premium-chat-arrow"
                 ></i>
 
+                <button
+                    type="button"
+                    class="chat-delete-action"
+                    aria-label="Delete chat from list"
+                    title="Delete chat"
+                >
+                    <i data-lucide="trash-2"></i>
+                    <span>Delete</span>
+                </button>
+
             </div>
 
             `;
@@ -35635,6 +35806,8 @@ async function loadChats(){
 
 
         chatList.innerHTML = html;
+
+        setupPremiumChatListInteractions(chatList);
 
 
         // Lucide icons refresh
@@ -35692,6 +35865,323 @@ async function loadChats(){
     }
 
 }
+
+
+// =========================================================
+// PREMIUM CHAT LIST — LONG PRESS / DELETE
+// =========================================================
+
+function setupPremiumChatListInteractions(chatList){
+
+    if(!chatList){
+        return;
+    }
+
+    chatList
+    .querySelectorAll(".premium-chat-list-item")
+    .forEach(function(item){
+
+        let pressTimer = null;
+        let longPressed = false;
+        let moved = false;
+
+        const deleteButton =
+            item.querySelector(".chat-delete-action");
+
+        const getEmail = function(){
+            try{
+                return decodeURIComponent(
+                    item.dataset.chatEmail || ""
+                );
+            }
+            catch(error){
+                return item.dataset.chatEmail || "";
+            }
+        };
+
+        const clearPress = function(){
+            if(pressTimer){
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+        };
+
+        item.addEventListener(
+            "pointerdown",
+            function(event){
+
+                if(
+                    event.pointerType === "mouse" &&
+                    event.button !== 0
+                ){
+                    return;
+                }
+
+                moved = false;
+                longPressed = false;
+                clearPress();
+
+                pressTimer = setTimeout(function(){
+
+                    if(moved){
+                        return;
+                    }
+
+                    longPressed = true;
+
+                    item.classList.add(
+                        "chat-item-actions-visible"
+                    );
+
+                    if(navigator.vibrate){
+                        try{
+                            navigator.vibrate(30);
+                        }
+                        catch(e){}
+                    }
+
+                }, 550);
+            }
+        );
+
+        item.addEventListener(
+            "pointermove",
+            function(){
+                moved = true;
+                clearPress();
+            }
+        );
+
+        item.addEventListener(
+            "pointerup",
+            clearPress
+        );
+
+        item.addEventListener(
+            "pointercancel",
+            clearPress
+        );
+
+        item.addEventListener(
+            "click",
+            function(event){
+
+                if(
+                    event.target.closest &&
+                    event.target.closest(
+                        ".chat-delete-action"
+                    )
+                ){
+                    return;
+                }
+
+                if(longPressed){
+                    event.preventDefault();
+                    event.stopPropagation();
+                    longPressed = false;
+                    return;
+                }
+
+                if(
+                    item.classList.contains(
+                        "chat-item-actions-visible"
+                    )
+                ){
+                    item.classList.remove(
+                        "chat-item-actions-visible"
+                    );
+                    return;
+                }
+
+                const email = getEmail();
+
+                if(email){
+                    openChat(email);
+                }
+            }
+        );
+
+        item.addEventListener(
+            "keydown",
+            function(event){
+
+                if(
+                    event.key === "Enter" ||
+                    event.key === " "
+                ){
+                    event.preventDefault();
+
+                    const email = getEmail();
+
+                    if(email){
+                        openChat(email);
+                    }
+                }
+            }
+        );
+
+        item.addEventListener(
+            "contextmenu",
+            function(event){
+                event.preventDefault();
+            }
+        );
+
+        if(deleteButton){
+
+            deleteButton.addEventListener(
+                "pointerdown",
+                function(event){
+                    event.stopPropagation();
+                }
+            );
+
+            deleteButton.addEventListener(
+                "click",
+                async function(event){
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const email = getEmail();
+
+                    if(!email){
+                        return;
+                    }
+
+                    item.classList.remove(
+                        "chat-item-actions-visible"
+                    );
+
+                    const confirmed =
+                        await premiumConfirm({
+                            title: "Remove chat?",
+                            message:
+                                "This account will be removed from your chat list. Your friendship and existing messages will not be deleted.",
+                            type: "danger",
+                            icon: "trash-2",
+                            confirmText: "Remove"
+                        });
+
+                    if(confirmed){
+                        await removeChatFromList(email);
+                    }
+                }
+            );
+        }
+    });
+}
+
+
+async function removeChatFromList(email){
+
+    const currentUser = auth.currentUser;
+
+    if(
+        !currentUser ||
+        !email
+    ){
+        return;
+    }
+
+    try{
+
+        await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("hiddenChats")
+        .doc(email)
+        .set({
+            email: email,
+            hiddenAt:
+                firebase.firestore
+                .FieldValue
+                .serverTimestamp()
+        });
+
+        premiumAlert(
+            "The chat was removed from your chat list.",
+            "Chat Removed",
+            "success"
+        );
+
+        await loadChats();
+
+    }
+    catch(error){
+
+        console.error(
+            "Remove chat from list error:",
+            error
+        );
+
+        premiumAlert(
+            error.message ||
+            "Could not remove this chat from the list.",
+            "Remove Failed",
+            "error"
+        );
+    }
+}
+
+
+// =========================================================
+// CHAT COMPOSER — KEYBOARD BEHAVIOUR
+// =========================================================
+
+function keepMessageComposerActive(){
+
+    const input =
+        document.getElementById("messageInput");
+
+    if(input){
+        input.dataset.keyboardActive = "true";
+    }
+}
+
+
+// Tapping anywhere outside the message composer closes
+// the mobile keyboard. The Send button is intentionally excluded.
+document.addEventListener(
+    "pointerdown",
+    function(event){
+
+        const input =
+            document.getElementById("messageInput");
+
+        if(
+            !input ||
+            document.activeElement !== input
+        ){
+            return;
+        }
+
+        const target = event.target;
+
+        if(
+            target &&
+            target.closest &&
+            (
+                target.closest("#messageInput") ||
+                target.closest(".send-btn")
+            )
+        ){
+            return;
+        }
+
+        try{
+            input.blur();
+        }
+        catch(e){}
+
+        if(
+            typeof stopTyping === "function"
+        ){
+            stopTyping();
+        }
+    },
+    true
+);
 
 // ================= PROFILE =================
 
@@ -36302,7 +36792,7 @@ function saveEditProfile(){
 
     if(name === ""){
 
-        alert("Please enter your name.");
+        premiumAlert("Please enter your name.");
         return;
 
     }
@@ -36340,7 +36830,7 @@ if(window.lucide){
 
         loadProfile();
 
-        alert("Profile Updated Successfully ✨");
+        premiumAlert("Profile Updated Successfully ✨");
 
     })
     .catch(error => {
@@ -36358,7 +36848,7 @@ if(window.lucide){
 
         console.error(error);
 
-        alert(error.message);
+        premiumAlert(error.message);
 
     });
 
@@ -36647,7 +37137,7 @@ function logout(){
                 error
             );
 
-            alert(
+            premiumAlert(
                 "Logout failed. Please try again."
             );
 
@@ -37147,11 +37637,15 @@ async function requestAccountDeletion(){
     const user = auth.currentUser;
     if(!user) return;
 
-    const confirmed = window.confirm(
-        "Delete your Rsenger account?\n\n" +
-        "Your account will be scheduled for permanent deletion after 24 hours. " +
-        "You can cancel it anytime during those 24 hours.\n\nContinue?"
-    );
+    const confirmed =
+        await premiumConfirm({
+            title: "Delete Rsenger account?",
+            message:
+                "Your account will be scheduled for permanent deletion after 24 hours. You can cancel it anytime during those 24 hours.",
+            type: "danger",
+            icon: "user-round-x",
+            confirmText: "Schedule Deletion"
+        });
 
     if(!confirmed) return;
 
@@ -37166,10 +37660,10 @@ async function requestAccountDeletion(){
 
         updateAccountDeletionUI(deletionAt.getTime());
 
-        alert("Account deletion scheduled. You have 24 hours to cancel it.");
+        premiumAlert("Account deletion scheduled. You have 24 hours to cancel it.");
     }catch(error){
         console.error("Schedule account deletion error:",error);
-        alert("Could not schedule account deletion.\n"+(error.message||""));
+        premiumAlert("Could not schedule account deletion.\n"+(error.message||""));
     }
 }
 
@@ -37177,7 +37671,17 @@ async function cancelAccountDeletion(){
     const user = auth.currentUser;
     if(!user) return;
 
-    if(!window.confirm("Cancel your scheduled account deletion?")) return;
+    const confirmed =
+        await premiumConfirm({
+            title: "Cancel account deletion?",
+            message:
+                "Your scheduled account deletion will be cancelled and your account will remain active.",
+            type: "success",
+            icon: "rotate-ccw",
+            confirmText: "Cancel Deletion"
+        });
+
+    if(!confirmed) return;
 
     try{
         await db.collection("users").doc(user.uid).set({
@@ -37188,10 +37692,10 @@ async function cancelAccountDeletion(){
 
         clearAccountDeletionTimers();
         updateAccountDeletionUI(null);
-        alert("Account deletion cancelled successfully.");
+        premiumAlert("Account deletion cancelled successfully.");
     }catch(error){
         console.error("Cancel account deletion error:",error);
-        alert("Could not cancel account deletion.\n"+(error.message||""));
+        premiumAlert("Could not cancel account deletion.\n"+(error.message||""));
     }
 }
 
@@ -37226,7 +37730,7 @@ async function checkAndFinalizeAccountDeletion(){
         console.error("Permanent account deletion error:",error);
 
         if(error && error.code === "auth/requires-recent-login"){
-            alert(
+            premiumAlert(
                 "The 24-hour deletion period has ended, but Firebase requires " +
                 "a fresh login before this account can be permanently deleted. " +
                 "Please log in again; deletion will be retried automatically."
@@ -37564,7 +38068,7 @@ function saveEditedMessage(){
 
     if(newText === ""){
 
-        alert("Message cannot be empty.");
+        premiumAlert("Message cannot be empty.");
 
         return;
     }
@@ -37592,7 +38096,7 @@ function saveEditedMessage(){
             error
         );
 
-        alert(error.message);
+        premiumAlert(error.message);
 
     });
 
@@ -37739,7 +38243,7 @@ function copyMessage(){
 
 navigator.clipboard.writeText(selectedMessageText);
 
-alert("Copied");
+premiumAlert("Copied");
 
 closeMenu();
 
@@ -37773,7 +38277,7 @@ function deleteForMe(){
     })
     .catch(error => {
         console.error(error);
-        alert(error.message);
+        premiumAlert(error.message);
     });
 
 }
@@ -37856,7 +38360,7 @@ function editSelected(){
 
 function forwardMessage(){
 
-alert("Forward screen will come in Part 4");
+premiumAlert("Forward screen will come in Part 4");
 
 closeMenu();
 
@@ -37883,7 +38387,7 @@ function saveNickname(){
     let nickname = document.getElementById("nicknameInput").value.trim();
 
     if(nickname === ""){
-        alert("Enter nickname");
+        premiumAlert("Enter nickname");
         return;
     }
 
@@ -37893,10 +38397,10 @@ function saveNickname(){
         nickname: nickname
     })
     .then(()=>{
-        alert("Nickname Saved");
+        premiumAlert("Nickname Saved");
     })
     .catch(error=>{
-        alert(error.message);
+        premiumAlert(error.message);
     });
 
 }
@@ -38286,6 +38790,7 @@ function showPremiumTypingStatus(){
 // =====================================================
 
 let typingTimeout = null;
+let typingGeneration = 0;
 let typingListener = null;
 let currentChatUserUid = null;
 
@@ -38338,6 +38843,9 @@ async function startTyping(){
     const me =
         auth.currentUser;
 
+    const input =
+        document.getElementById("messageInput");
+
     if(
         !me ||
         !currentChatEmail
@@ -38347,8 +38855,18 @@ async function startTyping(){
 
     }
 
+    const myTypingGeneration =
+        ++typingGeneration;
 
     clearTimeout(typingTimeout);
+
+    if(
+        !input ||
+        input.value.trim() === ""
+    ){
+        await stopTyping();
+        return;
+    }
 
 
     try{
@@ -38403,9 +38921,14 @@ async function startTyping(){
         typingTimeout =
             setTimeout(() => {
 
-                stopTyping();
+                if(
+                    myTypingGeneration ===
+                    typingGeneration
+                ){
+                    stopTyping();
+                }
 
-            }, 1800);
+            }, 1200);
 
     }
     catch(error){
@@ -38424,6 +38947,8 @@ async function startTyping(){
 // =====================================================
 
 async function stopTyping(){
+
+    typingGeneration++;
 
     clearTimeout(
         typingTimeout
