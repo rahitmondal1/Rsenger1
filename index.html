@@ -30403,38 +30403,36 @@ function login(){
 
 function registerUser(){
 
-    let name =
+    const name =
         document.getElementById("name").value.trim();
 
-    let username =
+    const username =
         document.getElementById("username").value.trim();
 
-    let phone =
+    const phone =
         document.getElementById("phone").value.trim();
 
-    let email =
+    const email =
         document.getElementById("email").value.trim();
 
-    let password =
+    const password =
         document.getElementById("password").value;
 
-    let confirmPassword =
+    const confirmPassword =
         document.getElementById("confirmPassword").value;
 
 
     // ================= BASIC CHECK =================
 
     if(
-        name === "" ||
-        username === "" ||
-        phone === "" ||
-        email === "" ||
-        password === "" ||
-        confirmPassword === ""
+        !name ||
+        !username ||
+        !phone ||
+        !email ||
+        !password ||
+        !confirmPassword
     ){
-
         alert("Please fill all fields");
-
         return;
     }
 
@@ -30442,91 +30440,292 @@ function registerUser(){
     // ================= PASSWORD CHECK =================
 
     if(password !== confirmPassword){
-
         alert("Password not matched");
-
         return;
     }
 
 
-    // ================= CHECK EXACT USERNAME =================
+    // Prevent double click while account is being created
+
+    const createButton =
+        document.querySelector(
+            '#registerPage button[onclick="registerUser()"]'
+        );
+
+    if(createButton){
+        createButton.disabled = true;
+        createButton.dataset.originalText =
+            createButton.textContent;
+        createButton.textContent = "Creating account...";
+    }
+
+
+    // ================= CHECK USERNAME =================
 
     db.collection("users")
     .where("username", "==", username)
     .limit(1)
     .get()
 
-    .then((snapshot) => {
+    .then(async function(snapshot){
 
-        // Same-to-same username already exists
         if(!snapshot.empty){
 
-            alert(
+            throw new Error(
                 "This username is already taken.\nPlease choose another username."
             );
 
-            return;
         }
 
 
-        // ================= CREATE ACCOUNT =================
+        // ================= CREATE FIREBASE ACCOUNT =================
 
-        return auth.createUserWithEmailAndPassword(
-            email,
-            password
-        )
+        const credential =
+            await auth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
 
-        .then((result) => {
+        const user = credential.user;
 
-            return db.collection("users")
-            .doc(result.user.uid)
+        if(!user){
+            throw new Error("Account creation failed.");
+        }
+
+
+        // ================= CREATE USER DOCUMENT =================
+
+        await db
+            .collection("users")
+            .doc(user.uid)
             .set({
 
                 name: name,
-
                 username: username,
-
                 phone: phone,
-
                 email: email,
 
                 online: true,
-
                 bio: "",
-
                 profilePic: "",
 
                 createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
 
+            },{
+                merge: true
             });
 
-        });
 
-    })
+        console.log(
+            "REGISTER SUCCESS:",
+            user.uid
+        );
 
-    .then((result) => {
 
-        // If username was already taken,
-        // result will be undefined and nothing happens.
-        if(result === undefined) return;
+        // =====================================================
+        // IMPORTANT: NEW ACCOUNT -> GO DIRECTLY TO HOME
+        // =====================================================
+
+        const splash =
+            document.getElementById("splashPage");
+
+        const loginPage =
+            document.getElementById("loginPage");
+
+        const registerPage =
+            document.getElementById("registerPage");
+
+        const homePage =
+            document.getElementById("homePage");
+
+
+        // Close any leftover modal/overlay
+
+        document
+            .querySelectorAll(".modal, .overlay")
+            .forEach(function(el){
+                el.classList.add("hidden");
+                el.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+            });
+
+
+        // Hide auth pages completely
+
+        if(loginPage){
+            loginPage.classList.add("hidden");
+            loginPage.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+        }
+
+        if(registerPage){
+            registerPage.classList.add("hidden");
+            registerPage.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+        }
+
+
+        // Show HOME immediately
+
+        if(homePage){
+            homePage.classList.remove("hidden");
+            homePage.style.setProperty(
+                "display",
+                "block",
+                "important"
+            );
+            homePage.style.setProperty(
+                "visibility",
+                "visible",
+                "important"
+            );
+            homePage.style.setProperty(
+                "opacity",
+                "1",
+                "important"
+            );
+            homePage.style.setProperty(
+                "pointer-events",
+                "auto",
+                "important"
+            );
+        }
+
+
+        // Splash must NEVER leave the register screen visible
+
+        if(splash){
+            splash.classList.remove("splash-exit");
+            splash.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+            splash.style.setProperty(
+                "visibility",
+                "hidden",
+                "important"
+            );
+        }
+
+
+        // Bottom navigation only on Home
+
+        if(typeof showBottomNav === "function"){
+            showBottomNav();
+        }
+
+
+        // Group icon only on Home
+
+        if(typeof showGroupIcon === "function"){
+            showGroupIcon();
+        }
+        else if(typeof hideGroupIcon === "function"){
+            hideGroupIcon();
+            setTimeout(function(){
+                if(typeof showGroupIcon === "function"){
+                    showGroupIcon();
+                }
+            },50);
+        }
+
+
+        // Refresh icons
+
+        if(window.lucide){
+            lucide.createIcons();
+        }
+
+
+        // Start app systems for the newly-created account
+
+        setTimeout(function(){
+
+            try{
+                if(typeof setupPresence === "function"){
+                    setupPresence();
+                }
+            }
+            catch(e){
+                console.error(
+                    "Register presence error:",
+                    e
+                );
+            }
+
+
+            try{
+                if(typeof saveFCMToken === "function"){
+                    saveFCMToken();
+                }
+            }
+            catch(e){
+                console.error(
+                    "Register FCM error:",
+                    e
+                );
+            }
+
+
+            try{
+                if(typeof loadChats === "function"){
+                    loadChats();
+                }
+            }
+            catch(e){
+                console.error(
+                    "Register chats error:",
+                    e
+                );
+            }
+
+        },150);
+
 
         alert("Account Created");
 
-        showLogin();
+    })
+
+    .catch(function(error){
+
+        console.error(
+            "Register Error:",
+            error
+        );
+
+        alert(
+            error && error.message
+                ? error.message
+                : "Could not create account."
+        );
 
     })
 
-    .catch((error) => {
+    .finally(function(){
 
-        console.error("Register Error:", error);
-
-        alert(error.message);
+        if(createButton){
+            createButton.disabled = false;
+            createButton.textContent =
+                createButton.dataset.originalText ||
+                "Create Account";
+        }
 
     });
 
 }
-
 
 
 // ================= GOOGLE LOGIN =================
