@@ -2983,6 +2983,398 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
+
+<!-- =========================================================
+     RSENGER V2 PREMIUM UX FIXES
+     ========================================================= -->
+<style id="rsenger-v2-ux-fixes">
+/* ---------- Premium, stable chat list ---------- */
+#homePage #chatList{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:10px !important;
+    padding:8px 0 125px !important;
+    box-sizing:border-box !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+}
+
+#homePage #chatList .premium-chat-list-item{
+    width:calc(100% - 2px) !important;
+    min-height:72px !important;
+    height:72px !important;
+    flex:0 0 72px !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+    padding:8px 12px !important;
+    margin:0 !important;
+    box-sizing:border-box !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+    transform:translateZ(0);
+    will-change:transform;
+}
+
+#homePage #chatList .premium-chat-avatar-wrap{
+    width:54px !important;
+    min-width:54px !important;
+    max-width:54px !important;
+    height:54px !important;
+    min-height:54px !important;
+    flex:0 0 54px !important;
+    position:relative !important;
+}
+
+#homePage #chatList .premium-chat-avatar{
+    width:54px !important;
+    height:54px !important;
+    min-width:54px !important;
+    max-width:54px !important;
+    min-height:54px !important;
+    max-height:54px !important;
+    flex:0 0 54px !important;
+    display:block !important;
+    box-sizing:border-box !important;
+    border-radius:50% !important;
+    object-fit:cover !important;
+}
+
+#homePage #chatList .premium-chat-content{
+    min-width:0 !important;
+    width:auto !important;
+    flex:1 1 auto !important;
+    overflow:hidden !important;
+}
+
+#homePage #chatList .premium-chat-name-row,
+#homePage #chatList .premium-chat-last-message{
+    max-width:100% !important;
+    overflow:hidden !important;
+    white-space:nowrap !important;
+    text-overflow:ellipsis !important;
+}
+
+#homePage #chatList .premium-chat-arrow{
+    flex:0 0 18px !important;
+    width:18px !important;
+    height:18px !important;
+}
+
+#homePage #chatList .chat-delete-action{
+    right:10px !important;
+    min-height:42px !important;
+    z-index:20 !important;
+}
+
+#homePage #chatList .premium-chat-list-item.chat-item-actions-visible{
+    box-shadow:0 12px 34px rgba(0,0,0,.28), inset 0 0 0 1px rgba(248,113,113,.12);
+}
+
+/* ---------- Group composer: fixed above keyboard ---------- */
+#rsengerGroupPage{
+    height:100dvh !important;
+    min-height:0 !important;
+    max-height:100dvh !important;
+    overflow:hidden !important;
+}
+
+#rsengerGroupPage .rsenger-group-input-area{
+    position:relative !important;
+    z-index:100 !important;
+    flex:0 0 auto !important;
+    touch-action:manipulation !important;
+    padding-bottom:max(8px, env(safe-area-inset-bottom)) !important;
+}
+
+#rsengerGroupPage .rsenger-group-message-input{
+    min-width:0 !important;
+    touch-action:manipulation !important;
+    -webkit-user-select:text !important;
+    user-select:text !important;
+}
+
+#rsengerGroupPage .group-send-btn,
+#rsengerGroupPage .group-photo-btn{
+    touch-action:manipulation !important;
+    -webkit-tap-highlight-color:transparent;
+}
+
+/* ---------- Smoother touch feedback ---------- */
+.premium-chat-list-item,
+.send-btn,
+.group-send-btn,
+.group-photo-btn,
+.bottom-nav button,
+button,
+label{
+    -webkit-tap-highlight-color:transparent;
+}
+
+@media (prefers-reduced-motion:no-preference){
+    .premium-chat-list-item,
+    .send-btn,
+    .group-send-btn{
+        transition:
+            transform .16s cubic-bezier(.2,.8,.2,1),
+            background .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+    }
+}
+</style>
+
+<script id="rsenger-v2-ux-script">
+(function(){
+    "use strict";
+
+    /* =====================================================
+       1) ROBUST 1-TO-1 TYPING INDICATOR
+       - typing starts only when there is actual text
+       - stops after 1 second of inactivity
+       - prevents async start/stop race conditions
+       - removes typing on disconnect/page hide
+       ===================================================== */
+
+    let rsTypingTimer = null;
+    let rsTypingGeneration = 0;
+    let rsTypingUidCache = null;
+
+    async function resolveTypingUid(){
+        if(!currentChatEmail) return null;
+        if(rsTypingUidCache && currentChatUserUid === rsTypingUidCache){
+            return rsTypingUidCache;
+        }
+
+        try{
+            const snap = await db.collection("users")
+                .where("email","==",currentChatEmail)
+                .limit(1)
+                .get();
+
+            if(snap.empty) return null;
+
+            rsTypingUidCache = snap.docs[0].id;
+            currentChatUserUid = rsTypingUidCache;
+            return rsTypingUidCache;
+        }catch(err){
+            console.error("Typing UID error:", err);
+            return null;
+        }
+    }
+
+    async function rsRemoveTyping(uid){
+        const me = auth.currentUser;
+        if(!me || !uid || !window.rtdb) return;
+
+        try{
+            await rtdb.ref("typing/"+uid+"/"+me.uid).remove();
+        }catch(err){
+            console.error("Typing remove error:", err);
+        }
+    }
+
+    window.stopTyping = async function(){
+        const generation = ++rsTypingGeneration;
+
+        if(rsTypingTimer){
+            clearTimeout(rsTypingTimer);
+            rsTypingTimer = null;
+        }
+
+        const me = auth.currentUser;
+        const uid = currentChatUserUid || await resolveTypingUid();
+
+        if(me && uid){
+            await rsRemoveTyping(uid);
+        }
+
+        return generation;
+    };
+
+    window.startTyping = async function(){
+        const input = document.getElementById("messageInput");
+        const me = auth.currentUser;
+
+        if(!me || !currentChatEmail || !input){
+            return;
+        }
+
+        if(input.value.trim() === ""){
+            await window.stopTyping();
+            return;
+        }
+
+        const generation = ++rsTypingGeneration;
+
+        if(rsTypingTimer){
+            clearTimeout(rsTypingTimer);
+            rsTypingTimer = null;
+        }
+
+        const uid = await resolveTypingUid();
+
+        /* User stopped/changed input while UID was loading. */
+        if(
+            generation !== rsTypingGeneration ||
+            input.value.trim() === ""
+        ){
+            if(uid) await rsRemoveTyping(uid);
+            return;
+        }
+
+        const ref = rtdb.ref("typing/"+uid+"/"+me.uid);
+
+        try{
+            /* Make typing self-healing if the browser/network disconnects. */
+            try{
+                ref.onDisconnect().remove();
+            }catch(e){}
+
+            await ref.set({
+                typing:true,
+                timestamp:firebase.database.ServerValue.TIMESTAMP
+            });
+
+            /* A stop can happen while set() is in flight. Never leave stale state. */
+            if(
+                generation !== rsTypingGeneration ||
+                input.value.trim() === ""
+            ){
+                await ref.remove();
+                return;
+            }
+
+            rsTypingTimer = setTimeout(function(){
+                if(generation === rsTypingGeneration){
+                    window.stopTyping();
+                }
+            },1000);
+
+        }catch(err){
+            console.error("Start typing error:",err);
+        }
+    };
+
+    /* Clear cached UID whenever a different chat is opened. */
+    const originalOpenChat = window.openChat;
+    if(typeof originalOpenChat === "function"){
+        window.openChat = async function(){
+            await window.stopTyping();
+            rsTypingUidCache = null;
+            currentChatUserUid = null;
+            return originalOpenChat.apply(this, arguments);
+        };
+    }
+
+    document.addEventListener("visibilitychange",function(){
+        if(document.hidden){
+            window.stopTyping();
+        }
+    });
+
+    window.addEventListener("pagehide",function(){
+        window.stopTyping();
+    });
+
+    /* =====================================================
+       2) GROUP KEYBOARD BEHAVIOUR
+       Send -> keep keyboard.
+       Outside tap -> close keyboard.
+       ===================================================== */
+
+    const GROUP_INPUT = "#rsengerGroupMessageInput";
+    const GROUP_SEND = "#rsengerGroupSendBtn";
+    const GROUP_PHOTO = ".group-photo-btn";
+
+    function refocusGroupInput(){
+        const input = document.getElementById("rsengerGroupMessageInput");
+        if(!input) return;
+
+        requestAnimationFrame(function(){
+            try{
+                input.focus({preventScroll:true});
+            }catch(e){
+                try{ input.focus(); }catch(ignore){}
+            }
+        });
+    }
+
+    document.addEventListener("pointerdown",function(event){
+        const input = document.getElementById("rsengerGroupMessageInput");
+
+        if(!input || document.activeElement !== input){
+            return;
+        }
+
+        const target = event.target;
+
+        if(
+            target &&
+            target.closest &&
+            (
+                target.closest(GROUP_INPUT) ||
+                target.closest(GROUP_SEND) ||
+                target.closest(GROUP_PHOTO) ||
+                target.closest("#rsengerGroupMessageMenu")
+            )
+        ){
+            return;
+        }
+
+        try{ input.blur(); }catch(e){}
+    },true);
+
+    /* Prevent the send button from stealing focus before onclick runs. */
+    document.addEventListener("pointerdown",function(event){
+        const target = event.target;
+        if(
+            target &&
+            target.closest &&
+            target.closest(GROUP_SEND)
+        ){
+            event.preventDefault();
+        }
+    },true);
+
+    const originalGroupSend = window.sendRsengerGroupMessage;
+    if(typeof originalGroupSend === "function"){
+        window.sendRsengerGroupMessage = async function(){
+            const input = document.getElementById("rsengerGroupMessageInput");
+            if(!input) return;
+
+            const hadContent =
+                !!input.value.trim() ||
+                !!window.selectedRsengerGroupPhoto;
+
+            try{
+                return await originalGroupSend.apply(this, arguments);
+            }finally{
+                /* Only refocus if this composer actually had something to send. */
+                if(hadContent){
+                    refocusGroupInput();
+                }
+            }
+        };
+    }
+
+    /* =====================================================
+       3) SMOOTH GROUP MESSAGE INPUT
+       Keep button state instant and avoid accidental submit.
+       ===================================================== */
+    document.addEventListener("input",function(event){
+        if(event.target && event.target.id === "rsengerGroupMessageInput"){
+            if(typeof updateRsengerGroupSendButton === "function"){
+                updateRsengerGroupSendButton();
+            }
+        }
+    },true);
+
+})();
+</script>
+
 </body>
 
 </html><style>*{
