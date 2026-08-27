@@ -36,63 +36,6 @@ body{
 .setting-item-text{display:flex;flex-direction:column;gap:3px;}
 .setting-item-text strong{font-size:15px;}
 .setting-item-text small{font-size:12px;opacity:.68;}
-
-
-/* =====================================================
-   GOOGLE SIGN-IN BUTTON - STABLE ICON + TEXT
-   ===================================================== */
-#loginPage button[onclick="googleLogin()"],
-#registerPage button[onclick="googleLogin()"]{
-    position:relative !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:12px !important;
-}
-
-#loginPage button[onclick="googleLogin()"] .google-icon,
-#registerPage button[onclick="googleLogin()"] .google-icon{
-    width:30px !important;
-    height:30px !important;
-    min-width:30px !important;
-    min-height:30px !important;
-    max-width:30px !important;
-    max-height:30px !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    flex:0 0 30px !important;
-    padding:0 !important;
-    margin:0 !important;
-    background:#fff !important;
-    border-radius:9px !important;
-    overflow:hidden !important;
-}
-
-#loginPage button[onclick="googleLogin()"] .google-icon svg,
-#registerPage button[onclick="googleLogin()"] .google-icon svg{
-    width:20px !important;
-    height:20px !important;
-    display:block !important;
-    flex:0 0 20px !important;
-}
-
-#loginPage button[onclick="googleLogin()"] .google-button-text,
-#registerPage button[onclick="googleLogin()"] .google-button-text{
-    display:inline-block !important;
-    color:#e9edf5 !important;
-    background:transparent !important;
-    -webkit-text-fill-color:#e9edf5 !important;
-    font-weight:600 !important;
-    line-height:1.2 !important;
-}
-
-#loginPage button[onclick="googleLogin()"]:disabled,
-#registerPage button[onclick="googleLogin()"]:disabled{
-    cursor:wait !important;
-    transform:none !important;
-}
-
 </style>
 
 <link rel="stylesheet" href="style.css">
@@ -361,7 +304,7 @@ Login to continue to Rsenger
         </svg>
     </span>
 
-    <span class="google-button-text">Continue with Google</span>
+    <span>Continue with Google</span>
 
 </button>
 
@@ -531,7 +474,7 @@ Create Account
         </svg>
     </span>
 
-    <span class="google-button-text">Continue with Google</span>
+    <span>Continue with Google</span>
 
 </button>
 
@@ -2082,51 +2025,46 @@ Friend Requests
 <!-- SETTINGS PAGE -->
 
 
-<section id="settingsPage" class="screen hidden">
+<section id="settingsPage" class="screen hidden rsenger-settings-page">
 
-
-<div class="profile-header">
-
-<button class="premium-back-btn" onclick="closeSettings()" aria-label="Back">
-    <i data-lucide="arrow-left"></i>
-</button>
-
-<h2>
-Settings
-</h2>
-
+<div class="rs-settings-header">
+  <button class="premium-back-btn" onclick="closeSettings()" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+  <div><h2>Settings</h2><small>Personalize your Rsenger experience</small></div>
+  <div class="rs-settings-header-badge"><i data-lucide="sliders-horizontal"></i></div>
 </div>
 
+<div class="rs-settings-content">
 
+  <div class="rs-settings-section-title">ACCOUNT</div>
+  <button class="rs-setting-card" onclick="editProfile()"><span class="rs-setting-icon profile"><i data-lucide="user-pen"></i></span><span class="rs-setting-copy"><b>Edit Profile</b><small>Name, username and bio</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></button>
+  <button class="rs-setting-card" onclick="openSecuritySettings()"><span class="rs-setting-icon security"><i data-lucide="shield-check"></i></span><span class="rs-setting-copy"><b>Security</b><small>Password, app lock and active sessions</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></button>
 
-<div class="setting-item" onclick="toggleDark()">
-    <i data-lucide="moon"></i>
-    <span>Dark Mode</span>
+  <div class="rs-settings-section-title">PRIVACY</div>
+  <div class="rs-setting-card"><span class="rs-setting-icon privacy"><i data-lucide="eye"></i></span><span class="rs-setting-copy"><b>Last Seen & Online</b><small>Control your online visibility</small></span><select id="rsLastSeenSetting" class="rs-setting-select" onchange="saveRsSetting('lastSeen',this.value)"><option value="everyone">Everyone</option><option value="friends">Friends</option><option value="nobody">Nobody</option></select></div>
+  <label class="rs-setting-card"><span class="rs-setting-icon receipt"><i data-lucide="check-check"></i></span><span class="rs-setting-copy"><b>Read Receipts</b><small>Show when messages are read</small></span><input id="rsReadReceipts" class="rs-switch" type="checkbox" onchange="saveRsSetting('readReceipts',this.checked)"><span class="rs-switch-ui"></span></label>
+  <label class="rs-setting-card"><span class="rs-setting-icon typing"><i data-lucide="pencil-line"></i></span><span class="rs-setting-copy"><b>Typing Indicator</b><small>Show when you are typing</small></span><input id="rsTypingIndicator" class="rs-switch" type="checkbox" onchange="saveRsSetting('typingIndicator',this.checked)"><span class="rs-switch-ui"></span></label>
+  <button class="rs-setting-card" onclick="openBlockedAccounts()"><span class="rs-setting-icon blocked"><i data-lucide="user-round-x"></i></span><span class="rs-setting-copy"><b>Blocked Accounts</b><small>Manage people you have blocked</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></button>
+
+  <div class="rs-settings-section-title">NOTIFICATIONS</div>
+  <label class="rs-setting-card"><span class="rs-setting-icon notify"><i data-lucide="bell"></i></span><span class="rs-setting-copy"><b>Notifications</b><small>Message and activity notifications</small></span><input id="rsNotifications" class="rs-switch" type="checkbox" onchange="saveRsSetting('notifications',this.checked)"><span class="rs-switch-ui"></span></label>
+  <label class="rs-setting-card"><span class="rs-setting-icon sound"><i data-lucide="volume-2"></i></span><span class="rs-setting-copy"><b>Notification Sound</b><small>Play a sound for new activity</small></span><input id="rsNotificationSound" class="rs-switch" type="checkbox" onchange="saveRsSetting('notificationSound',this.checked)"><span class="rs-switch-ui"></span></label>
+
+  <div class="rs-settings-section-title">CHAT</div>
+  <label class="rs-setting-card"><span class="rs-setting-icon chat"><i data-lucide="send"></i></span><span class="rs-setting-copy"><b>Enter to Send</b><small>Press Enter to send messages</small></span><input id="rsEnterToSend" class="rs-switch" type="checkbox" onchange="saveRsSetting('enterToSend',this.checked)"><span class="rs-switch-ui"></span></label>
+  <label class="rs-setting-card"><span class="rs-setting-icon data"><i data-lucide="wifi"></i></span><span class="rs-setting-copy"><b>Data Saver</b><small>Reduce media and background data</small></span><input id="rsDataSaver" class="rs-switch" type="checkbox" onchange="saveRsSetting('dataSaver',this.checked)"><span class="rs-switch-ui"></span></label>
+  <button class="rs-setting-card" onclick="clearRsengerCache()"><span class="rs-setting-icon storage"><i data-lucide="trash-2"></i></span><span class="rs-setting-copy"><b>Clear Cache</b><small>Remove locally cached app data</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></button>
+
+  <div class="rs-settings-section-title">APPEARANCE</div>
+  <div class="rs-setting-card"><span class="rs-setting-icon theme"><i data-lucide="palette"></i></span><span class="rs-setting-copy"><b>Theme</b><small>Choose how Rsenger looks</small></span><select id="rsThemeSetting" class="rs-setting-select" onchange="applyRsTheme(this.value)"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
+  <div class="rs-setting-card"><span class="rs-setting-icon accent"><i data-lucide="paintbrush"></i></span><span class="rs-setting-copy"><b>Accent Color</b><small>Personalize the interface</small></span><div class="rs-accent-dots"><button aria-label="Purple" onclick="event.stopPropagation();setRsAccent('#8b5cf6')" style="--c:#8b5cf6"></button><button aria-label="Blue" onclick="event.stopPropagation();setRsAccent('#3b82f6')" style="--c:#3b82f6"></button><button aria-label="Pink" onclick="event.stopPropagation();setRsAccent('#ec4899')" style="--c:#ec4899"></button><button aria-label="Green" onclick="event.stopPropagation();setRsAccent('#10b981')" style="--c:#10b981"></button></div></div>
+
+  <div class="rs-settings-section-title">HELP & ACCOUNT</div>
+  <button class="rs-setting-card" onclick="showRsAbout()"><span class="rs-setting-icon help"><i data-lucide="circle-help"></i></span><span class="rs-setting-copy"><b>Help & About</b><small>Support, privacy and app information</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></button>
+  <div id="accountDeletionSetting" class="rs-setting-card danger" onclick="requestAccountDeletion()"><span class="rs-setting-icon danger"><i data-lucide="user-round-x"></i></span><span class="rs-setting-copy"><b>Delete Account</b><small id="accountDeletionStatus">Schedule permanent deletion</small></span><i data-lucide="chevron-right" class="rs-setting-arrow"></i></div>
+  <div id="cancelAccountDeletionSetting" class="rs-setting-card hidden" onclick="cancelAccountDeletion()"><span class="rs-setting-icon"><i data-lucide="rotate-ccw"></i></span><span class="rs-setting-copy"><b>Cancel Account Deletion</b><small id="accountDeletionCountdown">You can cancel within 24 hours</small></span></div>
+  <button class="rs-logout-card" onclick="logout()"><i data-lucide="log-out"></i><span>Log Out</span></button>
+  <div class="rs-settings-footer">Rsenger • Your private messaging space</div>
 </div>
-
-<div id="accountDeletionSetting" class="setting-item account-delete-setting" onclick="requestAccountDeletion()">
-    <i data-lucide="user-round-x"></i>
-    <div class="setting-item-text">
-        <strong>Delete Account</strong>
-        <small id="accountDeletionStatus">Schedule permanent deletion</small>
-    </div>
-</div>
-
-<div id="cancelAccountDeletionSetting" class="setting-item account-cancel-delete hidden" onclick="cancelAccountDeletion()">
-    <i data-lucide="rotate-ccw"></i>
-    <div class="setting-item-text">
-        <strong>Cancel Account Deletion</strong>
-        <small id="accountDeletionCountdown">You can cancel within 24 hours</small>
-    </div>
-</div>
-
-<div class="setting-item" onclick="logout()">
-    <i data-lucide="log-out"></i>
-    <span>Logout</span>
-</div>
-
-
-
 </section>
 
 
@@ -3523,7 +3461,7 @@ label{
 })();
 </script>
 
-</body>
+\n<script id="rsenger-premium-settings-js">\n(function(){\nconst KEY='rsenger_settings_v2';\nconst defaults={lastSeen:'everyone',readReceipts:true,typingIndicator:true,notifications:true,notificationSound:true,enterToSend:true,dataSaver:false,theme:'system',accent:'#8b5cf6'};\nfunction get(){try{return Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return Object.assign({},defaults)}}\nfunction set(k,v){const s=get();s[k]=v;localStorage.setItem(KEY,JSON.stringify(s));return s}\nwindow.loadRsSettings=function(){const s=get(); ['rsReadReceipts','rsTypingIndicator','rsNotifications','rsNotificationSound','rsEnterToSend','rsDataSaver'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=!!s[{rsReadReceipts:'readReceipts',rsTypingIndicator:'typingIndicator',rsNotifications:'notifications',rsNotificationSound:'notificationSound',rsEnterToSend:'enterToSend',rsDataSaver:'dataSaver'}[id]]});const ls=document.getElementById('rsLastSeenSetting');if(ls)ls.value=s.lastSeen;const th=document.getElementById('rsThemeSetting');if(th)th.value=s.theme;document.documentElement.style.setProperty('--rs-accent',s.accent);applyRsTheme(s.theme);};\nwindow.saveRsSetting=async function(k,v){set(k,v);document.documentElement.style.setProperty('--rs-accent',get().accent);if(k==='notifications'&&v&&'Notification'in window&&Notification.permission==='default'){try{await Notification.requestPermission()}catch(e){}}if(typeof auth!=='undefined'&&auth.currentUser&&typeof db!=='undefined'){try{await db.collection('users').doc(auth.currentUser.uid).set({settings:{[k]:v}},{merge:true})}catch(e){console.warn('Settings sync:',e)}}};\nwindow.applyRsTheme=function(v){set('theme',v);let dark=v==='dark'||(v==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.body.classList.toggle('dark',dark);};\nwindow.setRsAccent=function(c){set('accent',c);document.documentElement.style.setProperty('--rs-accent',c);premiumAlert('Accent color updated.','Appearance','success')};\nwindow.clearRsengerCache=function(){premiumConfirm({title:'Clear local cache?',message:'This removes local app preferences and cached data. Your Firebase account, chats and messages will not be deleted.',type:'danger',icon:'trash-2',confirmText:'Clear Cache'}).then(ok=>{if(!ok)return;localStorage.removeItem('rsenger_settings_v2');premiumAlert('Local cache cleared successfully.','Cache Cleared','success');loadRsSettings()})};\nwindow.showRsAbout=function(){premiumAlert('Rsenger is your private messaging space. Keep your account secure and use privacy controls to manage your experience.','About Rsenger','success')};\nwindow.openSecuritySettings=function(){premiumAlert('Security controls are available through your Firebase account. For account protection, use a strong password and keep your device locked.','Security','success')};\nwindow.openBlockedAccounts=function(){premiumPrompt({title:'Blocked Account','message:'Enter the email address you want to block. You can manage this list later from your account settings.',confirmText:'Block'}).then(v=>{if(!v)return;const s=get();s.blocked=Array.isArray(s.blocked)?s.blocked:[];if(!s.blocked.includes(v.toLowerCase()))s.blocked.push(v.toLowerCase());localStorage.setItem(KEY,JSON.stringify(s));premiumAlert('Account blocked on this device.','Blocked','success')})};\nconst oldOpen=window.openSettings;window.openSettings=function(){if(oldOpen)oldOpen.apply(this,arguments);setTimeout(loadRsSettings,30)};\nwindow.addEventListener('storage',()=>{if(document.getElementById('settingsPage')&&!document.getElementById('settingsPage').classList.contains('hidden'))loadRsSettings()});\nwindow.addEventListener('DOMContentLoaded',()=>{loadRsSettings();if(window.matchMedia)window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{const s=get();if(s.theme==='system')applyRsTheme('system')})});\n})();\n</script>\n\n<style id="rsenger-premium-settings-v2">\n.rsenger-settings-page{background:linear-gradient(180deg,#f7f8fc 0%,#eef1f7 100%);overflow-y:auto!important;padding-bottom:30px}.dark .rsenger-settings-page{background:linear-gradient(180deg,#080b14,#0d1220)}\n.rs-settings-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:13px;padding:16px 16px 14px;background:rgba(247,248,252,.88);backdrop-filter:blur(18px);border-bottom:1px solid rgba(20,25,40,.07)}.dark .rs-settings-header{background:rgba(8,11,20,.88);border-color:rgba(255,255,255,.07)}.rs-settings-header h2{margin:0;font-size:21px}.rs-settings-header small{color:#7b8190;font-size:11px}.rs-settings-header>div:nth-child(2){flex:1}.rs-settings-header-badge{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.11);color:#8b5cf6}.rs-settings-content{max-width:720px;margin:auto;padding:12px 14px 40px}.rs-settings-section-title{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#858b9a;margin:20px 6px 8px}.rs-setting-card{width:100%;min-height:64px;border:1px solid rgba(20,25,40,.07);border-radius:18px;background:rgba(255,255,255,.9);display:flex;align-items:center;gap:12px;padding:10px 13px;margin:7px 0;box-sizing:border-box;text-align:left;color:#171a22;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;cursor:pointer}.rs-setting-card:active{transform:scale(.985)}.rs-setting-card:hover{box-shadow:0 8px 24px rgba(25,30,50,.07)}.dark .rs-setting-card{background:rgba(20,25,39,.9);border-color:rgba(255,255,255,.07);color:#f5f6fb}.rs-setting-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:0 0 42px;background:rgba(139,92,246,.11);color:#8b5cf6}.rs-setting-icon.security{color:#0ea5e9;background:rgba(14,165,233,.11)}.rs-setting-icon.privacy,.rs-setting-icon.receipt{color:#6366f1;background:rgba(99,102,241,.11)}.rs-setting-icon.typing{color:#f59e0b;background:rgba(245,158,11,.11)}.rs-setting-icon.blocked,.rs-setting-icon.danger{color:#ef4444;background:rgba(239,68,68,.10)}.rs-setting-icon.notify{color:#f59e0b;background:rgba(245,158,11,.11)}.rs-setting-icon.sound{color:#10b981;background:rgba(16,185,129,.11)}.rs-setting-icon.chat{color:#3b82f6;background:rgba(59,130,246,.11)}.rs-setting-icon.data{color:#14b8a6;background:rgba(20,184,166,.11)}.rs-setting-icon.storage{color:#ef4444;background:rgba(239,68,68,.10)}.rs-setting-copy{flex:1;min-width:0}.rs-setting-copy b{display:block;font-size:14px;font-weight:750}.rs-setting-copy small{display:block;color:#858b99;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rs-setting-arrow{color:#9aa0ad;width:18px}.rs-setting-select{border:0;background:transparent;color:#7c5ce6;font-weight:700;outline:none;max-width:105px}.dark .rs-setting-select{color:#a996ff}.rs-switch{position:absolute;opacity:0;pointer-events:none}.rs-switch-ui{width:44px;height:25px;border-radius:99px;background:#cdd2dc;position:relative;flex:0 0 44px;transition:.2s}.rs-switch-ui:after{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:white;top:3px;left:3px;box-shadow:0 2px 5px #0002;transition:.2s}.rs-setting-card:has(.rs-switch:checked) .rs-switch-ui{background:var(--rs-accent,#8b5cf6)}.rs-setting-card:has(.rs-switch:checked) .rs-switch-ui:after{left:22px}.rs-accent-dots{display:flex;gap:7px}.rs-accent-dots button{width:22px;height:22px;border:2px solid white;border-radius:50%;background:var(--c);box-shadow:0 0 0 1px #0002;cursor:pointer}.dark .rs-accent-dots button{border-color:#171b28}.rs-logout-card{width:100%;height:56px;margin-top:18px;border:1px solid rgba(239,68,68,.14);border-radius:18px;background:rgba(239,68,68,.07);color:#ef4444;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px}.rs-settings-footer{text-align:center;color:#9aa0ad;font-size:10px;padding:20px}.rs-setting-card.danger{border-color:rgba(239,68,68,.12)}\n@media(max-width:420px){.rs-setting-copy b{font-size:13px}.rs-setting-copy small{font-size:10px}.rs-setting-icon{width:39px;height:39px;flex-basis:39px}.rs-setting-card{min-height:61px;padding:9px 11px}}\n</style>\n</body>
 
 </html><style>*{
 margin:0;
@@ -31413,49 +31351,17 @@ function registerUser(){
 
 
 // =====================================================
-// RSENGER - PREMIUM GOOGLE SIGN-IN
-// Login + Register | Popup first | Redirect fallback
+// RSENGER - PREMIUM GOOGLE LOGIN
+// Login + Register
+// Popup + Mobile Redirect + Firebase
 // =====================================================
 
 let googleLoginInProgress = false;
 
-function getGoogleButtons(){
-    return document.querySelectorAll(
-        '#loginPage button[onclick="googleLogin()"], ' +
-        '#registerPage button[onclick="googleLogin()"]'
-    );
-}
 
-function setGoogleButtonsLoading(loading){
-    getGoogleButtons().forEach(function(button){
-        const text = button.querySelector('.google-button-text');
-
-        if(loading){
-            button.disabled = true;
-            button.setAttribute('aria-busy','true');
-            button.style.opacity = '0.72';
-            button.style.pointerEvents = 'none';
-
-            if(text){
-                if(!text.dataset.originalText){
-                    text.dataset.originalText = text.textContent;
-                }
-                text.textContent = 'Connecting to Google...';
-            }
-        }else{
-            button.disabled = false;
-            button.removeAttribute('aria-busy');
-            button.style.opacity = '';
-            button.style.pointerEvents = '';
-
-            if(text){
-                text.textContent =
-                    text.dataset.originalText ||
-                    'Continue with Google';
-            }
-        }
-    });
-}
+/* =====================================================
+   GOOGLE LOGIN / REGISTER
+   ===================================================== */
 
 async function googleLogin(){
 
@@ -31464,298 +31370,650 @@ async function googleLogin(){
     }
 
     googleLoginInProgress = true;
-    setGoogleButtonsLoading(true);
+
+    const buttons =
+        document.querySelectorAll(
+            '#loginPage button[onclick="googleLogin()"],' +
+            '#registerPage button[onclick="googleLogin()"]'
+        );
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+        button.dataset.originalText =
+            button.innerText;
+
+        button.innerText =
+            "Connecting to Google...";
+
+        button.style.opacity = "0.7";
+        button.style.pointerEvents = "none";
+
+    });
+
 
     try{
+
+        /*
+         * Keep Firebase login session permanently available
+         */
         await auth.setPersistence(
             firebase.auth.Auth.Persistence.LOCAL
         );
 
+
         const provider =
             new firebase.auth.GoogleAuthProvider();
 
+
         provider.setCustomParameters({
-            prompt: 'select_account'
+            prompt: "select_account"
         });
 
-        // Popup is preferred because it keeps the current page intact.
-        // Redirect is used only when the browser blocks popup authentication.
-        const result =
-            await auth.signInWithPopup(provider);
 
-        if(!result || !result.user){
-            throw new Error('Google account information was not received.');
+        /*
+         * Android / mobile browser
+         *
+         * Redirect is more reliable than popup
+         */
+        const isMobile =
+            /Android|iPhone|iPad|iPod/i.test(
+                navigator.userAgent
+            );
+
+
+        if(isMobile){
+
+            await auth.signInWithRedirect(
+                provider
+            );
+
+            return;
         }
 
-        await completeGoogleLogin(result.user);
 
-    }catch(error){
+        /*
+         * Desktop
+         */
+        const result =
+            await auth.signInWithPopup(
+                provider
+            );
 
-        console.error('Google Sign-In Error:', error);
 
-        const fallbackCodes = [
-            'auth/popup-blocked',
-            'auth/operation-not-supported-in-this-environment'
-        ];
+        await completeGoogleLogin(
+            result.user
+        );
 
-        if(fallbackCodes.includes(error.code)){
+    }
+    catch(error){
+
+        console.error(
+            "Google Login Error:",
+            error
+        );
+
+
+        /*
+         * Popup blocked → redirect fallback
+         */
+        if(
+            error.code ===
+            "auth/popup-blocked" ||
+
+            error.code ===
+            "auth/operation-not-supported-in-this-environment"
+        ){
+
             try{
+
                 const provider =
                     new firebase.auth.GoogleAuthProvider();
 
                 provider.setCustomParameters({
-                    prompt: 'select_account'
+                    prompt: "select_account"
                 });
 
-                await auth.signInWithRedirect(provider);
+
+                await auth.signInWithRedirect(
+                    provider
+                );
+
                 return;
 
-            }catch(redirectError){
+            }
+            catch(redirectError){
+
                 console.error(
-                    'Google Redirect Error:',
+                    "Google Redirect Error:",
                     redirectError
                 );
-                showGoogleError(redirectError);
+
+                showGoogleError(
+                    redirectError
+                );
             }
-        }else{
-            showGoogleError(error);
+
+        }
+        else{
+
+            showGoogleError(
+                error
+            );
+
         }
 
-    }finally{
-        // Redirect navigates away, so the current page does not need a reset.
-        if(!window.__rsengerGoogleRedirecting){
-            googleLoginInProgress = false;
-            setGoogleButtonsLoading(false);
-        }
     }
+    finally{
+
+        /*
+         * Redirect হলে page unload হবে,
+         * তাই তখন button reset করার দরকার নেই
+         */
+        if(
+            !window.location.href.includes(
+                "google"
+            )
+        ){
+
+            resetGoogleButtons();
+
+        }
+
+    }
+
 }
 
+
+
 /* =====================================================
-   COMPLETE GOOGLE LOGIN / REGISTER
+   COMPLETE GOOGLE LOGIN
    ===================================================== */
 
 async function completeGoogleLogin(user){
 
     if(!user){
-        throw new Error('Google account information was not received.');
+        throw new Error(
+            "Google account information পাওয়া যায়নি।"
+        );
     }
 
-    const userRef = db.collection('users').doc(user.uid);
-    const userDoc = await userRef.get();
 
+    const userRef =
+        db.collection("users")
+          .doc(user.uid);
+
+
+    const userDoc =
+        await userRef.get();
+
+
+    /*
+     * Existing user
+     */
     if(userDoc.exists){
 
-        const oldData = userDoc.data() || {};
-        const updateData = {
-            online: true,
-            email: oldData.email || user.email || ''
-        };
+        const oldData =
+            userDoc.data() || {};
 
-        if(!oldData.name && user.displayName){
-            updateData.name = user.displayName;
+
+        const updateData = {};
+
+
+        /*
+         * Google profile photo থাকলে
+         * আর existing profile photo না থাকলে
+         */
+        if(
+            !oldData.profilePic &&
+            user.photoURL
+        ){
+
+            updateData.profilePic =
+                user.photoURL;
+
         }
 
-        if(!oldData.profilePic && user.photoURL){
-            updateData.profilePic = user.photoURL;
+
+        if(
+            !oldData.name &&
+            user.displayName
+        ){
+
+            updateData.name =
+                user.displayName;
+
         }
 
-        await userRef.update(updateData);
 
-    }else{
+        if(
+            !oldData.email &&
+            user.email
+        ){
+
+            updateData.email =
+                user.email;
+
+        }
+
+
+        updateData.online = true;
+
+
+        await userRef.update(
+            updateData
+        );
+
+    }
+
+
+    /*
+     * New Google user
+     */
+    else{
 
         await userRef.set({
-            name: user.displayName || 'Rsenger User',
-            username: '',
-            phone: user.phoneNumber || '',
-            email: user.email || '',
-            bio: '',
-            profilePic: user.photoURL || '',
-            online: true,
+
+            name:
+                user.displayName || "Rsenger User",
+
+            username:
+                "",
+
+            phone:
+                user.phoneNumber || "",
+
+            email:
+                user.email || "",
+
+            bio:
+                "",
+
+            profilePic:
+                user.photoURL || "",
+
+            online:
+                true,
+
             createdAt:
-                firebase.firestore.FieldValue.serverTimestamp()
+                firebase.firestore.FieldValue
+                .serverTimestamp()
+
         });
+
     }
 
-    // Make sure Firebase has the signed-in user before starting app systems.
-    if(!auth.currentUser){
-        await new Promise(function(resolve, reject){
-            let finished = false;
 
-            const timeout = setTimeout(function(){
-                if(finished) return;
-                finished = true;
-                unsubscribe();
-                reject(new Error('Firebase session could not be restored.'));
-            }, 10000);
+    /*
+     * Make Firebase user available
+     */
+    await new Promise(resolve => {
 
-            const unsubscribe = auth.onAuthStateChanged(function(currentUser){
-                if(currentUser && !finished){
-                    finished = true;
-                    clearTimeout(timeout);
-                    unsubscribe();
-                    resolve();
+        if(auth.currentUser){
+
+            resolve();
+
+            return;
+        }
+
+
+        const unsubscribe =
+            auth.onAuthStateChanged(
+                currentUser => {
+
+                    if(currentUser){
+
+                        unsubscribe();
+
+                        resolve();
+
+                    }
+
                 }
-            });
-        });
-    }
+            );
 
-    const loginPage = document.getElementById('loginPage');
-    const registerPage = document.getElementById('registerPage');
-    const homePage = document.getElementById('homePage');
-    const splash = document.getElementById('splashPage');
+    });
+
+
+    /*
+     * Hide Login
+     */
+    const loginPage =
+        document.getElementById(
+            "loginPage"
+        );
 
     if(loginPage){
-        loginPage.classList.add('hidden');
-        loginPage.style.setProperty('display','none','important');
+
+        loginPage.classList.add(
+            "hidden"
+        );
+
     }
+
+
+    /*
+     * Hide Register
+     */
+    const registerPage =
+        document.getElementById(
+            "registerPage"
+        );
 
     if(registerPage){
-        registerPage.classList.add('hidden');
-        registerPage.style.setProperty('display','none','important');
+
+        registerPage.classList.add(
+            "hidden"
+        );
+
     }
 
-    if(splash){
-        splash.classList.add('hidden');
-        splash.style.setProperty('display','none','important');
-    }
+
+    /*
+     * Show Home
+     */
+    const homePage =
+        document.getElementById(
+            "homePage"
+        );
 
     if(homePage){
-        homePage.classList.remove('hidden');
-        homePage.style.setProperty('display','block','important');
-        homePage.style.setProperty('visibility','visible','important');
-        homePage.style.setProperty('opacity','1','important');
-        homePage.style.setProperty('pointer-events','auto','important');
+
+        homePage.classList.remove(
+            "hidden"
+        );
+
     }
 
-    try{
-        if(typeof showBottomNav === 'function'){
-            showBottomNav();
-        }
-    }catch(e){
-        console.error('Google bottom navigation error:',e);
-    }
+
+    /*
+     * Start Rsenger systems
+     */
 
     try{
-        if(typeof showGroupIcon === 'function'){
-            showGroupIcon();
-        }
-    }catch(e){
-        console.error('Google group icon error:',e);
-    }
 
-    try{
-        if(typeof setupPresence === 'function'){
+        if(
+            typeof setupPresence ===
+            "function"
+        ){
+
             setupPresence();
+
         }
-    }catch(e){
-        console.error('Google presence error:',e);
+
+    }
+    catch(e){
+
+        console.error(
+            "Google presence error:",
+            e
+        );
+
     }
 
+
     try{
-        if(typeof saveFCMToken === 'function'){
+
+        if(
+            typeof saveFCMToken ===
+            "function"
+        ){
+
             saveFCMToken();
+
         }
-    }catch(e){
-        console.error('Google FCM error:',e);
+
     }
+    catch(e){
+
+        console.error(
+            "Google FCM error:",
+            e
+        );
+
+    }
+
 
     try{
-        if(typeof loadChats === 'function'){
+
+        if(
+            typeof loadChats ===
+            "function"
+        ){
+
             loadChats();
+
         }
-    }catch(e){
-        console.error('Google chats error:',e);
+
+    }
+    catch(e){
+
+        console.error(
+            "Google chats error:",
+            e
+        );
+
     }
 
-    if(window.lucide){
+
+    /*
+     * Refresh Lucide icons
+     */
+
+    if(
+        window.lucide
+    ){
+
         lucide.createIcons();
+
     }
 
-    googleLoginInProgress = false;
-    setGoogleButtonsLoading(false);
+
+    googleLoginInProgress =
+        false;
+
+
+    resetGoogleButtons();
+
 }
 
+
+
 /* =====================================================
-   MOBILE / REDIRECT RESULT
+   REDIRECT RESULT
+   IMPORTANT:
+   This handles Android/mobile Google login
    ===================================================== */
 
 async function handleGoogleRedirect(){
 
     try{
-        const result = await auth.getRedirectResult();
 
-        if(result && result.user){
-            googleLoginInProgress = true;
-            await completeGoogleLogin(result.user);
+        const result =
+            await auth.getRedirectResult();
+
+
+        if(
+            result &&
+            result.user
+        ){
+
+            googleLoginInProgress =
+                true;
+
+
+            await completeGoogleLogin(
+                result.user
+            );
+
         }
 
-    }catch(error){
-        console.error('Google Redirect Error:',error);
-        showGoogleError(error);
-    }finally{
-        googleLoginInProgress = false;
-        setGoogleButtonsLoading(false);
     }
+    catch(error){
+
+        console.error(
+            "Google Redirect Error:",
+            error
+        );
+
+
+        googleLoginInProgress =
+            false;
+
+
+        resetGoogleButtons();
+
+
+        showGoogleError(
+            error
+        );
+
+    }
+
 }
 
+
+
 /* =====================================================
-   ENGLISH GOOGLE ERROR MESSAGES
+   GOOGLE ERROR
    ===================================================== */
 
 function showGoogleError(error){
 
-    let message = 'Google Sign-In failed. Please try again.';
+    let message =
+        "Google Login failed.";
 
-    if(error && error.code){
+
+    if(error){
+
         switch(error.code){
 
-            case 'auth/popup-closed-by-user':
-                message = 'Google Sign-In was cancelled. Please try again.';
+            case "auth/popup-closed-by-user":
+
+                message =
+                    "Google Login window বন্ধ করা হয়েছে। আবার চেষ্টা করুন.";
+
                 break;
 
-            case 'auth/popup-blocked':
-                message = 'Google Sign-In popup was blocked by your browser.';
+
+            case "auth/popup-blocked":
+
+                message =
+                    "Browser Google Login popup block করেছে। আবার চেষ্টা করুন.";
+
                 break;
 
-            case 'auth/unauthorized-domain':
-                message = 'This website domain is not authorized for Google Sign-In. Add the current website domain to Firebase Authentication > Settings > Authorized domains.';
+
+            case "auth/unauthorized-domain":
+
+                message =
+                    "এই website domain Firebase Google Login-এর জন্য authorized নয়.";
+
                 break;
 
-            case 'auth/operation-not-allowed':
-                message = 'Google Sign-In is not enabled in Firebase Authentication.';
+
+            case "auth/operation-not-allowed":
+
+                message =
+                    "Firebase Console-এ Google Sign-in enable করা নেই.";
+
                 break;
 
-            case 'auth/network-request-failed':
-                message = 'Network error. Please check your internet connection and try again.';
+
+            case "auth/network-request-failed":
+
+                message =
+                    "Internet connection check করে আবার চেষ্টা করুন.";
+
                 break;
 
-            case 'auth/account-exists-with-different-credential':
-                message = 'This email is already registered with a different sign-in method.';
+
+            case "auth/account-exists-with-different-credential":
+
+                message =
+                    "এই email অন্য একটি login method-এর সঙ্গে already connected.";
+
                 break;
 
-            case 'auth/invalid-continue-uri':
-                message = 'The Google Sign-In redirect URL is invalid.';
-                break;
 
             default:
-                if(error.message){
-                    message = error.message;
+
+                if(
+                    error.message
+                ){
+
+                    message =
+                        error.message;
+
                 }
+
         }
-    }else if(error && error.message){
-        message = error.message;
+
     }
 
-    if(typeof premiumAlert === 'function'){
-        premiumAlert(message,'Google Sign-In','error');
-    }else{
-        alert(message);
+
+    if(
+        typeof premiumAlert ===
+        "function"
+    ){
+
+        premiumAlert(
+            message,
+            "Google Login",
+            "error"
+        );
+
     }
+    else{
+
+        alert(
+            message
+        );
+
+    }
+
 }
+
+
+
+/* =====================================================
+   RESET GOOGLE BUTTONS
+   ===================================================== */
+
+function resetGoogleButtons(){
+
+    const buttons =
+        document.querySelectorAll(
+            '#loginPage button[onclick="googleLogin()"],' +
+            '#registerPage button[onclick="googleLogin()"]'
+        );
+
+
+    buttons.forEach(button => {
+
+        button.disabled = false;
+
+        button.innerText =
+            button.dataset.originalText ||
+            "Continue with Google";
+
+        button.style.opacity =
+            "";
+
+        button.style.pointerEvents =
+            "";
+
+    });
+
+
+    googleLoginInProgress =
+        false;
+
+    }
 
 // =========================================
 // PREMIUM SEARCH OVERLAY CONTROLLER
-
 // =========================================
 
 let friendSearchTimer = null;
