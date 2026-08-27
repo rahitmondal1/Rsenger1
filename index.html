@@ -52591,3 +52591,294 @@ async function updateRsengerGroupMessageAccess(){
                       
 
 </script>
+
+
+<!-- =========================================================
+     RSENGER FINAL SETTINGS POLISH / SCROLL / DARK PREMIUM FIX
+     ========================================================= -->
+<style id="rsenger-final-settings-polish">
+/* Settings is an independent vertical scroll surface */
+html, body { overflow:hidden !important; }
+#settingsPage {
+    position:fixed !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100dvh !important;
+    min-height:100dvh !important;
+    max-height:none !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
+    touch-action:pan-y !important;
+    padding-bottom:130px !important;
+    display:block !important;
+}
+#settingsPage.hidden { display:none !important; }
+#settingsPage::before,
+#settingsPage::after { pointer-events:none !important; }
+#settingsPage > * { position:relative; z-index:2; }
+.rsenger-settings-page .rs-settings-content {
+    width:100% !important;
+    max-width:720px !important;
+    min-height:max-content !important;
+    padding:12px 14px 145px !important;
+    margin:0 auto !important;
+    box-sizing:border-box !important;
+}
+.rsenger-settings-page .rs-settings-header {
+    position:sticky !important;
+    top:0 !important;
+    z-index:50 !important;
+    background:rgba(7,10,18,.88) !important;
+    color:#f8fafc !important;
+    border-bottom:1px solid rgba(255,255,255,.075) !important;
+    box-shadow:0 10px 30px rgba(0,0,0,.18) !important;
+}
+.rsenger-settings-page .rs-settings-header h2 { color:#fff !important; }
+.rsenger-settings-page .rs-settings-header small { color:#8490a8 !important; }
+.rsenger-settings-page .rs-settings-header-badge {
+    background:rgba(139,92,246,.13) !important;
+    color:#a78bfa !important;
+    border:1px solid rgba(139,92,246,.14) !important;
+}
+
+/* Never use white setting cards/buttons */
+.rsenger-settings-page .rs-setting-card {
+    appearance:none !important;
+    -webkit-appearance:none !important;
+    background:linear-gradient(145deg,rgba(19,25,42,.96),rgba(10,15,27,.98)) !important;
+    color:#f3f6ff !important;
+    border:1px solid rgba(255,255,255,.075) !important;
+    box-shadow:0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+.rsenger-settings-page .rs-setting-card:hover {
+    background:linear-gradient(145deg,rgba(24,31,51,.98),rgba(11,17,30,.99)) !important;
+    border-color:rgba(139,92,246,.22) !important;
+    box-shadow:0 12px 30px rgba(0,0,0,.24),0 0 0 1px rgba(139,92,246,.04) !important;
+}
+.rsenger-settings-page .rs-setting-card:active { transform:scale(.985) !important; }
+.rsenger-settings-page .rs-setting-copy b { color:#f5f7ff !important; }
+.rsenger-settings-page .rs-setting-copy small { color:#7f8ba3 !important; }
+.rsenger-settings-page .rs-setting-arrow { color:#7f8ba3 !important; }
+.rsenger-settings-page .rs-settings-section-title { color:#71809a !important; }
+
+/* Dark native selects */
+.rsenger-settings-page .rs-setting-select {
+    color:#a78bfa !important;
+    background:#111827 !important;
+    border:1px solid rgba(139,92,246,.16) !important;
+    border-radius:10px !important;
+    padding:7px 8px !important;
+    color-scheme:dark !important;
+}
+.rsenger-settings-page .rs-setting-select option {
+    background:#0d1322 !important;
+    color:#f5f7ff !important;
+}
+
+/* Switches: dark track + dark thumb, accent when enabled */
+.rsenger-settings-page .rs-switch-ui {
+    background:#20283a !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.25) !important;
+}
+.rsenger-settings-page .rs-switch-ui::after {
+    background:#8d98ad !important;
+    box-shadow:0 2px 6px rgba(0,0,0,.45) !important;
+}
+.rsenger-settings-page .rs-setting-card:has(.rs-switch:checked) .rs-switch-ui {
+    background:var(--rs-accent,#8b5cf6) !important;
+    border-color:transparent !important;
+}
+.rsenger-settings-page .rs-setting-card:has(.rs-switch:checked) .rs-switch-ui::after {
+    background:#0b1020 !important;
+}
+
+/* Accent circles stay visible without white button backgrounds */
+.rsenger-settings-page .rs-accent-dots button {
+    appearance:none !important;
+    -webkit-appearance:none !important;
+    background:var(--c) !important;
+    border:2px solid #1a2234 !important;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08),0 4px 10px rgba(0,0,0,.3) !important;
+}
+.rsenger-settings-page .rs-accent-dots button:active { transform:scale(.9) !important; }
+
+/* Logout is dark, not white */
+.rsenger-settings-page .rs-logout-card {
+    appearance:none !important;
+    -webkit-appearance:none !important;
+    background:linear-gradient(145deg,rgba(127,29,29,.22),rgba(69,10,10,.32)) !important;
+    color:#fb7185 !important;
+    border:1px solid rgba(248,113,113,.16) !important;
+    box-shadow:0 8px 24px rgba(0,0,0,.2) !important;
+    cursor:pointer !important;
+}
+.rsenger-settings-page .rs-logout-card:active { transform:scale(.985); }
+
+/* Back button must also match the app */
+.rsenger-settings-page .premium-back-btn {
+    background:rgba(255,255,255,.045) !important;
+    color:#dbe5f5 !important;
+    border:1px solid rgba(255,255,255,.075) !important;
+    box-shadow:none !important;
+}
+
+/* All premium popups stay in the same dark Rsenger language */
+.premium-alert-box,
+.premium-popup {
+    background:linear-gradient(145deg,rgba(20,27,45,.985),rgba(7,11,21,.995)) !important;
+    color:#f5f7ff !important;
+    border:1px solid rgba(255,255,255,.09) !important;
+    box-shadow:0 28px 90px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+.premium-alert-box h3,
+.premium-popup h3,
+.premium-popup-title { color:#f8fafc !important; }
+.premium-alert-box p,
+.premium-popup p,
+.premium-popup-message { color:#9aa7bd !important; }
+.premium-alert-ok,
+.premium-popup-btn {
+    background:linear-gradient(135deg,var(--rs-accent,#8b5cf6),#22d3ee) !important;
+    color:#07101c !important;
+    border:0 !important;
+    box-shadow:0 10px 28px rgba(34,211,238,.16) !important;
+}
+.premium-alert-close {
+    background:rgba(255,255,255,.045) !important;
+    color:#9aa7bd !important;
+    border:1px solid rgba(255,255,255,.07) !important;
+}
+
+@media (max-width:600px){
+    #settingsPage { padding-bottom:120px !important; }
+    .rsenger-settings-page .rs-settings-content { padding-left:12px !important; padding-right:12px !important; padding-bottom:130px !important; }
+    .rsenger-settings-page .rs-setting-card { min-height:62px !important; }
+}
+</style>
+
+<script id="rsenger-final-settings-js">
+(function(){
+    'use strict';
+
+    const KEY = 'rsenger_settings_v2';
+
+    function readSettings(){
+        try{
+            const raw = localStorage.getItem(KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            return Object.assign({
+                lastSeen:'everyone',
+                readReceipts:true,
+                typingIndicator:true,
+                notifications:true,
+                notificationSound:true,
+                enterToSend:true,
+                dataSaver:false,
+                theme:'dark',
+                accent:'#8b5cf6'
+            }, parsed || {});
+        }catch(e){
+            return {
+                lastSeen:'everyone', readReceipts:true, typingIndicator:true,
+                notifications:true, notificationSound:true, enterToSend:true,
+                dataSaver:false, theme:'dark', accent:'#8b5cf6'
+            };
+        }
+    }
+
+    function writeSettings(s){
+        try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){}
+    }
+
+    function applyDarkTheme(){
+        /* Rsenger's main interface is dark-first; never flash a white settings page. */
+        document.body.classList.add('dark');
+        const s = readSettings();
+        document.documentElement.style.setProperty('--rs-accent', s.accent || '#8b5cf6');
+    }
+
+    window.loadRsSettings = function(){
+        const s = readSettings();
+        const map = {
+            rsReadReceipts:'readReceipts',
+            rsTypingIndicator:'typingIndicator',
+            rsNotifications:'notifications',
+            rsNotificationSound:'notificationSound',
+            rsEnterToSend:'enterToSend',
+            rsDataSaver:'dataSaver'
+        };
+        Object.keys(map).forEach(id=>{
+            const el=document.getElementById(id);
+            if(el) el.checked=!!s[map[id]];
+        });
+        const ls=document.getElementById('rsLastSeenSetting');
+        if(ls) ls.value=s.lastSeen || 'everyone';
+        const th=document.getElementById('rsThemeSetting');
+        if(th) th.value=s.theme || 'dark';
+        document.documentElement.style.setProperty('--rs-accent',s.accent || '#8b5cf6');
+        applyDarkTheme();
+    };
+
+    window.saveRsSetting = async function(key,value){
+        const s=readSettings();
+        s[key]=value;
+        writeSettings(s);
+        document.documentElement.style.setProperty('--rs-accent',s.accent || '#8b5cf6');
+        applyDarkTheme();
+
+        if(key==='notifications' && value && 'Notification' in window && Notification.permission==='default'){
+            try{ await Notification.requestPermission(); }catch(e){}
+        }
+
+        if(typeof auth!=='undefined' && auth.currentUser && typeof db!=='undefined'){
+            try{
+                const payload={settings:{}};
+                payload.settings[key]=value;
+                await db.collection('users').doc(auth.currentUser.uid).set(payload,{merge:true});
+            }catch(e){ console.warn('Settings sync:',e); }
+        }
+    };
+
+    window.applyRsTheme = function(value){
+        const s=readSettings();
+        s.theme=value;
+        writeSettings(s);
+        applyDarkTheme();
+        if(typeof auth!=='undefined' && auth.currentUser && typeof db!=='undefined'){
+            db.collection('users').doc(auth.currentUser.uid).set({settings:{theme:value}},{merge:true}).catch(()=>{});
+        }
+    };
+
+    window.setRsAccent = function(color){
+        const s=readSettings();
+        s.accent=color;
+        writeSettings(s);
+        document.documentElement.style.setProperty('--rs-accent',color);
+        if(typeof auth!=='undefined' && auth.currentUser && typeof db!=='undefined'){
+            db.collection('users').doc(auth.currentUser.uid).set({settings:{accent:color}},{merge:true}).catch(()=>{});
+        }
+        if(typeof premiumAlert==='function') premiumAlert('Accent color updated.','Appearance','success');
+    };
+
+    /* Make settings open reliably and always refresh its controls. */
+    const originalOpenSettings = window.openSettings;
+    window.openSettings = function(){
+        if(typeof originalOpenSettings==='function') originalOpenSettings.apply(this,arguments);
+        const page=document.getElementById('settingsPage');
+        if(page){ page.scrollTop=0; page.classList.remove('hidden'); }
+        applyDarkTheme();
+        setTimeout(function(){
+            window.loadRsSettings();
+            if(window.lucide) lucide.createIcons();
+        },40);
+    };
+
+    document.addEventListener('DOMContentLoaded',function(){
+        applyDarkTheme();
+        window.loadRsSettings();
+    });
+})();
+</script>
