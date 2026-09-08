@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -2954,9 +2954,9 @@ onclick="closeMessageMenu()"></div>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script src="https://unpkg.com/[email protected]/webtonative.min.js"></script>
 
-<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 
-<script src="script.js"></script>
+
+<!-- Rsenger app logic is bundled in this single index.html file. -->
 
 <script>
     lucide.createIcons();
@@ -3461,9 +3461,7 @@ label{
 })();
 </script>
 
-\n<script id="rsenger-premium-settings-js">\n(function(){\nconst KEY='rsenger_settings_v2';\nconst defaults={lastSeen:'everyone',readReceipts:true,typingIndicator:true,notifications:true,notificationSound:true,enterToSend:true,dataSaver:false,theme:'system',accent:'#8b5cf6'};\nfunction get(){try{return Object.assign({},defaults,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return Object.assign({},defaults)}}\nfunction set(k,v){const s=get();s[k]=v;localStorage.setItem(KEY,JSON.stringify(s));return s}\nwindow.loadRsSettings=function(){const s=get(); ['rsReadReceipts','rsTypingIndicator','rsNotifications','rsNotificationSound','rsEnterToSend','rsDataSaver'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=!!s[{rsReadReceipts:'readReceipts',rsTypingIndicator:'typingIndicator',rsNotifications:'notifications',rsNotificationSound:'notificationSound',rsEnterToSend:'enterToSend',rsDataSaver:'dataSaver'}[id]]});const ls=document.getElementById('rsLastSeenSetting');if(ls)ls.value=s.lastSeen;const th=document.getElementById('rsThemeSetting');if(th)th.value=s.theme;document.documentElement.style.setProperty('--rs-accent',s.accent);applyRsTheme(s.theme);};\nwindow.saveRsSetting=async function(k,v){set(k,v);document.documentElement.style.setProperty('--rs-accent',get().accent);if(k==='notifications'&&v&&'Notification'in window&&Notification.permission==='default'){try{await Notification.requestPermission()}catch(e){}}if(typeof auth!=='undefined'&&auth.currentUser&&typeof db!=='undefined'){try{await db.collection('users').doc(auth.currentUser.uid).set({settings:{[k]:v}},{merge:true})}catch(e){console.warn('Settings sync:',e)}}};\nwindow.applyRsTheme=function(v){set('theme',v);let dark=v==='dark'||(v==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.body.classList.toggle('dark',dark);};\nwindow.setRsAccent=function(c){set('accent',c);document.documentElement.style.setProperty('--rs-accent',c);premiumAlert('Accent color updated.','Appearance','success')};\nwindow.clearRsengerCache=function(){premiumConfirm({title:'Clear local cache?',message:'This removes local app preferences and cached data. Your Firebase account, chats and messages will not be deleted.',type:'danger',icon:'trash-2',confirmText:'Clear Cache'}).then(ok=>{if(!ok)return;localStorage.removeItem('rsenger_settings_v2');premiumAlert('Local cache cleared successfully.','Cache Cleared','success');loadRsSettings()})};\nwindow.showRsAbout=function(){premiumAlert('Rsenger is your private messaging space. Keep your account secure and use privacy controls to manage your experience.','About Rsenger','success')};\nwindow.openSecuritySettings=function(){premiumAlert('Security controls are available through your Firebase account. For account protection, use a strong password and keep your device locked.','Security','success')};\nwindow.openBlockedAccounts=function(){premiumPrompt({title:'Blocked Account','message:'Enter the email address you want to block. You can manage this list later from your account settings.',confirmText:'Block'}).then(v=>{if(!v)return;const s=get();s.blocked=Array.isArray(s.blocked)?s.blocked:[];if(!s.blocked.includes(v.toLowerCase()))s.blocked.push(v.toLowerCase());localStorage.setItem(KEY,JSON.stringify(s));premiumAlert('Account blocked on this device.','Blocked','success')})};\nconst oldOpen=window.openSettings;window.openSettings=function(){if(oldOpen)oldOpen.apply(this,arguments);setTimeout(loadRsSettings,30)};\nwindow.addEventListener('storage',()=>{if(document.getElementById('settingsPage')&&!document.getElementById('settingsPage').classList.contains('hidden'))loadRsSettings()});\nwindow.addEventListener('DOMContentLoaded',()=>{loadRsSettings();if(window.matchMedia)window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{const s=get();if(s.theme==='system')applyRsTheme('system')})});\n})();\n</script>\n\n<style id="rsenger-premium-settings-v2">\n.rsenger-settings-page{background:linear-gradient(180deg,#f7f8fc 0%,#eef1f7 100%);overflow-y:auto!important;padding-bottom:30px}.dark .rsenger-settings-page{background:linear-gradient(180deg,#080b14,#0d1220)}\n.rs-settings-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:13px;padding:16px 16px 14px;background:rgba(247,248,252,.88);backdrop-filter:blur(18px);border-bottom:1px solid rgba(20,25,40,.07)}.dark .rs-settings-header{background:rgba(8,11,20,.88);border-color:rgba(255,255,255,.07)}.rs-settings-header h2{margin:0;font-size:21px}.rs-settings-header small{color:#7b8190;font-size:11px}.rs-settings-header>div:nth-child(2){flex:1}.rs-settings-header-badge{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.11);color:#8b5cf6}.rs-settings-content{max-width:720px;margin:auto;padding:12px 14px 40px}.rs-settings-section-title{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#858b9a;margin:20px 6px 8px}.rs-setting-card{width:100%;min-height:64px;border:1px solid rgba(20,25,40,.07);border-radius:18px;background:rgba(255,255,255,.9);display:flex;align-items:center;gap:12px;padding:10px 13px;margin:7px 0;box-sizing:border-box;text-align:left;color:#171a22;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;cursor:pointer}.rs-setting-card:active{transform:scale(.985)}.rs-setting-card:hover{box-shadow:0 8px 24px rgba(25,30,50,.07)}.dark .rs-setting-card{background:rgba(20,25,39,.9);border-color:rgba(255,255,255,.07);color:#f5f6fb}.rs-setting-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:0 0 42px;background:rgba(139,92,246,.11);color:#8b5cf6}.rs-setting-icon.security{color:#0ea5e9;background:rgba(14,165,233,.11)}.rs-setting-icon.privacy,.rs-setting-icon.receipt{color:#6366f1;background:rgba(99,102,241,.11)}.rs-setting-icon.typing{color:#f59e0b;background:rgba(245,158,11,.11)}.rs-setting-icon.blocked,.rs-setting-icon.danger{color:#ef4444;background:rgba(239,68,68,.10)}.rs-setting-icon.notify{color:#f59e0b;background:rgba(245,158,11,.11)}.rs-setting-icon.sound{color:#10b981;background:rgba(16,185,129,.11)}.rs-setting-icon.chat{color:#3b82f6;background:rgba(59,130,246,.11)}.rs-setting-icon.data{color:#14b8a6;background:rgba(20,184,166,.11)}.rs-setting-icon.storage{color:#ef4444;background:rgba(239,68,68,.10)}.rs-setting-copy{flex:1;min-width:0}.rs-setting-copy b{display:block;font-size:14px;font-weight:750}.rs-setting-copy small{display:block;color:#858b99;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rs-setting-arrow{color:#9aa0ad;width:18px}.rs-setting-select{border:0;background:transparent;color:#7c5ce6;font-weight:700;outline:none;max-width:105px}.dark .rs-setting-select{color:#a996ff}.rs-switch{position:absolute;opacity:0;pointer-events:none}.rs-switch-ui{width:44px;height:25px;border-radius:99px;background:#cdd2dc;position:relative;flex:0 0 44px;transition:.2s}.rs-switch-ui:after{content:"";position:absolute;width:19px;height:19px;border-radius:50%;background:white;top:3px;left:3px;box-shadow:0 2px 5px #0002;transition:.2s}.rs-setting-card:has(.rs-switch:checked) .rs-switch-ui{background:var(--rs-accent,#8b5cf6)}.rs-setting-card:has(.rs-switch:checked) .rs-switch-ui:after{left:22px}.rs-accent-dots{display:flex;gap:7px}.rs-accent-dots button{width:22px;height:22px;border:2px solid white;border-radius:50%;background:var(--c);box-shadow:0 0 0 1px #0002;cursor:pointer}.dark .rs-accent-dots button{border-color:#171b28}.rs-logout-card{width:100%;height:56px;margin-top:18px;border:1px solid rgba(239,68,68,.14);border-radius:18px;background:rgba(239,68,68,.07);color:#ef4444;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px}.rs-settings-footer{text-align:center;color:#9aa0ad;font-size:10px;padding:20px}.rs-setting-card.danger{border-color:rgba(239,68,68,.12)}\n@media(max-width:420px){.rs-setting-copy b{font-size:13px}.rs-setting-copy small{font-size:10px}.rs-setting-icon{width:39px;height:39px;flex-basis:39px}.rs-setting-card{min-height:61px;padding:9px 11px}}\n</style>\n</body>
-
-</html><style>*{
+\n\n\n<style>*{
 margin:0;
 padding:0;
 box-sizing:border-box;
@@ -31413,28 +31411,9 @@ async function googleLogin(){
 
 
         /*
-         * Android / mobile browser
-         *
-         * Redirect is more reliable than popup
-         */
-        const isMobile =
-            /Android|iPhone|iPad|iPod/i.test(
-                navigator.userAgent
-            );
-
-
-        if(isMobile){
-
-            await auth.signInWithRedirect(
-                provider
-            );
-
-            return;
-        }
-
-
-        /*
-         * Desktop
+         * Popup is the primary flow on desktop and mobile browsers.
+         * If a browser/WebView blocks popups, the catch block below
+         * automatically falls back to Firebase redirect authentication.
          */
         const result =
             await auth.signInWithPopup(
@@ -31535,7 +31514,7 @@ async function completeGoogleLogin(user){
 
     if(!user){
         throw new Error(
-            "Google account information পাওয়া যায়নি।"
+            "Google account information was not received."
         );
     }
 
@@ -31619,7 +31598,7 @@ async function completeGoogleLogin(user){
                 user.displayName || "Rsenger User",
 
             username:
-                "",
+                ("user_" + user.uid.slice(-8)).toLowerCase(),
 
             phone:
                 user.phoneNumber || "",
@@ -31892,7 +31871,7 @@ function showGoogleError(error){
             case "auth/popup-closed-by-user":
 
                 message =
-                    "Google Login window বন্ধ করা হয়েছে। আবার চেষ্টা করুন.";
+                    "The Google sign-in window was closed. Please try again.";
 
                 break;
 
@@ -31900,7 +31879,7 @@ function showGoogleError(error){
             case "auth/popup-blocked":
 
                 message =
-                    "Browser Google Login popup block করেছে। আবার চেষ্টা করুন.";
+                    "Your browser blocked the Google sign-in popup. Please try again.";
 
                 break;
 
@@ -31908,7 +31887,7 @@ function showGoogleError(error){
             case "auth/unauthorized-domain":
 
                 message =
-                    "এই website domain Firebase Google Login-এর জন্য authorized নয়.";
+                    "This website domain is not authorized for Google Sign-In in Firebase.";
 
                 break;
 
@@ -31916,7 +31895,7 @@ function showGoogleError(error){
             case "auth/operation-not-allowed":
 
                 message =
-                    "Firebase Console-এ Google Sign-in enable করা নেই.";
+                    "Google Sign-In is not enabled in the Firebase Console.";
 
                 break;
 
@@ -31924,7 +31903,7 @@ function showGoogleError(error){
             case "auth/network-request-failed":
 
                 message =
-                    "Internet connection check করে আবার চেষ্টা করুন.";
+                    "Please check your internet connection and try again.";
 
                 break;
 
@@ -31932,7 +31911,31 @@ function showGoogleError(error){
             case "auth/account-exists-with-different-credential":
 
                 message =
-                    "এই email অন্য একটি login method-এর সঙ্গে already connected.";
+                    "This email is already linked to a different sign-in method.";
+
+                break;
+
+
+            case "auth/invalid-api-key":
+
+                message =
+                    "Firebase configuration is invalid. Please check the app configuration.";
+
+                break;
+
+
+            case "auth/redirect-cancelled-by-user":
+
+                message =
+                    "Google sign-in was cancelled. Please try again.";
+
+                break;
+
+
+            case "auth/internal-error":
+
+                message =
+                    "Google sign-in encountered an internal error. Please try again.";
 
                 break;
 
@@ -52882,3 +52885,155 @@ html, body { overflow:hidden !important; }
     });
 })();
 </script>
+
+<script id="rsenger-premium-settings-final">
+(function(){
+    'use strict';
+    const KEY='rsenger_settings_v2';
+    const DEFAULTS={lastSeen:'everyone',readReceipts:true,typingIndicator:true,notifications:true,notificationSound:true,enterToSend:true,dataSaver:false,theme:'system',accent:'#8b5cf6',blocked:[]};
+
+    function readSettings(){
+        try{
+            const parsed=JSON.parse(localStorage.getItem(KEY)||'{}');
+            const value=Object.assign({},DEFAULTS,parsed&&typeof parsed==='object'?parsed:{});
+            if(!Array.isArray(value.blocked)) value.blocked=[];
+            return value;
+        }catch(error){ return Object.assign({},DEFAULTS,{blocked:[]}); }
+    }
+    function writeSettings(value){ try{localStorage.setItem(KEY,JSON.stringify(value));}catch(error){console.warn('Settings storage error:',error);} }
+    function applyTheme(theme){
+        const selected=theme||readSettings().theme||'system';
+        const dark=selected==='dark'||(selected==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.body.classList.toggle('dark',!!dark);
+        document.documentElement.style.setProperty('--rs-accent',readSettings().accent||DEFAULTS.accent);
+    }
+    function sync(key,value){
+        try{
+            if(typeof auth==='undefined'||!auth.currentUser||typeof db==='undefined') return;
+            const payload={settings:{}}; payload.settings[key]=value;
+            db.collection('users').doc(auth.currentUser.uid).set(payload,{merge:true}).catch(e=>console.warn('Settings sync:',e));
+        }catch(error){console.warn('Settings sync:',error);}
+    }
+
+    window.loadRsSettings=function(){
+        const s=readSettings();
+        const map={rsReadReceipts:'readReceipts',rsTypingIndicator:'typingIndicator',rsNotifications:'notifications',rsNotificationSound:'notificationSound',rsEnterToSend:'enterToSend',rsDataSaver:'dataSaver'};
+        Object.keys(map).forEach(id=>{const el=document.getElementById(id);if(el)el.checked=s[map[id]]!==false;});
+        const lastSeen=document.getElementById('rsLastSeenSetting'); if(lastSeen)lastSeen.value=s.lastSeen||'everyone';
+        const theme=document.getElementById('rsThemeSetting'); if(theme)theme.value=s.theme||'system';
+        document.documentElement.style.setProperty('--rs-accent',s.accent||DEFAULTS.accent);
+        applyTheme(s.theme);
+    };
+
+    window.saveRsSetting=async function(key,value){
+        const s=readSettings(); s[key]=value; writeSettings(s); applyTheme(s.theme); sync(key,value);
+        if(key==='notifications'&&value&&'Notification' in window&&Notification.permission==='default'){try{await Notification.requestPermission();}catch(e){}}
+        if(typeof premiumAlert==='function'){
+            const labels={lastSeen:'Last seen visibility',readReceipts:'Read receipts',typingIndicator:'Typing indicator',notifications:'Notifications',notificationSound:'Notification sound',enterToSend:'Enter to send',dataSaver:'Data saver'};
+            premiumAlert((labels[key]||'Setting')+' updated.','Settings Saved','success');
+        }
+    };
+
+    window.applyRsTheme=function(theme){
+        const s=readSettings(); s.theme=['system','light','dark'].includes(theme)?theme:'system'; writeSettings(s); applyTheme(s.theme); sync('theme',s.theme);
+    };
+
+    window.setRsAccent=function(color){
+        const allowed=['#8b5cf6','#3b82f6','#ec4899','#10b981']; if(!allowed.includes(color))color=DEFAULTS.accent;
+        const s=readSettings(); s.accent=color; writeSettings(s); document.documentElement.style.setProperty('--rs-accent',color); sync('accent',color);
+        if(typeof premiumAlert==='function')premiumAlert('Accent color updated.','Appearance','success');
+    };
+
+    window.clearRsengerCache=async function(){
+        if(typeof premiumConfirm!=='function')return;
+        const ok=await premiumConfirm({title:'Clear local cache?',message:'This removes local app preferences and cached device data. Your Firebase account, chats and messages will not be deleted.',type:'danger',icon:'trash-2',confirmText:'Clear Cache'});
+        if(!ok)return;
+        try{localStorage.removeItem(KEY);sessionStorage.clear();}catch(error){console.warn('Cache clear error:',error);}
+        if(typeof premiumAlert==='function')premiumAlert('Local cache cleared successfully.','Cache Cleared','success');
+        window.loadRsSettings();
+    };
+
+    window.showRsAbout=function(){
+        const message='Rsenger\\n\\nPrivate messaging with profile controls, one-to-one chats, media sharing, community tools and privacy settings.\\n\\nYour settings are stored locally and, when signed in, synced to your Firebase account.';
+        if(typeof premiumAlert==='function')premiumAlert(message,'About Rsenger','success');
+    };
+
+    window.openSecuritySettings=async function(){
+        const user=typeof auth!=='undefined'?auth.currentUser:null;
+        if(!user){if(typeof premiumAlert==='function')premiumAlert('Please sign in first.','Security','error');return;}
+        const email=user.email||'';
+        if(typeof premiumConfirm!=='function')return;
+        const ok=await premiumConfirm({title:'Account Security',message:'Signed in as '+email+'. Send a password reset email to this account?',type:'success',icon:'shield-check',confirmText:'Send Reset Email'});
+        if(!ok)return;
+        try{
+            if(!email)throw new Error('No email address is attached to this account.');
+            await auth.sendPasswordResetEmail(email);
+            if(typeof premiumAlert==='function')premiumAlert('A password reset email has been sent to '+email+'.','Reset Email Sent','success');
+        }catch(error){
+            console.error('Password reset error:',error);
+            if(typeof premiumAlert==='function')premiumAlert(error.message||'Could not send the password reset email.','Security Error','error');
+        }
+    };
+
+    window.openBlockedAccounts=async function(){
+        const s=readSettings(); let current=s.blocked.slice(); const user=typeof auth!=='undefined'?auth.currentUser:null;
+        if(user&&typeof db!=='undefined'){
+            try{
+                const snap=await db.collection('users').doc(user.uid).get();
+                const remote=snap.exists&&snap.data().settings&&snap.data().settings.blocked;
+                if(Array.isArray(remote))current=Array.from(new Set(current.concat(remote.map(String))));
+            }catch(error){console.warn('Blocked accounts load:',error);}
+        }
+        const listText=current.length?'\\n\\nCurrently blocked:\\n• '+current.join('\\n• '):'\\n\\nNo accounts are blocked.';
+        if(typeof premiumPrompt!=='function')return;
+        const value=await premiumPrompt({title:'Blocked Accounts',message:'Enter an email address to block on your account and this device.'+listText,confirmText:'Block'});
+        if(!value)return;
+        const email=value.trim().toLowerCase();
+        if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){if(typeof premiumAlert==='function')premiumAlert('Please enter a valid email address.','Invalid Email','error');return;}
+        if(!current.includes(email))current.push(email);
+        s.blocked=current; writeSettings(s); sync('blocked',current);
+        if(typeof premiumAlert==='function')premiumAlert(email+' is now blocked.','Account Blocked','success');
+    };
+
+    const oldOpenSettings=window.openSettings;
+    window.openSettings=function(){
+        if(typeof oldOpenSettings==='function')oldOpenSettings.apply(this,arguments);
+        const page=document.getElementById('settingsPage');
+        if(page){page.classList.remove('hidden');page.scrollTop=0;}
+        setTimeout(function(){window.loadRsSettings();if(window.lucide)window.lucide.createIcons();},40);
+    };
+
+    const originalStartTyping=window.startTyping;
+    if(typeof originalStartTyping==='function'){
+        window.startTyping=function(){
+            if(!readSettings().typingIndicator){if(typeof window.stopTyping==='function')window.stopTyping();return;}
+            return originalStartTyping.apply(this,arguments);
+        };
+    }
+    const originalMarkSeen=window.markMessagesAsSeen;
+    if(typeof originalMarkSeen==='function'){
+        window.markMessagesAsSeen=function(){
+            if(!readSettings().readReceipts)return Promise.resolve();
+            return originalMarkSeen.apply(this,arguments);
+        };
+    }
+    document.addEventListener('keydown',function(event){
+        if(!event.target||event.target.id!=='messageInput'||event.key!=='Enter'||event.shiftKey||event.isComposing)return;
+        if(!readSettings().enterToSend)return;
+        event.preventDefault(); if(typeof window.sendMessage==='function')window.sendMessage();
+    },true);
+    window.addEventListener('storage',function(){const page=document.getElementById('settingsPage');if(page&&!page.classList.contains('hidden'))window.loadRsSettings();});
+    window.addEventListener('DOMContentLoaded',function(){
+        window.loadRsSettings();
+        if(window.matchMedia){
+            const media=window.matchMedia('(prefers-color-scheme: dark)');
+            const update=function(){if(readSettings().theme==='system')applyTheme('system');};
+            if(media.addEventListener)media.addEventListener('change',update);else if(media.addListener)media.addListener(update);
+        }
+    });
+    applyTheme(readSettings().theme);
+})();
+</script>
+
+</body>
+</html>
