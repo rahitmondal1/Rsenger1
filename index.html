@@ -626,6 +626,76 @@ No chats yet
 
 
 
+
+<!-- =====================================================
+     RSENGER CHAIN — SIGNATURE CONTENT EXPERIENCE
+     ===================================================== -->
+<section id="chainPage" class="screen hidden rs-chain-page">
+  <div class="rs-chain-topbar">
+    <div class="rs-chain-brand">
+      <div class="rs-chain-mark"><i data-lucide="layers-3"></i></div>
+      <div>
+        <h1>Chain</h1>
+        <p>One story. Many voices.</p>
+      </div>
+    </div>
+    <button class="rs-chain-create" type="button" onclick="openChainComposer()">
+      <i data-lucide="plus"></i><span>Create</span>
+    </button>
+  </div>
+
+  <div class="rs-chain-tabs">
+    <button id="chainTabDiscover" class="active" onclick="setChainTab('discover')">Discover</button>
+    <button id="chainTabFollowing" onclick="setChainTab('following')">Following</button>
+    <button id="chainTabMine" onclick="setChainTab('mine')">My Chains</button>
+  </div>
+
+  <div id="chainFeed" class="rs-chain-feed">
+    <div class="rs-chain-loading">
+      <div class="rs-chain-spinner"></div>
+      <span>Loading Chains…</span>
+    </div>
+  </div>
+</section>
+
+<!-- CHAIN CREATE / ADD MODAL -->
+<div id="chainComposerOverlay" class="rs-chain-overlay hidden" onclick="closeChainComposer(event)">
+  <div class="rs-chain-composer" onclick="event.stopPropagation()">
+    <div class="rs-chain-composer-head">
+      <div>
+        <span class="rs-chain-eyebrow">CREATE A CHAIN</span>
+        <h2 id="chainComposerTitle">Start something people can continue.</h2>
+      </div>
+      <button type="button" onclick="closeChainComposer()" aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+
+    <div id="chainCreateFields">
+      <label class="rs-chain-field-label">Chain title</label>
+      <input id="chainTitleInput" class="rs-chain-input" maxlength="80" placeholder="e.g. My first college day">
+      <label class="rs-chain-field-label">The prompt</label>
+      <textarea id="chainPromptInput" class="rs-chain-input rs-chain-textarea" maxlength="180" placeholder="Give people a reason to add their part…"></textarea>
+    </div>
+
+    <label class="rs-chain-field-label">Your first part</label>
+    <textarea id="chainCaptionInput" class="rs-chain-input rs-chain-textarea" maxlength="220" placeholder="Say something about your photo or video…"></textarea>
+
+    <div class="rs-chain-upload-box" id="chainUploadBox">
+      <input id="chainMediaInput" type="file" accept="image/*,video/*" hidden onchange="previewChainMedia(this)">
+      <button type="button" onclick="document.getElementById('chainMediaInput').click()">
+        <span class="rs-chain-upload-icon"><i data-lucide="image-plus"></i></span>
+        <span><b>Add photo or video</b><small>Images or videos up to 30 seconds</small></span>
+        <i data-lucide="chevron-right"></i>
+      </button>
+      <div id="chainMediaPreview" class="rs-chain-media-preview hidden"></div>
+    </div>
+
+    <div class="rs-chain-composer-note"><i data-lucide="sparkles"></i><span>Every new part becomes part of the same story.</span></div>
+    <button id="chainPublishBtn" class="rs-chain-publish" type="button" onclick="publishChain()">
+      <i data-lucide="send"></i><span>Start Chain</span>
+    </button>
+  </div>
+</div>
+
 <!-- =====================================================
      RSENGER GLOBAL GROUP
      ===================================================== -->
@@ -2078,6 +2148,11 @@ Friend Requests
 
     <button onclick="showFriends()" aria-label="Friends">
         <i data-lucide="users-round"></i>
+    </button>
+
+    <button class="rs-chain-nav-btn" onclick="showChain()" aria-label="Chain">
+        <span class="rs-chain-nav-orb"><i data-lucide="layers-3"></i></span>
+        <small>Chain</small>
     </button>
 
     <button onclick="showRequests()" aria-label="Requests">
@@ -37271,6 +37346,31 @@ document.addEventListener(
     true
 );
 
+
+// ================= CHAIN =================
+function showChain(){
+    hideAllPages();
+    const page=document.getElementById("chainPage");
+    if(!page) return;
+    page.classList.remove("hidden");
+    page.style.removeProperty("display");
+    page.style.removeProperty("visibility");
+    page.style.removeProperty("pointer-events");
+    showBottomNav();
+    hideGroupIcon();
+    if(typeof loadChains === "function") loadChains();
+    if(window.lucide) lucide.createIcons();
+}
+
+function setChainTab(tab){
+    window.rsChainTab=tab;
+    ["discover","following","mine"].forEach(t=>{
+        const b=document.getElementById("chainTab"+t.charAt(0).toUpperCase()+t.slice(1));
+        if(b) b.classList.toggle("active",t===tab);
+    });
+    loadChains();
+}
+
 // ================= PROFILE =================
 
 
@@ -38256,7 +38356,8 @@ function hideAllPages(){
         "requestsPage",
         "notificationsPage",
         "settingsPage",
-        "chatPage"
+        "chatPage",
+        "chainPage"
     ];
 
 
@@ -53349,5 +53450,191 @@ html, body { overflow:hidden !important; }
 }
 </style>
 
+
+<script id="rsenger-chain-system">
+(function(){
+"use strict";
+
+window.rsChainTab="discover";
+window.rsChainComposerMode="create";
+window.rsChainTargetId=null;
+window.rsChainSelectedFile=null;
+window.rsChainPreviewUrl=null;
+window.rsChainUnsubscribe=null;
+
+function chainEscape(v){
+  return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+}
+function chainTime(ts){
+  if(!ts) return "Just now";
+  let d=typeof ts.toDate==="function"?ts.toDate():new Date(ts);
+  if(isNaN(d)) return "Just now";
+  const diff=Math.max(0,Date.now()-d.getTime()), min=Math.floor(diff/60000), hr=Math.floor(min/60), day=Math.floor(hr/24);
+  if(min<1) return "Just now";
+  if(min<60) return min+"m";
+  if(hr<24) return hr+"h";
+  if(day<7) return day+"d";
+  return d.toLocaleDateString(undefined,{day:"numeric",month:"short"});
+}
+function chainInitial(name){return (name||"R").trim().charAt(0).toUpperCase();}
+function chainProfileHTML(item){
+  const pic=item.profilePic||"";
+  return pic?`<img src="${chainEscape(pic)}" alt="">`:`<span>${chainEscape(chainInitial(item.creatorName))}</span>`;
+}
+function chainMediaHTML(item){
+  if(!item.mediaUrl) return `<div class="rs-chain-no-media"><i data-lucide="sparkles"></i><span>Text-only part</span></div>`;
+  if(item.mediaType==="video") return `<video class="rs-chain-media" src="${chainEscape(item.mediaUrl)}" controls playsinline preload="metadata"></video>`;
+  return `<img class="rs-chain-media" src="${chainEscape(item.mediaUrl)}" alt="Chain part" loading="lazy">`;
+}
+function chainCardHTML(chain, first){
+  const title=chainEscape(chain.title||"Untitled Chain");
+  const prompt=chainEscape(chain.prompt||"Add your part to continue the story.");
+  const creator=chainEscape(chain.creatorName||"Rsenger User");
+  const parts=chain.partCount||1;
+  const chainId=chain.id;
+  return `<article class="rs-chain-card" data-chain-id="${chainEscape(chainId)}">
+    <div class="rs-chain-card-glow"></div>
+    <div class="rs-chain-card-head">
+      <div class="rs-chain-user"><div class="rs-chain-avatar">${chainProfileHTML(chain)}</div><div><b>${creator}</b><span>@${chainEscape(chain.creatorUsername||"rsenger")}</span></div></div>
+      <span class="rs-chain-time">${chainTime(chain.createdAt)}</span>
+    </div>
+    <div class="rs-chain-title-row"><div><span class="rs-chain-pill">CHAIN</span><h2>${title}</h2></div><div class="rs-chain-parts"><i data-lucide="git-branch"></i>${parts} ${parts===1?"part":"parts"}</div></div>
+    <p class="rs-chain-prompt">${prompt}</p>
+    ${first?chainMediaHTML(first):""}
+    ${first&&first.caption?`<p class="rs-chain-caption">${chainEscape(first.caption)}</p>`:""}
+    <div class="rs-chain-progress"><span style="width:${Math.min(100,Math.max(14,parts*14))}%"></span></div>
+    <div class="rs-chain-card-foot">
+      <button onclick="openChainViewer('${chainEscape(chainId)}')"><i data-lucide="play"></i><span>View Chain</span></button>
+      <button onclick="openChainAdd('${chainEscape(chainId)}')"><i data-lucide="plus"></i><span>Add your part</span></button>
+    </div>
+  </article>`;
+}
+
+window.openChainComposer=function(mode="create", chainId=null){
+  window.rsChainComposerMode=mode; window.rsChainTargetId=chainId; window.rsChainSelectedFile=null;
+  const ov=document.getElementById("chainComposerOverlay"), title=document.getElementById("chainComposerTitle"), fields=document.getElementById("chainCreateFields"), btn=document.getElementById("chainPublishBtn"), cap=document.getElementById("chainCaptionInput");
+  if(!ov) return;
+  if(mode==="add"){
+    if(fields) fields.classList.add("hidden");
+    if(title) title.textContent="Add your part to the story.";
+    if(btn) btn.innerHTML='<i data-lucide="plus"></i><span>Add to Chain</span>';
+    if(cap) cap.placeholder="Add your voice to this Chain…";
+  }else{
+    if(fields) fields.classList.remove("hidden");
+    if(title) title.textContent="Start something people can continue.";
+    if(btn) btn.innerHTML='<i data-lucide="send"></i><span>Start Chain</span>';
+    if(cap) cap.placeholder="Say something about your photo or video…";
+    const t=document.getElementById("chainTitleInput"), p=document.getElementById("chainPromptInput"); if(t)t.value=""; if(p)p.value="";
+  }
+  const c=document.getElementById("chainCaptionInput"); if(c)c.value="";
+  const input=document.getElementById("chainMediaInput"); if(input)input.value="";
+  const preview=document.getElementById("chainMediaPreview"); if(preview){preview.innerHTML="";preview.classList.add("hidden");}
+  ov.classList.remove("hidden"); document.body.classList.add("rs-chain-modal-open");
+  if(window.lucide) lucide.createIcons();
+};
+window.closeChainComposer=function(e){if(e&&e.target!==e.currentTarget)return;const ov=document.getElementById("chainComposerOverlay");if(ov)ov.classList.add("hidden");document.body.classList.remove("rs-chain-modal-open");if(window.rsChainPreviewUrl){URL.revokeObjectURL(window.rsChainPreviewUrl);window.rsChainPreviewUrl=null;}}
+window.openChainAdd=function(id){openChainComposer("add",id)};
+
+window.previewChainMedia=function(input){
+  const file=input&&input.files&&input.files[0]; if(!file)return;
+  if(!/^image\/(jpeg|png|webp|gif)|^video\//i.test(file.type)){premiumAlert("Please choose an image or video.","Unsupported Media","error");input.value="";return;}
+  if(file.size>40*1024*1024){premiumAlert("Please keep Chain media under 40 MB.","File Too Large","error");input.value="";return;}
+  window.rsChainSelectedFile=file;
+  const preview=document.getElementById("chainMediaPreview"); if(!preview)return;
+  if(window.rsChainPreviewUrl)URL.revokeObjectURL(window.rsChainPreviewUrl); window.rsChainPreviewUrl=URL.createObjectURL(file);
+  preview.classList.remove("hidden");
+  preview.innerHTML=file.type.startsWith("video/")?`<video src="${window.rsChainPreviewUrl}" controls muted playsinline></video>`:`<img src="${window.rsChainPreviewUrl}" alt="Preview">`;
+  if(file.type.startsWith("video/")){
+    const v=preview.querySelector("video"); v.addEventListener("loadedmetadata",()=>{if(v.duration>30){premiumAlert("Chain videos can be up to 30 seconds.","Video Too Long","error");input.value="";window.rsChainSelectedFile=null;preview.innerHTML="";preview.classList.add("hidden");}} ,{once:true});
+  }
+};
+
+window.publishChain=async function(){
+  const me=auth.currentUser; if(!me){premiumAlert("Please log in first.","Login Required","error");return;}
+  const btn=document.getElementById("chainPublishBtn"); if(btn)btn.disabled=true;
+  try{
+    const file=window.rsChainSelectedFile;
+    if(file&&file.type.startsWith("video/")){
+      const ok=await new Promise(resolve=>{const v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{resolve(v.duration<=30);URL.revokeObjectURL(v.src)};v.onerror=()=>resolve(false);v.src=URL.createObjectURL(file);});
+      if(!ok) throw new Error("Chain videos can be up to 30 seconds.");
+    }
+    let profile={name:me.displayName||me.email.split("@")[0],username:"",profilePic:""};
+    try{const u=await db.collection("users").doc(me.uid).get();if(u.exists){const d=u.data()||{};profile.name=d.nickname||d.name||profile.name;profile.username=d.username||"";profile.profilePic=d.profilePic||"";}}catch(_){ }
+    let mediaUrl="", mediaType="";
+    if(file){
+      const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const ref=firebase.storage().ref(`chains/${me.uid}/${Date.now()}_${safe}`);
+      const upload=await ref.put(file,{contentType:file.type}); mediaUrl=await upload.ref.getDownloadURL(); mediaType=file.type.startsWith("video/")?"video":"image";
+    }
+    const caption=(document.getElementById("chainCaptionInput")?.value||"").trim();
+    if(!caption&&!mediaUrl) throw new Error("Add a photo, video, or a short caption.");
+    if(window.rsChainComposerMode==="add"){
+      const id=window.rsChainTargetId; if(!id)throw new Error("Chain not found.");
+      await db.collection("chains").doc(id).collection("parts").add({uid:me.uid,email:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,caption,mediaUrl,mediaType,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      await db.collection("chains").doc(id).set({partCount:firebase.firestore.FieldValue.increment(1),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+      closeChainComposer(); premiumAlert("Your part has been added to the Chain.","Chain Updated","success"); loadChains();
+    }else{
+      const title=(document.getElementById("chainTitleInput")?.value||"").trim(); const prompt=(document.getElementById("chainPromptInput")?.value||"").trim();
+      if(title.length<3)throw new Error("Give your Chain a title.");
+      if(prompt.length<5)throw new Error("Add a short prompt so people know how to continue.");
+      const chainRef=db.collection("chains").doc();
+      await chainRef.set({title,prompt,creatorUid:me.uid,creatorEmail:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,partCount:1,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),visibility:"public"});
+      await chainRef.collection("parts").doc().set({uid:me.uid,email:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,caption,mediaUrl,mediaType,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      closeChainComposer(); premiumAlert("Your Chain is live. People can now add their part.","Chain Created","success"); loadChains();
+    }
+  }catch(err){console.error("Chain publish error",err);premiumAlert(err.message||"Could not publish this Chain.","Chain Error","error");}
+  finally{if(btn)btn.disabled=false;if(window.lucide)lucide.createIcons();}
+};
+
+window.loadChains=function(){
+  const feed=document.getElementById("chainFeed"); if(!feed)return;
+  if(window.rsChainUnsubscribe){window.rsChainUnsubscribe();window.rsChainUnsubscribe=null;}
+  const me=auth.currentUser;
+  if(!me){feed.innerHTML='<div class="rs-chain-empty"><i data-lucide="lock-keyhole"></i><h3>Login to explore Chains</h3><p>Sign in to create and join community stories.</p></div>';if(window.lucide)lucide.createIcons();return;}
+  let q=db.collection("chains").orderBy("createdAt","desc").limit(30);
+  if(window.rsChainTab==="mine") q=db.collection("chains").where("creatorUid","==",me.uid).limit(30);
+  window.rsChainUnsubscribe=q.onSnapshot(async snap=>{
+    if(snap.empty){feed.innerHTML='<div class="rs-chain-empty"><div class="rs-chain-empty-orb"><i data-lucide="layers-3"></i></div><h3>No Chains yet</h3><p>Be the first person to start a story others can continue.</p><button onclick="openChainComposer()"><i data-lucide="plus"></i> Start the first Chain</button></div>';if(window.lucide)lucide.createIcons();return;}
+    const docs=await Promise.all(snap.docs.map(async d=>{const chain={id:d.id,...d.data()};let first=null;try{const ps=await d.ref.collection("parts").orderBy("createdAt","asc").limit(1).get();if(!ps.empty)first={id:ps.docs[0].id,...ps.docs[0].data()};}catch(e){console.warn(e)}return {chain,first};}));
+    let list=docs;
+    if(window.rsChainTab==="following"){
+      // Following is intentionally safe: show Chains whose creator is in the user's friends list.
+      const friendEmails=new Set(); try{const fs=await db.collection("friends").get();fs.forEach(x=>{const d=x.data()||{};if(d.user1===me.email)friendEmails.add(d.user2);if(d.user2===me.email)friendEmails.add(d.user1);});}catch(_){ }
+      list=docs.filter(x=>x.chain.creatorEmail&&friendEmails.has(x.chain.creatorEmail));
+    }
+    feed.innerHTML=list.map(x=>chainCardHTML(x.chain,x.first)).join("");
+    if(window.lucide)lucide.createIcons();
+  },err=>{console.error("Chain feed error",err);feed.innerHTML='<div class="rs-chain-empty"><i data-lucide="cloud-off"></i><h3>Couldn’t load Chains</h3><p>Check your connection and try again.</p><button onclick="loadChains()">Retry</button></div>';if(window.lucide)lucide.createIcons();});
+};
+
+window.openChainViewer=async function(id){
+  const modal=document.createElement("div"); modal.className="rs-chain-viewer-overlay"; modal.id="rsChainViewer";
+  modal.innerHTML='<div class="rs-chain-viewer"><button class="rs-chain-viewer-close" onclick="this.closest(\'.rs-chain-viewer-overlay\').remove()"><i data-lucide="x"></i></button><div id="rsChainViewerContent" class="rs-chain-viewer-content"><div class="rs-chain-loading"><div class="rs-chain-spinner"></div><span>Building the story…</span></div></div></div>';
+  document.body.appendChild(modal);if(window.lucide)lucide.createIcons();
+  try{
+    const d=await db.collection("chains").doc(id).get();if(!d.exists)throw new Error("Chain no longer exists.");const c=d.data()||{};
+    const parts=await d.ref.collection("parts").orderBy("createdAt","asc").get();
+    const content=document.getElementById("rsChainViewerContent");
+    content.innerHTML=`<div class="rs-chain-viewer-title"><span class="rs-chain-pill">CHAIN</span><h2>${chainEscape(c.title)}</h2><p>${chainEscape(c.prompt)}</p><div class="rs-chain-viewer-count">${parts.size} ${parts.size===1?"part":"parts"}</div></div>`+parts.docs.map((p,i)=>{const x=p.data()||{};return `<div class="rs-chain-part"><div class="rs-chain-part-no">${String(i+1).padStart(2,"0")}</div><div class="rs-chain-part-main"><div class="rs-chain-user"><div class="rs-chain-avatar">${chainProfileHTML(x)}</div><div><b>${chainEscape(x.creatorName||"Rsenger User")}</b><span>${chainTime(x.createdAt)}</span></div></div>${chainMediaHTML(x)}${x.caption?`<p class="rs-chain-caption">${chainEscape(x.caption)}</p>`:""}</div></div>`}).join("")+`<button class="rs-chain-viewer-add" onclick="document.getElementById('rsChainViewer').remove();openChainAdd('${chainEscape(id)}')"><i data-lucide="plus"></i>Add your part</button>`;
+    if(window.lucide)lucide.createIcons();
+  }catch(e){document.getElementById("rsChainViewerContent").innerHTML='<div class="rs-chain-empty"><i data-lucide="triangle-alert"></i><h3>Couldn’t open this Chain</h3><p>'+chainEscape(e.message||"Please try again.")+'</p></div>';if(window.lucide)lucide.createIcons();}
+};
+
+window.addEventListener("beforeunload",()=>{if(window.rsChainUnsubscribe)window.rsChainUnsubscribe();});
+})();
+</script>
+
+<style id="rsenger-chain-premium-style">
+#chainPage.rs-chain-page{position:absolute!important;inset:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;background:radial-gradient(circle at 85% 5%,rgba(124,58,237,.18),transparent 32%),radial-gradient(circle at 10% 55%,rgba(34,211,238,.09),transparent 28%),#050711!important;color:#eef2ff!important;z-index:20!important;padding:0 0 92px!important;box-sizing:border-box!important}
+.rs-chain-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 10px!important;flex:0 0 auto!important}.rs-chain-brand{display:flex;align-items:center;gap:11px}.rs-chain-mark{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,92,246,.25),rgba(34,211,238,.16));border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.08);color:#c4b5fd}.rs-chain-mark svg{width:22px}.rs-chain-brand h1{margin:0;font:800 26px/1 Space Grotesk,Inter,sans-serif;letter-spacing:-.7px}.rs-chain-brand p{margin:3px 0 0;color:#7f8aa2;font:500 11px/1 Inter,sans-serif}.rs-chain-create{height:42px;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:0 14px;display:flex;align-items:center;gap:7px;color:#fff;background:linear-gradient(135deg,#7c3aed,#2563eb);box-shadow:0 10px 25px rgba(76,29,149,.3);font:700 12px Inter,sans-serif}.rs-chain-create svg{width:17px}
+.rs-chain-tabs{display:flex;gap:6px;padding:4px 18px 13px;border-bottom:1px solid rgba(255,255,255,.06);flex:0 0 auto}.rs-chain-tabs button{border:0;background:transparent;color:#737f98;padding:9px 13px;border-radius:11px;font:700 11px Inter,sans-serif}.rs-chain-tabs button.active{color:#fff;background:rgba(139,92,246,.14);box-shadow:inset 0 0 0 1px rgba(139,92,246,.16)}
+.rs-chain-feed{flex:1;overflow-y:auto;padding:15px 14px 24px;overscroll-behavior:contain}.rs-chain-feed::-webkit-scrollbar{width:3px}.rs-chain-feed::-webkit-scrollbar-thumb{background:#27314a;border-radius:20px}.rs-chain-card{position:relative;overflow:hidden;margin:0 auto 16px;max-width:620px;border:1px solid rgba(255,255,255,.085);border-radius:24px;background:linear-gradient(145deg,rgba(17,23,39,.94),rgba(8,12,23,.98));box-shadow:0 22px 60px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04);padding:15px}.rs-chain-card-glow{position:absolute;width:160px;height:160px;right:-80px;top:-80px;background:rgba(139,92,246,.18);filter:blur(30px);pointer-events:none}.rs-chain-card-head,.rs-chain-title-row,.rs-chain-card-foot,.rs-chain-user{display:flex;align-items:center}.rs-chain-card-head{justify-content:space-between}.rs-chain-user{gap:9px;min-width:0}.rs-chain-avatar{width:38px;height:38px;flex:0 0 38px;border-radius:13px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;font:800 15px Inter,sans-serif}.rs-chain-avatar img{width:100%;height:100%;object-fit:cover}.rs-chain-user b{display:block;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 12px Inter,sans-serif}.rs-chain-user span{display:block;margin-top:3px;color:#66728b;font:500 9px Inter,sans-serif}.rs-chain-time{color:#58647a;font:600 9px Inter,sans-serif}.rs-chain-title-row{justify-content:space-between;align-items:flex-start;margin:16px 0 5px;gap:10px}.rs-chain-pill{display:inline-flex;padding:4px 7px;border-radius:7px;color:#c4b5fd;background:rgba(139,92,246,.11);border:1px solid rgba(139,92,246,.16);font:800 8px Inter,sans-serif;letter-spacing:1px}.rs-chain-title-row h2{margin:7px 0 0;font:800 20px/1.15 Space Grotesk,Inter,sans-serif;letter-spacing:-.4px}.rs-chain-parts{display:flex;align-items:center;gap:4px;white-space:nowrap;color:#73809a;font:700 9px Inter,sans-serif;padding-top:5px}.rs-chain-parts svg{width:12px}.rs-chain-prompt{margin:0 0 12px;color:#8c98ae;font:500 11px/1.45 Inter,sans-serif}.rs-chain-media{display:block;width:100%;max-height:390px;object-fit:cover;border-radius:18px;background:#02040a;border:1px solid rgba(255,255,255,.06)}.rs-chain-no-media{height:140px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:radial-gradient(circle at center,rgba(139,92,246,.15),rgba(4,7,15,.9));color:#8b97ad;font:600 10px Inter,sans-serif}.rs-chain-no-media svg{width:25px;color:#a78bfa}.rs-chain-caption{margin:10px 2px 2px;color:#d6dbea;font:500 12px/1.5 Inter,sans-serif}.rs-chain-progress{height:3px;margin:14px 0 12px;background:#151d2e;border-radius:99px;overflow:hidden}.rs-chain-progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#22d3ee)}.rs-chain-card-foot{justify-content:space-between;gap:8px}.rs-chain-card-foot button{flex:1;min-height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.035);color:#c9d1e2;display:flex;justify-content:center;align-items:center;gap:6px;font:700 10px Inter,sans-serif}.rs-chain-card-foot button:last-child{background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(37,99,235,.2));border-color:rgba(139,92,246,.2);color:#e9e5ff}.rs-chain-card-foot svg{width:14px}
+.rs-chain-loading,.rs-chain-empty{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#68748c}.rs-chain-spinner{width:24px;height:24px;border:2px solid rgba(255,255,255,.08);border-top-color:#a78bfa;border-radius:50%;animation:rsChainSpin .8s linear infinite;margin-bottom:12px}@keyframes rsChainSpin{to{transform:rotate(360deg)}}.rs-chain-empty h3{margin:14px 0 6px;color:#e9edf7;font:800 18px Space Grotesk}.rs-chain-empty p{max-width:280px;margin:0;color:#69758d;font:500 11px/1.5 Inter}.rs-chain-empty>svg{width:30px;color:#8b5cf6}.rs-chain-empty-orb{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,92,246,.2),rgba(34,211,238,.1));border:1px solid rgba(255,255,255,.08)}.rs-chain-empty-orb svg{width:29px;color:#a78bfa}.rs-chain-empty button{margin-top:16px;border:0;border-radius:12px;padding:11px 15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font:700 11px Inter}.rs-chain-empty button svg{width:14px;vertical-align:middle;margin-right:4px}
+.rs-chain-nav-btn{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}.rs-chain-nav-btn small{font:800 7px Inter,sans-serif;color:#9fa9bd;line-height:1}.rs-chain-nav-orb{width:42px;height:42px;margin-top:-18px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#06b6d4);border:4px solid #080b15;box-shadow:0 9px 25px rgba(91,33,182,.42),0 0 0 1px rgba(255,255,255,.08)}.rs-chain-nav-orb svg{width:20px;color:white}
+.rs-chain-overlay,.rs-chain-viewer-overlay{position:fixed!important;inset:0!important;z-index:99999!important;background:rgba(1,3,9,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:flex-end;justify-content:center}.rs-chain-composer{width:min(620px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(255,255,255,.1);border-bottom:0;border-radius:28px 28px 0 0;background:linear-gradient(160deg,#11182a,#070a12);box-shadow:0 -30px 100px rgba(0,0,0,.5);padding:20px 17px 24px;box-sizing:border-box}.rs-chain-composer-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px}.rs-chain-composer-head h2{margin:6px 0 0;max-width:430px;font:800 21px/1.15 Space Grotesk}.rs-chain-composer-head button,.rs-chain-viewer-close{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#9da8bc;display:grid;place-items:center}.rs-chain-eyebrow{font:800 8px Inter;letter-spacing:1.5px;color:#a78bfa}.rs-chain-field-label{display:block;margin:12px 0 7px;color:#8995ab;font:700 10px Inter}.rs-chain-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.08);border-radius:14px;outline:0;background:#0a0f1c;color:#edf1fb;padding:13px 14px;font:500 12px Inter;box-shadow:inset 0 1px rgba(255,255,255,.03)}.rs-chain-input:focus{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.09)}.rs-chain-textarea{min-height:75px;resize:none}.rs-chain-upload-box{margin-top:13px;border:1px dashed rgba(139,92,246,.28);border-radius:16px;background:rgba(139,92,246,.045);overflow:hidden}.rs-chain-upload-box>button{width:100%;border:0;background:transparent;color:#e7ebf6;display:flex;align-items:center;gap:10px;padding:13px;text-align:left}.rs-chain-upload-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(139,92,246,.13);color:#c4b5fd}.rs-chain-upload-box b{display:block;font:700 11px Inter}.rs-chain-upload-box small{display:block;margin-top:3px;color:#69758d;font:500 9px Inter}.rs-chain-upload-box>button>svg{margin-left:auto;width:16px;color:#66728a}.rs-chain-media-preview{padding:0 10px 10px}.rs-chain-media-preview img,.rs-chain-media-preview video{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:13px}.rs-chain-composer-note{display:flex;align-items:center;gap:7px;margin:13px 2px;color:#68758d;font:500 9px Inter}.rs-chain-composer-note svg{width:14px;color:#8b5cf6}.rs-chain-publish{width:100%;height:49px;border:0;border-radius:15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;display:flex;justify-content:center;align-items:center;gap:8px;font:800 12px Inter;box-shadow:0 14px 28px rgba(76,29,149,.3)}.rs-chain-publish:disabled{opacity:.55}.rs-chain-publish svg{width:16px}
+.rs-chain-viewer-overlay{align-items:stretch}.rs-chain-viewer{width:min(720px,100%);height:100%;background:#050711;display:flex;flex-direction:column}.rs-chain-viewer-close{position:absolute;right:14px;top:14px;z-index:2}.rs-chain-viewer-content{overflow:auto;padding:70px 16px 28px}.rs-chain-viewer-title{padding:8px 4px 22px}.rs-chain-viewer-title h2{margin:9px 0 6px;font:800 27px Space Grotesk}.rs-chain-viewer-title p{margin:0;max-width:560px;color:#7c879c;font:500 12px/1.5 Inter}.rs-chain-viewer-count{margin-top:10px;color:#a78bfa;font:800 9px Inter}.rs-chain-part{display:grid;grid-template-columns:34px 1fr;gap:10px;margin-bottom:18px}.rs-chain-part-no{padding-top:13px;color:#4e5a70;font:800 11px Space Grotesk}.rs-chain-part-main{border:1px solid rgba(255,255,255,.075);border-radius:19px;padding:11px;background:rgba(13,18,31,.85)}.rs-chain-viewer-add{width:100%;height:47px;border:1px solid rgba(139,92,246,.22);border-radius:15px;background:rgba(139,92,246,.1);color:#ddd6fe;font:800 11px Inter}.rs-chain-viewer-add svg{width:15px;vertical-align:middle;margin-right:5px}
+.rs-chain-page .hidden,.rs-chain-overlay.hidden{display:none!important}.rs-chain-overlay.hidden,.rs-chain-viewer-overlay.hidden{display:none!important}
+@media(max-width:420px){.rs-chain-card{border-radius:21px;padding:13px}.rs-chain-title-row h2{font-size:18px}.rs-chain-parts{font-size:8px}.rs-chain-tabs{padding-left:13px;padding-right:13px}.rs-chain-feed{padding-left:10px;padding-right:10px}}
+</style>
 </body>
 </html>
