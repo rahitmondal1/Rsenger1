@@ -2150,7 +2150,7 @@ Friend Requests
         <i data-lucide="users-round"></i>
     </button>
 
-    <button type="button" onclick="showChain()" aria-label="Chain">
+    <button type="button" onclick="window.showChain()" aria-label="Chain">
         <i data-lucide="layers-3"></i>
     </button>
 
@@ -30605,8 +30605,17 @@ function openHomeAfterSplash(user){
     // page) from appearing automatically when the app starts.
     hideAllPages();
 
-    // Home প্রস্তুত
-    home.classList.remove("hidden");
+    // Show Home using the same force-show path as the navigation system.
+    // This also clears any display:none !important left by forceHide().
+    if(typeof forceShow === "function") {
+        forceShow("homePage");
+    } else {
+        home.classList.remove("hidden");
+        home.style.removeProperty("display");
+        home.style.removeProperty("visibility");
+        home.style.removeProperty("opacity");
+        home.style.removeProperty("pointer-events");
+    }
 
 
     // Premium splash exit
@@ -37352,17 +37361,28 @@ document.addEventListener(
 
 // ================= CHAIN =================
 function showChain(){
-    hideAllPages();
-    const page=document.getElementById("chainPage");
-    if(!page) return;
-    page.classList.remove("hidden");
-    page.style.removeProperty("display");
-    page.style.removeProperty("visibility");
-    page.style.removeProperty("pointer-events");
-    showBottomNav();
-    hideGroupIcon();
-    if(typeof loadChains === "function") loadChains();
-    if(window.lucide) lucide.createIcons();
+    try {
+        if(typeof window.hideAllPages === "function") window.hideAllPages();
+        const page=document.getElementById("chainPage");
+        if(!page) return;
+
+        // Use the same force-show mechanism as every other navigation button.
+        if(typeof forceShow === "function") forceShow("chainPage");
+        else {
+            page.classList.remove("hidden");
+            page.style.removeProperty("display");
+            page.style.removeProperty("visibility");
+            page.style.removeProperty("opacity");
+            page.style.removeProperty("pointer-events");
+        }
+
+        showBottomNav();
+        hideGroupIcon();
+        if(typeof loadChains === "function") loadChains();
+        if(window.lucide) lucide.createIcons();
+    } catch(e) {
+        console.error("Chain navigation error:",e);
+    }
 }
 
 function setChainTab(tab){
@@ -44245,6 +44265,7 @@ if(selectedRsengerGroupPhoto){
             "notificationsPage",
             "settingsPage",
             "chatPage",
+            "chainPage",
             "rsengerGroupPage"
         ].forEach(forceHide);
 
@@ -44406,9 +44427,10 @@ if(selectedRsengerGroupPhoto){
         "profilePage",
         "friendsPage",
         "requestsPage",
-        "notificationPage",
+        "notificationsPage",
         "settingsPage",
         "chatPage",
+        "chainPage",
         "rsengerGroupPage"
     ];
 
@@ -44606,6 +44628,32 @@ if(selectedRsengerGroupPhoto){
 
 })();
 
+/* =====================================================
+   CHAIN NAVIGATION FINAL OVERRIDE
+   Keep Chain inside the same navigation state machine as Home/Friends/Requests/Settings.
+===================================================== */
+window.showChain = function(){
+    try{
+        if(typeof window.hideAllPages === "function") window.hideAllPages();
+        const page=document.getElementById("chainPage");
+        if(!page) return;
+        if(typeof forceShow === "function") forceShow("chainPage");
+        else{
+            page.classList.remove("hidden");
+            page.style.removeProperty("display");
+            page.style.removeProperty("visibility");
+            page.style.removeProperty("opacity");
+            page.style.removeProperty("pointer-events");
+        }
+        if(typeof showBottomNav === "function") showBottomNav();
+        if(typeof hideGroupIcon === "function") hideGroupIcon();
+        if(typeof window.loadChains === "function") window.loadChains();
+        if(window.lucide) lucide.createIcons();
+    }catch(e){
+        console.error("Final Chain navigation error:",e);
+    }
+};
+
 
 /* =====================================================
    RSENGER SAFE SCROLL FIX
@@ -44624,6 +44672,7 @@ function updateSmartScroll(){
             "notificationsPage",
             "settingsPage",
             "chatPage",
+            "chainPage",
             "rsengerGroupPage"
 
         ];
