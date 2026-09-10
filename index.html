@@ -3461,7 +3461,7 @@ label{
 })();
 </script>
 
-\n\n\n<style>*{
+<style>*{
 margin:0;
 padding:0;
 box-sizing:border-box;
@@ -53034,6 +53034,320 @@ html, body { overflow:hidden !important; }
     applyTheme(readSettings().theme);
 })();
 </script>
+
+
+
+<style id="rsenger-settings-recreated">
+/* =========================================================
+   RSENGER — PREMIUM SETTINGS RECREATION
+   Fixes broken inherited card/layout rules without changing
+   the existing settings functionality or element IDs.
+   ========================================================= */
+#settingsPage.rsenger-settings-page{
+    position:fixed !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100dvh !important;
+    max-height:none !important;
+    min-height:100dvh !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    box-sizing:border-box !important;
+    padding:0 0 120px !important;
+    background:
+        radial-gradient(650px 420px at 50% 10%, rgba(77,59,150,.20), transparent 62%),
+        radial-gradient(500px 380px at 0% 70%, rgba(34,211,238,.08), transparent 65%),
+        linear-gradient(180deg,#070a14 0%,#080b15 48%,#05070d 100%) !important;
+    color:#f7f9ff !important;
+    isolation:isolate !important;
+}
+#settingsPage.rsenger-settings-page::before{
+    content:"" !important;
+    position:fixed !important;
+    inset:0 !important;
+    pointer-events:none !important;
+    opacity:.24 !important;
+    background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px) !important;
+    background-size:42px 42px !important;
+    mask-image:linear-gradient(to bottom,black,transparent 92%) !important;
+    z-index:0 !important;
+}
+#settingsPage.rsenger-settings-page > *{position:relative !important;z-index:2 !important;}
+
+.rsenger-settings-page .rs-settings-header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:60 !important;
+    width:100% !important;
+    min-height:92px !important;
+    display:grid !important;
+    grid-template-columns:54px 1fr 46px !important;
+    align-items:center !important;
+    gap:12px !important;
+    padding:16px 16px 14px !important;
+    box-sizing:border-box !important;
+    background:linear-gradient(180deg,rgba(7,10,18,.97),rgba(7,10,18,.84)) !important;
+    border-bottom:1px solid rgba(255,255,255,.07) !important;
+    box-shadow:0 14px 38px rgba(0,0,0,.28) !important;
+    backdrop-filter:blur(22px) saturate(1.25) !important;
+    -webkit-backdrop-filter:blur(22px) saturate(1.25) !important;
+}
+.rsenger-settings-page .rs-settings-header > div:nth-child(2){min-width:0 !important;}
+.rsenger-settings-page .rs-settings-header h2{
+    margin:0 !important;
+    font:700 28px/1.05 'Space Grotesk',Inter,sans-serif !important;
+    letter-spacing:-.7px !important;
+    color:#ffffff !important;
+}
+.rsenger-settings-page .rs-settings-header small{
+    display:block !important;
+    margin-top:7px !important;
+    font:500 12px/1.2 Inter,sans-serif !important;
+    color:#8995aa !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+}
+.rsenger-settings-page .premium-back-btn{
+    width:54px !important;
+    height:54px !important;
+    min-width:54px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:17px !important;
+    background:linear-gradient(145deg,rgba(25,32,51,.96),rgba(11,16,29,.96)) !important;
+    color:#e7edfb !important;
+    border:1px solid rgba(255,255,255,.09) !important;
+    box-shadow:0 8px 22px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.045) !important;
+}
+.rsenger-settings-page .premium-back-btn svg{width:25px !important;height:25px !important;}
+.rsenger-settings-page .rs-settings-header-badge{
+    width:44px !important;
+    height:44px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:14px !important;
+    background:linear-gradient(145deg,rgba(139,92,246,.22),rgba(34,211,238,.10)) !important;
+    color:#bda8ff !important;
+    border:1px solid rgba(139,92,246,.25) !important;
+    box-shadow:0 8px 25px rgba(91,64,180,.16),inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+.rsenger-settings-page .rs-settings-header-badge svg{width:21px !important;height:21px !important;}
+
+.rsenger-settings-page .rs-settings-content{
+    width:min(100%,720px) !important;
+    margin:0 auto !important;
+    padding:18px 16px 150px !important;
+    box-sizing:border-box !important;
+}
+.rsenger-settings-page .rs-settings-section-title{
+    margin:22px 4px 10px !important;
+    color:#7e8ba3 !important;
+    font:700 11px/1 Inter,sans-serif !important;
+    letter-spacing:1.8px !important;
+}
+.rsenger-settings-page .rs-settings-section-title:first-child{margin-top:4px !important;}
+
+.rsenger-settings-page .rs-setting-card{
+    position:relative !important;
+    width:100% !important;
+    min-height:70px !important;
+    margin:0 0 9px !important;
+    padding:11px 14px !important;
+    box-sizing:border-box !important;
+    display:grid !important;
+    grid-template-columns:46px minmax(0,1fr) auto !important;
+    align-items:center !important;
+    column-gap:12px !important;
+    text-align:left !important;
+    border-radius:18px !important;
+    background:linear-gradient(145deg,rgba(20,27,45,.92),rgba(9,14,25,.96)) !important;
+    color:#f5f7ff !important;
+    border:1px solid rgba(255,255,255,.075) !important;
+    box-shadow:0 9px 28px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.035) !important;
+    backdrop-filter:blur(12px) !important;
+    -webkit-backdrop-filter:blur(12px) !important;
+    transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease !important;
+}
+.rsenger-settings-page button.rs-setting-card{font:inherit !important;cursor:pointer !important;}
+.rsenger-settings-page .rs-setting-card:hover{
+    border-color:rgba(139,92,246,.25) !important;
+    background:linear-gradient(145deg,rgba(25,33,54,.96),rgba(10,16,29,.98)) !important;
+    box-shadow:0 13px 32px rgba(0,0,0,.27),0 0 0 1px rgba(139,92,246,.035) !important;
+}
+.rsenger-settings-page .rs-setting-card:active{transform:scale(.992) !important;}
+
+.rsenger-settings-page .rs-setting-icon{
+    width:46px !important;
+    height:46px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:15px !important;
+    background:linear-gradient(145deg,rgba(139,92,246,.18),rgba(34,211,238,.08)) !important;
+    color:#b79cff !important;
+    border:1px solid rgba(139,92,246,.16) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+.rsenger-settings-page .rs-setting-icon svg{width:22px !important;height:22px !important;stroke-width:2 !important;}
+.rsenger-settings-page .rs-setting-icon.security{color:#8dd9ff !important;background:rgba(34,211,238,.10) !important;border-color:rgba(34,211,238,.13) !important;}
+.rsenger-settings-page .rs-setting-icon.privacy,.rsenger-settings-page .rs-setting-icon.receipt{color:#a99aff !important;}
+.rsenger-settings-page .rs-setting-icon.notify{color:#f0b0ff !important;}
+.rsenger-settings-page .rs-setting-icon.sound{color:#8ee7ff !important;}
+.rsenger-settings-page .rs-setting-icon.chat{color:#9bb8ff !important;}
+.rsenger-settings-page .rs-setting-icon.data{color:#79e4d2 !important;background:rgba(16,185,129,.09) !important;border-color:rgba(16,185,129,.12) !important;}
+.rsenger-settings-page .rs-setting-icon.storage{color:#f7b0c0 !important;background:rgba(244,63,94,.09) !important;border-color:rgba(244,63,94,.12) !important;}
+.rsenger-settings-page .rs-setting-icon.help{color:#b9c5ff !important;}
+.rsenger-settings-page .rs-setting-icon.danger{color:#fb7185 !important;background:rgba(244,63,94,.09) !important;border-color:rgba(244,63,94,.14) !important;}
+
+.rsenger-settings-page .rs-setting-copy{
+    min-width:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    gap:4px !important;
+}
+.rsenger-settings-page .rs-setting-copy b{
+    display:block !important;
+    margin:0 !important;
+    color:#f4f7ff !important;
+    font:650 15px/1.2 Inter,sans-serif !important;
+    letter-spacing:-.15px !important;
+}
+.rsenger-settings-page .rs-setting-copy small{
+    display:block !important;
+    margin:0 !important;
+    color:#7f8ca4 !important;
+    font:500 11px/1.35 Inter,sans-serif !important;
+    white-space:normal !important;
+}
+.rsenger-settings-page .rs-setting-arrow{
+    width:20px !important;
+    height:20px !important;
+    color:#71809a !important;
+    justify-self:end !important;
+}
+
+.rsenger-settings-page .rs-setting-select{
+    min-width:96px !important;
+    max-width:122px !important;
+    height:40px !important;
+    padding:0 28px 0 11px !important;
+    border-radius:12px !important;
+    border:1px solid rgba(139,92,246,.18) !important;
+    outline:none !important;
+    color:#c0aaff !important;
+    background:#101728 !important;
+    font:600 12px Inter,sans-serif !important;
+    color-scheme:dark !important;
+}
+.rsenger-settings-page .rs-setting-select option{background:#0c1220 !important;color:#f5f7ff !important;}
+
+.rsenger-settings-page .rs-switch{
+    position:absolute !important;
+    width:1px !important;
+    height:1px !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+}
+.rsenger-settings-page .rs-switch-ui{
+    position:relative !important;
+    width:48px !important;
+    height:28px !important;
+    border-radius:999px !important;
+    background:#20293b !important;
+    border:1px solid rgba(255,255,255,.08) !important;
+    box-sizing:border-box !important;
+    justify-self:end !important;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.30) !important;
+    transition:.2s ease !important;
+}
+.rsenger-settings-page .rs-switch-ui::after{
+    content:"" !important;
+    position:absolute !important;
+    top:4px !important;
+    left:4px !important;
+    width:18px !important;
+    height:18px !important;
+    border-radius:50% !important;
+    background:#8793a9 !important;
+    box-shadow:0 2px 7px rgba(0,0,0,.45) !important;
+    transition:transform .2s ease,background .2s ease !important;
+}
+.rsenger-settings-page .rs-setting-card:has(.rs-switch:checked) .rs-switch-ui{
+    background:linear-gradient(135deg,var(--rs-accent,#8b5cf6),#22d3ee) !important;
+    border-color:transparent !important;
+}
+.rsenger-settings-page .rs-setting-card:has(.rs-switch:checked) .rs-switch-ui::after{
+    transform:translateX(20px) !important;
+    background:#07101c !important;
+}
+
+.rsenger-settings-page .rs-accent-dots{
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+    justify-self:end !important;
+}
+.rsenger-settings-page .rs-accent-dots button{
+    width:24px !important;
+    height:24px !important;
+    padding:0 !important;
+    border-radius:50% !important;
+    background:var(--c) !important;
+    border:2px solid #172033 !important;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08),0 4px 10px rgba(0,0,0,.35) !important;
+}
+
+.rsenger-settings-page .rs-logout-card{
+    width:100% !important;
+    min-height:56px !important;
+    margin-top:14px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:9px !important;
+    border-radius:16px !important;
+    background:linear-gradient(145deg,rgba(127,29,29,.20),rgba(69,10,10,.30)) !important;
+    color:#fb7185 !important;
+    border:1px solid rgba(248,113,113,.15) !important;
+    box-shadow:0 9px 25px rgba(0,0,0,.20) !important;
+    font:700 14px Inter,sans-serif !important;
+}
+.rsenger-settings-page .rs-settings-footer{
+    padding:20px 0 4px !important;
+    text-align:center !important;
+    color:#4f5b70 !important;
+    font:500 10px Inter,sans-serif !important;
+    letter-spacing:.3px !important;
+}
+
+/* Account cards: two-column premium layout on wider phones/tablets. */
+@media (min-width:500px){
+    .rsenger-settings-page .rs-settings-section-title + .rs-setting-card + .rs-setting-card{
+        margin-left:calc(50% + 5px) !important;
+        width:calc(50% - 5px) !important;
+        margin-top:-79px !important;
+    }
+    .rsenger-settings-page .rs-settings-section-title + .rs-setting-card{
+        width:calc(50% - 5px) !important;
+    }
+}
+@media (max-width:499px){
+    .rsenger-settings-page .rs-settings-content{padding-left:13px !important;padding-right:13px !important;}
+    .rsenger-settings-page .rs-setting-card{min-height:68px !important;padding:10px 12px !important;border-radius:17px !important;grid-template-columns:44px minmax(0,1fr) auto !important;column-gap:11px !important;}
+    .rsenger-settings-page .rs-setting-icon{width:44px !important;height:44px !important;border-radius:14px !important;}
+    .rsenger-settings-page .rs-setting-copy b{font-size:14px !important;}
+    .rsenger-settings-page .rs-setting-copy small{font-size:10.5px !important;}
+    .rsenger-settings-page .rs-settings-header{grid-template-columns:52px 1fr 44px !important;min-height:88px !important;padding:14px 13px 12px !important;}
+    .rsenger-settings-page .premium-back-btn{width:52px !important;height:52px !important;min-width:52px !important;}
+    .rsenger-settings-page .rs-settings-header h2{font-size:25px !important;}
+    .rsenger-settings-page .rs-setting-select{min-width:90px !important;max-width:105px !important;}
+    .rsenger-settings-page .rs-accent-dots{gap:6px !important;}
+    .rsenger-settings-page .rs-accent-dots button{width:22px !important;height:22px !important;}
+}
+</style>
 
 </body>
 </html>
