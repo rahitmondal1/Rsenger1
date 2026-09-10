@@ -630,7 +630,7 @@ No chats yet
 <!-- =====================================================
      RSENGER CHAIN — SIGNATURE CONTENT EXPERIENCE
      ===================================================== -->
-<section id="chainPage" class="screen hidden rs-chain-page">
+<section id="chainPage" class="screen hidden rs-chain-page" style="display:none!important;visibility:hidden!important;pointer-events:none!important;">
   <div class="rs-chain-topbar">
     <div class="rs-chain-brand">
       <div class="rs-chain-mark"><i data-lucide="layers-3"></i></div>
@@ -2150,7 +2150,7 @@ Friend Requests
         <i data-lucide="users-round"></i>
     </button>
 
-    <button onclick="showChain()" aria-label="Chain">
+    <button type="button" onclick="showChain()" aria-label="Chain">
         <i data-lucide="layers-3"></i>
     </button>
 
@@ -30601,6 +30601,10 @@ function openHomeAfterSplash(user){
     register.classList.add("hidden");
 
 
+    // Always reset every app page first. This prevents Chain (or any other
+    // page) from appearing automatically when the app starts.
+    hideAllPages();
+
     // Home প্রস্তুত
     home.classList.remove("hidden");
 
@@ -38366,9 +38370,12 @@ function hideAllPages(){
             document.getElementById(id);
 
         if(page){
-
             page.classList.add("hidden");
-
+            if(id === "chainPage") {
+                page.style.setProperty("display","none","important");
+                page.style.setProperty("visibility","hidden","important");
+                page.style.setProperty("pointer-events","none","important");
+            }
         }
 
     });
@@ -53600,13 +53607,16 @@ window.publishChain=async function(){
       const storageRef=firebase.storage().ref().child("chains/"+me.uid+"/"+Date.now()+"_"+safe);
       const uploadTask=storageRef.put(file,{contentType:file.type,customMetadata:{uploadedBy:me.uid}});
       await new Promise((resolve,reject)=>{
-        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+        uploadTask.on("state_changed",
           snap=>{
             if(btn&&snap.totalBytes){
               const pct=Math.round((snap.bytesTransferred/snap.totalBytes)*100);
               btn.innerHTML='<span class="rs-chain-btn-spinner"></span><span>Uploading '+pct+'%</span>';
             }
-          },reject,resolve);
+          },
+          error=>reject(error),
+          ()=>resolve()
+        );
       });
       mediaUrl=await storageRef.getDownloadURL();
       mediaType=file.type.startsWith("video/")?"video":"image";
@@ -53684,6 +53694,8 @@ window.publishChain=async function(){
       message="Firebase Storage permission denied. Please allow signed-in users to upload their own Chain media.";
     }else if(err&&err.code==="storage/unknown"){
       message="Media upload failed. Check your internet connection and Firebase Storage configuration.";
+    }else if(err&&err.code==="storage/object-not-found"){
+      message="Firebase Storage is not available for this project right now. Text-only Chains can still be created.";
     }
     premiumAlert(message,"Chain Error","error");
   }finally{
@@ -53697,11 +53709,17 @@ window.loadChains=function(){
   if(window.rsChainUnsubscribe){window.rsChainUnsubscribe();window.rsChainUnsubscribe=null;}
   const me=auth.currentUser;
   if(!me){feed.innerHTML='<div class="rs-chain-empty"><i data-lucide="lock-keyhole"></i><h3>Login to explore Chains</h3><p>Sign in to create and join community stories.</p></div>';if(window.lucide)lucide.createIcons();return;}
-  let q=db.collection("chains").orderBy("createdAt","desc").limit(30);
-  if(window.rsChainTab==="mine") q=db.collection("chains").where("creatorUid","==",me.uid).limit(30);
+  // Avoid depending on a Firestore index for the main feed. We sort locally.
+  let q=db.collection("chains").limit(60);
+  if(window.rsChainTab==="mine") q=db.collection("chains").where("creatorUid","==",me.uid).limit(60);
   window.rsChainUnsubscribe=q.onSnapshot(async snap=>{
     if(snap.empty){feed.innerHTML='<div class="rs-chain-empty"><div class="rs-chain-empty-orb"><i data-lucide="layers-3"></i></div><h3>No Chains yet</h3><p>Be the first person to start a story others can continue.</p><button onclick="openChainComposer()"><i data-lucide="plus"></i> Start the first Chain</button></div>';if(window.lucide)lucide.createIcons();return;}
     const docs=await Promise.all(snap.docs.map(async d=>{const chain={id:d.id,...d.data()};let first=null;try{const ps=await d.ref.collection("parts").orderBy("createdAt","asc").limit(1).get();if(!ps.empty)first={id:ps.docs[0].id,...ps.docs[0].data()};}catch(e){console.warn(e)}return {chain,first};}));
+    docs.sort((a,b)=>{
+      const av=a.chain.createdAt&&typeof a.chain.createdAt.toMillis==="function"?a.chain.createdAt.toMillis():new Date(a.chain.createdAt||0).getTime()||0;
+      const bv=b.chain.createdAt&&typeof b.chain.createdAt.toMillis==="function"?b.chain.createdAt.toMillis():new Date(b.chain.createdAt||0).getTime()||0;
+      return bv-av;
+    });
     let list=docs;
     if(window.rsChainTab==="following"){
       // Following is intentionally safe: show Chains whose creator is in the user's friends list.
