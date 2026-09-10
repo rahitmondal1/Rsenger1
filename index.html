@@ -2150,9 +2150,8 @@ Friend Requests
         <i data-lucide="users-round"></i>
     </button>
 
-    <button class="rs-chain-nav-btn" onclick="showChain()" aria-label="Chain">
-        <span class="rs-chain-nav-orb"><i data-lucide="layers-3"></i></span>
-        <small>Chain</small>
+    <button onclick="showChain()" aria-label="Chain">
+        <i data-lucide="layers-3"></i>
     </button>
 
     <button onclick="showRequests()" aria-label="Requests">
@@ -53550,40 +53549,147 @@ window.previewChainMedia=function(input){
 };
 
 window.publishChain=async function(){
-  const me=auth.currentUser; if(!me){premiumAlert("Please log in first.","Login Required","error");return;}
-  const btn=document.getElementById("chainPublishBtn"); if(btn)btn.disabled=true;
+  const me=auth.currentUser;
+  if(!me){premiumAlert("Please log in first.","Login Required","error");return;}
+
+  const btn=document.getElementById("chainPublishBtn");
+  const originalHTML=btn?btn.innerHTML:"";
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="rs-chain-btn-spinner"></span><span>Publishing…</span>';}
+
   try{
+    const mode=window.rsChainComposerMode||"create";
     const file=window.rsChainSelectedFile;
-    if(file&&file.type.startsWith("video/")){
-      const ok=await new Promise(resolve=>{const v=document.createElement("video");v.preload="metadata";v.onloadedmetadata=()=>{resolve(v.duration<=30);URL.revokeObjectURL(v.src)};v.onerror=()=>resolve(false);v.src=URL.createObjectURL(file);});
-      if(!ok) throw new Error("Chain videos can be up to 30 seconds.");
-    }
-    let profile={name:me.displayName||me.email.split("@")[0],username:"",profilePic:""};
-    try{const u=await db.collection("users").doc(me.uid).get();if(u.exists){const d=u.data()||{};profile.name=d.nickname||d.name||profile.name;profile.username=d.username||"";profile.profilePic=d.profilePic||"";}}catch(_){ }
-    let mediaUrl="", mediaType="";
-    if(file){
-      const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-      const ref=firebase.storage().ref(`chains/${me.uid}/${Date.now()}_${safe}`);
-      const upload=await ref.put(file,{contentType:file.type}); mediaUrl=await upload.ref.getDownloadURL(); mediaType=file.type.startsWith("video/")?"video":"image";
-    }
     const caption=(document.getElementById("chainCaptionInput")?.value||"").trim();
-    if(!caption&&!mediaUrl) throw new Error("Add a photo, video, or a short caption.");
-    if(window.rsChainComposerMode==="add"){
-      const id=window.rsChainTargetId; if(!id)throw new Error("Chain not found.");
-      await db.collection("chains").doc(id).collection("parts").add({uid:me.uid,email:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,caption,mediaUrl,mediaType,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      await db.collection("chains").doc(id).set({partCount:firebase.firestore.FieldValue.increment(1),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-      closeChainComposer(); premiumAlert("Your part has been added to the Chain.","Chain Updated","success"); loadChains();
-    }else{
-      const title=(document.getElementById("chainTitleInput")?.value||"").trim(); const prompt=(document.getElementById("chainPromptInput")?.value||"").trim();
-      if(title.length<3)throw new Error("Give your Chain a title.");
-      if(prompt.length<5)throw new Error("Add a short prompt so people know how to continue.");
-      const chainRef=db.collection("chains").doc();
-      await chainRef.set({title,prompt,creatorUid:me.uid,creatorEmail:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,partCount:1,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),visibility:"public"});
-      await chainRef.collection("parts").doc().set({uid:me.uid,email:me.email,creatorName:profile.name,creatorUsername:profile.username,profilePic:profile.profilePic,caption,mediaUrl,mediaType,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      closeChainComposer(); premiumAlert("Your Chain is live. People can now add their part.","Chain Created","success"); loadChains();
+
+    if(file){
+      if(!/^image\/(jpeg|png|webp|gif)$|^video\//i.test(file.type)){
+        throw new Error("Please choose a valid image or video.");
+      }
+      if(file.size>40*1024*1024) throw new Error("Please keep Chain media under 40 MB.");
+
+      if(file.type.startsWith("video/")){
+        const objectUrl=URL.createObjectURL(file);
+        try{
+          const duration=await new Promise((resolve,reject)=>{
+            const v=document.createElement("video");
+            v.preload="metadata";
+            v.onloadedmetadata=()=>resolve(Number(v.duration)||0);
+            v.onerror=()=>reject(new Error("This video could not be read. Please choose another video."));
+            v.src=objectUrl;
+          });
+          if(!duration || duration>30) throw new Error("Chain videos can be up to 30 seconds.");
+        }finally{URL.revokeObjectURL(objectUrl);}
+      }
     }
-  }catch(err){console.error("Chain publish error",err);premiumAlert(err.message||"Could not publish this Chain.","Chain Error","error");}
-  finally{if(btn)btn.disabled=false;if(window.lucide)lucide.createIcons();}
+
+    let profile={name:(me.displayName||((me.email||"").split("@")[0])||"Rsenger User"),username:"",profilePic:""};
+    try{
+      const u=await db.collection("users").doc(me.uid).get();
+      if(u.exists){
+        const d=u.data()||{};
+        profile.name=d.nickname||d.name||profile.name;
+        profile.username=d.username||"";
+        profile.profilePic=d.profilePic||"";
+      }
+    }catch(profileErr){console.warn("Chain profile lookup failed",profileErr);}
+
+    let mediaUrl="",mediaType="";
+    if(file){
+      if(!firebase.storage) throw new Error("Media upload is not available right now. You can still publish a text-only Chain.");
+      const safe=(file.name||"media").replace(/[^a-zA-Z0-9._-]/g,"_");
+      const storageRef=firebase.storage().ref().child("chains/"+me.uid+"/"+Date.now()+"_"+safe);
+      const uploadTask=storageRef.put(file,{contentType:file.type,customMetadata:{uploadedBy:me.uid}});
+      await new Promise((resolve,reject)=>{
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+          snap=>{
+            if(btn&&snap.totalBytes){
+              const pct=Math.round((snap.bytesTransferred/snap.totalBytes)*100);
+              btn.innerHTML='<span class="rs-chain-btn-spinner"></span><span>Uploading '+pct+'%</span>';
+            }
+          },reject,resolve);
+      });
+      mediaUrl=await storageRef.getDownloadURL();
+      mediaType=file.type.startsWith("video/")?"video":"image";
+    }
+
+    if(!caption&&!mediaUrl) throw new Error("Add a photo, video, or a short caption.");
+
+    const basePart={
+      uid:me.uid,
+      email:me.email||"",
+      creatorName:profile.name,
+      creatorUsername:profile.username,
+      profilePic:profile.profilePic,
+      caption:caption||"",
+      mediaUrl:mediaUrl||"",
+      mediaType:mediaType||"",
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if(mode==="add"){
+      const id=window.rsChainTargetId;
+      if(!id) throw new Error("Chain not found. Please refresh and try again.");
+
+      const chainRef=db.collection("chains").doc(id);
+      const chainSnap=await chainRef.get();
+      if(!chainSnap.exists) throw new Error("This Chain no longer exists.");
+
+      const partRef=chainRef.collection("parts").doc();
+      const batch=db.batch();
+      batch.set(partRef,basePart);
+      batch.set(chainRef,{
+        partCount:firebase.firestore.FieldValue.increment(1),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+      await batch.commit();
+
+      closeChainComposer();
+      premiumAlert("Your part has been added to the Chain.","Chain Updated","success");
+      loadChains();
+    }else{
+      const title=(document.getElementById("chainTitleInput")?.value||"").trim();
+      const prompt=(document.getElementById("chainPromptInput")?.value||"").trim();
+      if(title.length<3) throw new Error("Give your Chain a title.");
+      if(prompt.length<5) throw new Error("Add a short prompt so people know how to continue.");
+
+      const chainRef=db.collection("chains").doc();
+      const partRef=chainRef.collection("parts").doc();
+      const batch=db.batch();
+      batch.set(chainRef,{
+        title,
+        prompt,
+        creatorUid:me.uid,
+        creatorEmail:me.email||"",
+        creatorName:profile.name,
+        creatorUsername:profile.username,
+        profilePic:profile.profilePic,
+        partCount:1,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        visibility:"public"
+      });
+      batch.set(partRef,basePart);
+      await batch.commit();
+
+      closeChainComposer();
+      premiumAlert("Your Chain is live. People can now add their part.","Chain Created","success");
+      loadChains();
+    }
+  }catch(err){
+    console.error("Chain publish error",err);
+    let message=err&&err.message?err.message:"Could not publish this Chain.";
+    if(err&&err.code==="permission-denied"){
+      message="Firebase permission denied. Please allow signed-in users to read/write the chains collection and upload to chains/{userId}/ in Storage Rules.";
+    }else if(err&&err.code==="storage/unauthorized"){
+      message="Firebase Storage permission denied. Please allow signed-in users to upload their own Chain media.";
+    }else if(err&&err.code==="storage/unknown"){
+      message="Media upload failed. Check your internet connection and Firebase Storage configuration.";
+    }
+    premiumAlert(message,"Chain Error","error");
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML=originalHTML||'<i data-lucide="send"></i><span>Start Chain</span>';}
+    if(window.lucide)lucide.createIcons();
+  }
 };
 
 window.loadChains=function(){
@@ -53626,12 +53732,14 @@ window.addEventListener("beforeunload",()=>{if(window.rsChainUnsubscribe)window.
 
 <style id="rsenger-chain-premium-style">
 #chainPage.rs-chain-page{position:absolute!important;inset:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;background:radial-gradient(circle at 85% 5%,rgba(124,58,237,.18),transparent 32%),radial-gradient(circle at 10% 55%,rgba(34,211,238,.09),transparent 28%),#050711!important;color:#eef2ff!important;z-index:20!important;padding:0 0 92px!important;box-sizing:border-box!important}
+#chainPage.rs-chain-page.hidden{display:none!important;visibility:hidden!important;pointer-events:none!important;}
 .rs-chain-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 10px!important;flex:0 0 auto!important}.rs-chain-brand{display:flex;align-items:center;gap:11px}.rs-chain-mark{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,92,246,.25),rgba(34,211,238,.16));border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.08);color:#c4b5fd}.rs-chain-mark svg{width:22px}.rs-chain-brand h1{margin:0;font:800 26px/1 Space Grotesk,Inter,sans-serif;letter-spacing:-.7px}.rs-chain-brand p{margin:3px 0 0;color:#7f8aa2;font:500 11px/1 Inter,sans-serif}.rs-chain-create{height:42px;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:0 14px;display:flex;align-items:center;gap:7px;color:#fff;background:linear-gradient(135deg,#7c3aed,#2563eb);box-shadow:0 10px 25px rgba(76,29,149,.3);font:700 12px Inter,sans-serif}.rs-chain-create svg{width:17px}
 .rs-chain-tabs{display:flex;gap:6px;padding:4px 18px 13px;border-bottom:1px solid rgba(255,255,255,.06);flex:0 0 auto}.rs-chain-tabs button{border:0;background:transparent;color:#737f98;padding:9px 13px;border-radius:11px;font:700 11px Inter,sans-serif}.rs-chain-tabs button.active{color:#fff;background:rgba(139,92,246,.14);box-shadow:inset 0 0 0 1px rgba(139,92,246,.16)}
 .rs-chain-feed{flex:1;overflow-y:auto;padding:15px 14px 24px;overscroll-behavior:contain}.rs-chain-feed::-webkit-scrollbar{width:3px}.rs-chain-feed::-webkit-scrollbar-thumb{background:#27314a;border-radius:20px}.rs-chain-card{position:relative;overflow:hidden;margin:0 auto 16px;max-width:620px;border:1px solid rgba(255,255,255,.085);border-radius:24px;background:linear-gradient(145deg,rgba(17,23,39,.94),rgba(8,12,23,.98));box-shadow:0 22px 60px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04);padding:15px}.rs-chain-card-glow{position:absolute;width:160px;height:160px;right:-80px;top:-80px;background:rgba(139,92,246,.18);filter:blur(30px);pointer-events:none}.rs-chain-card-head,.rs-chain-title-row,.rs-chain-card-foot,.rs-chain-user{display:flex;align-items:center}.rs-chain-card-head{justify-content:space-between}.rs-chain-user{gap:9px;min-width:0}.rs-chain-avatar{width:38px;height:38px;flex:0 0 38px;border-radius:13px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;font:800 15px Inter,sans-serif}.rs-chain-avatar img{width:100%;height:100%;object-fit:cover}.rs-chain-user b{display:block;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 12px Inter,sans-serif}.rs-chain-user span{display:block;margin-top:3px;color:#66728b;font:500 9px Inter,sans-serif}.rs-chain-time{color:#58647a;font:600 9px Inter,sans-serif}.rs-chain-title-row{justify-content:space-between;align-items:flex-start;margin:16px 0 5px;gap:10px}.rs-chain-pill{display:inline-flex;padding:4px 7px;border-radius:7px;color:#c4b5fd;background:rgba(139,92,246,.11);border:1px solid rgba(139,92,246,.16);font:800 8px Inter,sans-serif;letter-spacing:1px}.rs-chain-title-row h2{margin:7px 0 0;font:800 20px/1.15 Space Grotesk,Inter,sans-serif;letter-spacing:-.4px}.rs-chain-parts{display:flex;align-items:center;gap:4px;white-space:nowrap;color:#73809a;font:700 9px Inter,sans-serif;padding-top:5px}.rs-chain-parts svg{width:12px}.rs-chain-prompt{margin:0 0 12px;color:#8c98ae;font:500 11px/1.45 Inter,sans-serif}.rs-chain-media{display:block;width:100%;max-height:390px;object-fit:cover;border-radius:18px;background:#02040a;border:1px solid rgba(255,255,255,.06)}.rs-chain-no-media{height:140px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:radial-gradient(circle at center,rgba(139,92,246,.15),rgba(4,7,15,.9));color:#8b97ad;font:600 10px Inter,sans-serif}.rs-chain-no-media svg{width:25px;color:#a78bfa}.rs-chain-caption{margin:10px 2px 2px;color:#d6dbea;font:500 12px/1.5 Inter,sans-serif}.rs-chain-progress{height:3px;margin:14px 0 12px;background:#151d2e;border-radius:99px;overflow:hidden}.rs-chain-progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#22d3ee)}.rs-chain-card-foot{justify-content:space-between;gap:8px}.rs-chain-card-foot button{flex:1;min-height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.035);color:#c9d1e2;display:flex;justify-content:center;align-items:center;gap:6px;font:700 10px Inter,sans-serif}.rs-chain-card-foot button:last-child{background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(37,99,235,.2));border-color:rgba(139,92,246,.2);color:#e9e5ff}.rs-chain-card-foot svg{width:14px}
 .rs-chain-loading,.rs-chain-empty{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#68748c}.rs-chain-spinner{width:24px;height:24px;border:2px solid rgba(255,255,255,.08);border-top-color:#a78bfa;border-radius:50%;animation:rsChainSpin .8s linear infinite;margin-bottom:12px}@keyframes rsChainSpin{to{transform:rotate(360deg)}}.rs-chain-empty h3{margin:14px 0 6px;color:#e9edf7;font:800 18px Space Grotesk}.rs-chain-empty p{max-width:280px;margin:0;color:#69758d;font:500 11px/1.5 Inter}.rs-chain-empty>svg{width:30px;color:#8b5cf6}.rs-chain-empty-orb{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,92,246,.2),rgba(34,211,238,.1));border:1px solid rgba(255,255,255,.08)}.rs-chain-empty-orb svg{width:29px;color:#a78bfa}.rs-chain-empty button{margin-top:16px;border:0;border-radius:12px;padding:11px 15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font:700 11px Inter}.rs-chain-empty button svg{width:14px;vertical-align:middle;margin-right:4px}
-.rs-chain-nav-btn{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}.rs-chain-nav-btn small{font:800 7px Inter,sans-serif;color:#9fa9bd;line-height:1}.rs-chain-nav-orb{width:42px;height:42px;margin-top:-18px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#06b6d4);border:4px solid #080b15;box-shadow:0 9px 25px rgba(91,33,182,.42),0 0 0 1px rgba(255,255,255,.08)}.rs-chain-nav-orb svg{width:20px;color:white}
-.rs-chain-overlay,.rs-chain-viewer-overlay{position:fixed!important;inset:0!important;z-index:99999!important;background:rgba(1,3,9,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:flex-end;justify-content:center}.rs-chain-composer{width:min(620px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(255,255,255,.1);border-bottom:0;border-radius:28px 28px 0 0;background:linear-gradient(160deg,#11182a,#070a12);box-shadow:0 -30px 100px rgba(0,0,0,.5);padding:20px 17px 24px;box-sizing:border-box}.rs-chain-composer-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px}.rs-chain-composer-head h2{margin:6px 0 0;max-width:430px;font:800 21px/1.15 Space Grotesk}.rs-chain-composer-head button,.rs-chain-viewer-close{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#9da8bc;display:grid;place-items:center}.rs-chain-eyebrow{font:800 8px Inter;letter-spacing:1.5px;color:#a78bfa}.rs-chain-field-label{display:block;margin:12px 0 7px;color:#8995ab;font:700 10px Inter}.rs-chain-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.08);border-radius:14px;outline:0;background:#0a0f1c;color:#edf1fb;padding:13px 14px;font:500 12px Inter;box-shadow:inset 0 1px rgba(255,255,255,.03)}.rs-chain-input:focus{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.09)}.rs-chain-textarea{min-height:75px;resize:none}.rs-chain-upload-box{margin-top:13px;border:1px dashed rgba(139,92,246,.28);border-radius:16px;background:rgba(139,92,246,.045);overflow:hidden}.rs-chain-upload-box>button{width:100%;border:0;background:transparent;color:#e7ebf6;display:flex;align-items:center;gap:10px;padding:13px;text-align:left}.rs-chain-upload-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(139,92,246,.13);color:#c4b5fd}.rs-chain-upload-box b{display:block;font:700 11px Inter}.rs-chain-upload-box small{display:block;margin-top:3px;color:#69758d;font:500 9px Inter}.rs-chain-upload-box>button>svg{margin-left:auto;width:16px;color:#66728a}.rs-chain-media-preview{padding:0 10px 10px}.rs-chain-media-preview img,.rs-chain-media-preview video{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:13px}.rs-chain-composer-note{display:flex;align-items:center;gap:7px;margin:13px 2px;color:#68758d;font:500 9px Inter}.rs-chain-composer-note svg{width:14px;color:#8b5cf6}.rs-chain-publish{width:100%;height:49px;border:0;border-radius:15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;display:flex;justify-content:center;align-items:center;gap:8px;font:800 12px Inter;box-shadow:0 14px 28px rgba(76,29,149,.3)}.rs-chain-publish:disabled{opacity:.55}.rs-chain-publish svg{width:16px}
+.rs-chain-nav-btn{position:relative!important;} .rs-chain-nav-btn i{width:24px!important;height:24px!important;} .rs-chain-nav-orb{display:none!important;}
+.rs-chain-overlay,.rs-chain-viewer-overlay{position:fixed!important;inset:0!important;z-index:99999!important;background:rgba(1,3,9,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:flex-end;justify-content:center}.rs-chain-composer{width:min(620px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(255,255,255,.1);border-bottom:0;border-radius:28px 28px 0 0;background:linear-gradient(160deg,#11182a,#070a12);box-shadow:0 -30px 100px rgba(0,0,0,.5);padding:20px 17px 24px;box-sizing:border-box}.rs-chain-composer-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px}.rs-chain-composer-head h2{margin:6px 0 0;max-width:430px;font:800 21px/1.15 Space Grotesk}.rs-chain-composer-head button,.rs-chain-viewer-close{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#9da8bc;display:grid;place-items:center}.rs-chain-eyebrow{font:800 8px Inter;letter-spacing:1.5px;color:#a78bfa}.rs-chain-field-label{display:block;margin:12px 0 7px;color:#8995ab;font:700 10px Inter}.rs-chain-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.08);border-radius:14px;outline:0;background:#0a0f1c;color:#edf1fb;padding:13px 14px;font:500 12px Inter;box-shadow:inset 0 1px rgba(255,255,255,.03)}.rs-chain-input:focus{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 3px rgba(139,92,246,.09)}.rs-chain-textarea{min-height:75px;resize:none}.rs-chain-upload-box{margin-top:13px;border:1px dashed rgba(139,92,246,.28);border-radius:16px;background:rgba(139,92,246,.045);overflow:hidden}.rs-chain-upload-box>button{width:100%;border:0;background:transparent;color:#e7ebf6;display:flex;align-items:center;gap:10px;padding:13px;text-align:left}.rs-chain-upload-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(139,92,246,.13);color:#c4b5fd}.rs-chain-upload-box b{display:block;font:700 11px Inter}.rs-chain-upload-box small{display:block;margin-top:3px;color:#69758d;font:500 9px Inter}.rs-chain-upload-box>button>svg{margin-left:auto;width:16px;color:#66728a}.rs-chain-media-preview{padding:0 10px 10px}.rs-chain-media-preview img,.rs-chain-media-preview video{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:13px}.rs-chain-composer-note{display:flex;align-items:center;gap:7px;margin:13px 2px;color:#68758d;font:500 9px Inter}.rs-chain-composer-note svg{width:14px;color:#8b5cf6}.rs-chain-btn-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rsChainSpin .7s linear infinite;}
+.rs-chain-publish{width:100%;height:49px;border:0;border-radius:15px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;display:flex;justify-content:center;align-items:center;gap:8px;font:800 12px Inter;box-shadow:0 14px 28px rgba(76,29,149,.3)}.rs-chain-publish:disabled{opacity:.55}.rs-chain-publish svg{width:16px}
 .rs-chain-viewer-overlay{align-items:stretch}.rs-chain-viewer{width:min(720px,100%);height:100%;background:#050711;display:flex;flex-direction:column}.rs-chain-viewer-close{position:absolute;right:14px;top:14px;z-index:2}.rs-chain-viewer-content{overflow:auto;padding:70px 16px 28px}.rs-chain-viewer-title{padding:8px 4px 22px}.rs-chain-viewer-title h2{margin:9px 0 6px;font:800 27px Space Grotesk}.rs-chain-viewer-title p{margin:0;max-width:560px;color:#7c879c;font:500 12px/1.5 Inter}.rs-chain-viewer-count{margin-top:10px;color:#a78bfa;font:800 9px Inter}.rs-chain-part{display:grid;grid-template-columns:34px 1fr;gap:10px;margin-bottom:18px}.rs-chain-part-no{padding-top:13px;color:#4e5a70;font:800 11px Space Grotesk}.rs-chain-part-main{border:1px solid rgba(255,255,255,.075);border-radius:19px;padding:11px;background:rgba(13,18,31,.85)}.rs-chain-viewer-add{width:100%;height:47px;border:1px solid rgba(139,92,246,.22);border-radius:15px;background:rgba(139,92,246,.1);color:#ddd6fe;font:800 11px Inter}.rs-chain-viewer-add svg{width:15px;vertical-align:middle;margin-right:5px}
 .rs-chain-page .hidden,.rs-chain-overlay.hidden{display:none!important}.rs-chain-overlay.hidden,.rs-chain-viewer-overlay.hidden{display:none!important}
 @media(max-width:420px){.rs-chain-card{border-radius:21px;padding:13px}.rs-chain-title-row h2{font-size:18px}.rs-chain-parts{font-size:8px}.rs-chain-tabs{padding-left:13px;padding-right:13px}.rs-chain-feed{padding-left:10px;padding-right:10px}}
